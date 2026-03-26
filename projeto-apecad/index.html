@@ -1,0 +1,1594 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>APECAD 2026 - Painel dos Times</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      :root {
+        --azul-principal: #56a8ff;
+        --azul-escuro: #0f2747;
+        --dourado: #d8a635;
+        --dourado-claro: #f0c86a;
+        --branco: #ffffff;
+        --cinza-bg: #f4f7fb;
+        --cinza-card: #eef3fa;
+        --texto: #1c2430;
+        --texto-suave: #667085;
+        --sucesso: #1f9d55;
+        --erro: #d92d20;
+        --sombra: 0 10px 30px rgba(0, 0, 0, 0.12);
+        --borda: 1px solid rgba(15, 39, 71, 0.08);
+        --radius: 18px;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f7fbff, #eef5ff);
+        color: var(--texto);
+        min-height: 100vh;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .app {
+        min-height: 100vh;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+      }
+
+      .login-left {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+      }
+
+      .login-card {
+        width: 100%;
+        max-width: 470px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 28px;
+        box-shadow: var(--sombra);
+        padding: 38px 32px;
+        border: var(--borda);
+        backdrop-filter: blur(10px);
+      }
+
+      .logo-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 22px;
+      }
+
+      .logo-wrap img {
+        max-width: 150px;
+        max-height: 150px;
+        object-fit: contain;
+      }
+
+      .login-title {
+        text-align: center;
+        font-size: 28px;
+        color: var(--azul-escuro);
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .login-subtitle {
+        text-align: center;
+        color: var(--texto-suave);
+        font-size: 14px;
+        margin-bottom: 28px;
+        line-height: 1.5;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--azul-escuro);
+      }
+
+      .form-input {
+        width: 100%;
+        height: 52px;
+        border-radius: 14px;
+        border: 1px solid #d0d9e5;
+        padding: 0 16px;
+        font-size: 15px;
+        outline: none;
+        transition: 0.2s ease;
+        background: #fff;
+      }
+
+      .form-input:focus {
+        border-color: var(--azul-principal);
+        box-shadow: 0 0 0 4px rgba(86, 168, 255, 0.12);
+      }
+
+      .btn {
+        width: 100%;
+        height: 52px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(
+          135deg,
+          var(--azul-principal),
+          var(--azul-escuro)
+        );
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s ease;
+        margin-top: 10px;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+      }
+
+      .message {
+        margin-top: 16px;
+        padding: 13px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        display: none;
+        line-height: 1.4;
+      }
+
+      .message.success {
+        display: block;
+        background: rgba(31, 157, 85, 0.1);
+        color: var(--sucesso);
+        border: 1px solid rgba(31, 157, 85, 0.22);
+      }
+
+      .message.error {
+        display: block;
+        background: rgba(217, 45, 32, 0.08);
+        color: var(--erro);
+        border: 1px solid rgba(217, 45, 32, 0.18);
+      }
+
+      .login-right {
+        background:
+          linear-gradient(rgba(15, 39, 71, 0.78), rgba(15, 39, 71, 0.88)),
+          linear-gradient(135deg, #12345b, #56a8ff);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+      }
+
+      .hero-box {
+        max-width: 520px;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+
+      .hero-title {
+        font-size: 42px;
+        line-height: 1.1;
+        margin-bottom: 16px;
+        font-weight: 800;
+      }
+
+      .hero-title span {
+        color: var(--dourado-claro);
+      }
+
+      .hero-text {
+        font-size: 16px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      /* DASHBOARD */
+      .dashboard {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background: linear-gradient(180deg, var(--azul-escuro), #0b1d35);
+        color: white;
+        padding: 26px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        box-shadow: 10px 0 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .sidebar-top {
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 20px;
+      }
+
+      .sidebar-logo {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
+        margin-bottom: 10px;
+      }
+
+      .team-crest {
+        width: 110px;
+        height: 110px;
+        object-fit: contain;
+        margin: 0 auto 12px;
+        display: block;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 12px;
+      }
+
+      .team-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 5px;
+      }
+
+      .team-login {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .menu button {
+        border: none;
+        height: 48px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.07);
+        color: white;
+        text-align: left;
+        padding: 0 16px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        transition: 0.2s ease;
+      }
+
+      .menu button:hover,
+      .menu button.active {
+        background: linear-gradient(
+          135deg,
+          rgba(216, 166, 53, 0.95),
+          rgba(240, 200, 106, 0.9)
+        );
+        color: #1f2937;
+      }
+
+      .sidebar-footer {
+        margin-top: auto;
+      }
+
+      .logout-btn {
+        width: 100%;
+        height: 48px;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        font-weight: 700;
+      }
+
+      .main {
+        padding: 28px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 26px;
+      }
+
+      .topbar h1 {
+        font-size: 28px;
+        color: var(--azul-escuro);
+        margin-bottom: 6px;
+      }
+
+      .topbar p {
+        color: var(--texto-suave);
+        font-size: 14px;
+      }
+
+      .status-pill {
+        padding: 12px 18px;
+        border-radius: 999px;
+        background: white;
+        border: var(--borda);
+        box-shadow: var(--sombra);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--azul-escuro);
+      }
+
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        padding: 18px;
+        border: var(--borda);
+        box-shadow: var(--sombra);
+      }
+
+      .card-label {
+        font-size: 13px;
+        color: var(--texto-suave);
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .card-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--azul-escuro);
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+
+      .card-sub {
+        font-size: 13px;
+        color: var(--texto-suave);
+      }
+
+      .content-panel {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--sombra);
+        border: var(--borda);
+        padding: 24px;
+      }
+
+      .section-title {
+        font-size: 22px;
+        color: var(--azul-escuro);
+        margin-bottom: 8px;
+        font-weight: 800;
+      }
+
+      .section-text {
+        color: var(--texto-suave);
+        line-height: 1.7;
+        margin-bottom: 24px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .info-box {
+        background: var(--cinza-bg);
+        border-radius: 18px;
+        padding: 18px;
+        border: 1px solid #e5edf7;
+      }
+
+      .info-box strong {
+        display: block;
+        color: var(--azul-escuro);
+        margin-bottom: 6px;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .empty-state {
+        padding: 28px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #f8fbff, #eff5fc);
+        border: 1px dashed #c8d6ea;
+        color: var(--texto-suave);
+        line-height: 1.7;
+      }
+
+      @media (max-width: 1300px) {
+        .cards-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 980px) {
+        .login-screen {
+          grid-template-columns: 1fr;
+        }
+
+        .login-right {
+          display: none;
+        }
+
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-radius: 0 0 24px 24px;
+        }
+
+        .cards-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .main {
+          padding: 18px;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+      .table-like-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .goalkeeper-card {
+        background: #f8fbff;
+        border: 1px solid #dbe7f5;
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .goalkeeper-info {
+        flex: 1;
+        min-width: 240px;
+      }
+
+      .goalkeeper-name {
+        font-size: 16px;
+        font-weight: 800;
+        color: #0f2747;
+        margin-bottom: 6px;
+      }
+
+      .goalkeeper-meta {
+        font-size: 13px;
+        color: #667085;
+        line-height: 1.6;
+      }
+
+      .goalkeeper-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn-small {
+        border: none;
+        min-width: 110px;
+        height: 40px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 700;
+        padding: 0 14px;
+      }
+
+      .btn-edit {
+        background: linear-gradient(135deg, #56a8ff, #0f2747);
+        color: white;
+      }
+
+      .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- LOGIN -->
+      <section id="loginScreen" class="login-screen">
+        <div class="login-left">
+          <div class="login-card">
+            <div class="logo-wrap">
+              <img src="./assets/logo-apecad.png" alt="Logo APECAD" />
+            </div>
+
+            <h1 class="login-title">Painel dos Times</h1>
+            <p class="login-subtitle">
+              Acesse com o login e a senha do seu time para acompanhar elenco,
+              trocas, goleiros, extras e técnicos.
+            </p>
+
+            <div class="form-group">
+              <label class="form-label" for="login">Login do time</label>
+              <input
+                class="form-input"
+                id="login"
+                type="text"
+                placeholder="Ex.: argentina"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="senha">Senha</label>
+              <input
+                class="form-input"
+                id="senha"
+                type="password"
+                placeholder="Digite a senha"
+              />
+            </div>
+
+            <button class="btn" id="btnEntrar">Entrar no painel</button>
+
+            <div id="mensagemLogin" class="message"></div>
+          </div>
+        </div>
+
+        <div class="login-right">
+          <div class="hero-box">
+            <div class="hero-badge">APECAD 2026 • Sistema Oficial</div>
+            <h2 class="hero-title">
+              Organização profissional para os <span>times</span> e
+              representantes
+            </h2>
+            <p class="hero-text">
+              Controle de trocas, cadastro de goleiros, extras e técnicos,
+              acompanhamento do elenco e limite automático por time, tudo em um
+              painel único.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="dashboardScreen" class="dashboard hidden">
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <img
+              class="sidebar-logo"
+              src="./assets/logo-apecad.png"
+              alt="Logo APECAD"
+            />
+            <img
+              id="teamCrest"
+              class="team-crest"
+              src="./assets/escudos/escudo-padrao.png"
+              alt="Escudo do time"
+            />
+            <div id="teamName" class="team-name">Seleção</div>
+            <div id="teamLogin" class="team-login">@time</div>
+          </div>
+
+          <div class="menu">
+            <button class="menu-btn active" data-tab="inicio">Início</button>
+            <button class="menu-btn" data-tab="goleiros">Goleiros</button>
+            <button class="menu-btn" data-tab="extras">Extras</button>
+            <button class="menu-btn" data-tab="tecnicos">Técnicos</button>
+            <button class="menu-btn" data-tab="trocas">Trocas</button>
+          </div>
+
+          <div class="sidebar-footer">
+            <button class="logout-btn" id="btnSair">Sair</button>
+          </div>
+        </aside>
+
+        <main class="main">
+          <div class="topbar">
+            <div>
+              <h1>Dashboard do Time</h1>
+              <p>Acompanhe os limites e a situação atual do seu cadastro.</p>
+            </div>
+            <div id="statusSistema" class="status-pill">Sistema ativo</div>
+          </div>
+
+          <div class="cards-grid">
+            <div class="card">
+              <div class="card-label">Jogadores no elenco</div>
+              <div id="cardJogadores" class="card-value">0</div>
+              <div class="card-sub">Será atualizado após o sorteio</div>
+            </div>
+
+            <div class="card">
+              <div class="card-label">Trocas realizadas</div>
+              <div id="cardTrocas" class="card-value">0</div>
+              <div id="cardTrocasSub" class="card-sub">de 2 permitidas</div>
+            </div>
+
+            <div class="card">
+              <div class="card-label">Saldo de trocas</div>
+              <div id="cardSaldoTrocas" class="card-value">0</div>
+              <div class="card-sub">Disponíveis para negociação</div>
+            </div>
+
+            <div class="card">
+              <div class="card-label">Goleiros cadastrados</div>
+              <div id="cardGoleiros" class="card-value">0</div>
+              <div id="cardGoleirosSub" class="card-sub">de 3 permitidos</div>
+            </div>
+
+            <div class="card">
+              <div class="card-label">Extras cadastrados</div>
+              <div id="cardExtras" class="card-value">0</div>
+              <div id="cardExtrasSub" class="card-sub">de 3 permitidos</div>
+            </div>
+
+            <div class="card">
+              <div class="card-label">Técnicos cadastrados</div>
+              <div id="cardTecnicos" class="card-value">0</div>
+              <div id="cardTecnicosSub" class="card-sub">de 2 permitidos</div>
+            </div>
+          </div>
+
+          <div id="tab-inicio" class="content-panel tab-content active">
+            <h2 class="section-title">Visão geral</h2>
+            <p class="section-text">
+              Este é o painel inicial do seu time. Aqui você acompanha os
+              limites de trocas, goleiros, extras e técnicos, além do prazo
+              geral do sistema.
+            </p>
+
+            <div class="info-grid">
+              <div class="info-box">
+                <strong>Representante 1</strong>
+                <span id="rep1">-</span>
+              </div>
+
+              <div class="info-box">
+                <strong>Representante 2</strong>
+                <span id="rep2">-</span>
+              </div>
+
+              <div class="info-box">
+                <strong>Prazo final para alterações</strong>
+                <span id="prazoFinal">-</span>
+              </div>
+
+              <div class="info-box">
+                <strong>Status do time</strong>
+                <span id="statusTime">-</span>
+              </div>
+
+              <div class="info-box">
+                <strong>Trocas liberadas</strong>
+                <span id="bloqueioTroca">-</span>
+              </div>
+
+              <div class="info-box">
+                <strong>Cadastros liberados</strong>
+                <span id="bloqueioCadastros">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-goleiros" class="content-panel tab-content">
+            <h2 class="section-title">Cadastro de goleiros</h2>
+
+            <div style="max-width: 700px">
+              <input type="hidden" id="goleiroRegistroId" />
+
+              <div class="form-group">
+                <label class="form-label">Nome completo</label>
+                <input id="goleiroNome" class="form-input" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Documento</label>
+                <input id="goleiroDoc" class="form-input" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Telefone</label>
+                <input id="goleiroTel" class="form-input" type="text" />
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  gap: 12px;
+                  flex-wrap: wrap;
+                  margin-top: 10px;
+                "
+              >
+                <button
+                  class="btn"
+                  style="max-width: 220px"
+                  onclick="salvarGoleiro()"
+                >
+                  Salvar goleiro
+                </button>
+                <button
+                  class="btn"
+                  style="
+                    max-width: 220px;
+                    background: linear-gradient(135deg, #6b7280, #374151);
+                  "
+                  onclick="limparFormularioGoleiro()"
+                >
+                  Limpar
+                </button>
+              </div>
+
+              <div id="msgGoleiro" class="message"></div>
+            </div>
+
+            <div style="margin-top: 30px">
+              <h3 style="margin-bottom: 14px; color: #0f2747">
+                Goleiros cadastrados
+              </h3>
+              <div id="listaGoleiros" class="empty-state">
+                Nenhum goleiro cadastrado até o momento.
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-extras" class="content-panel tab-content">
+            <h2 class="section-title">Cadastro de extras</h2>
+
+            <input type="hidden" id="extraRegistroId" />
+
+            <div class="form-group">
+              <label class="form-label">Nome completo</label>
+              <input id="extraNome" class="form-input" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Documento</label>
+              <input id="extraDoc" class="form-input" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Telefone</label>
+              <input id="extraTel" class="form-input" type="text" />
+            </div>
+
+            <button class="btn" onclick="salvarExtra()">Salvar extra</button>
+
+            <div id="msgExtra" class="message"></div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Extras cadastrados</h3>
+            <div id="listaExtras" class="empty-state">
+              Nenhum extra cadastrado.
+            </div>
+          </div>
+
+          <div id="tab-tecnicos" class="content-panel tab-content">
+            <h2 class="section-title">Cadastro de técnicos</h2>
+
+            <input type="hidden" id="tecnicoRegistroId" />
+
+            <div class="form-group">
+              <label class="form-label">Nome completo</label>
+              <input id="tecnicoNome" class="form-input" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Telefone</label>
+              <input id="tecnicoTel" class="form-input" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Função</label>
+              <select id="tecnicoFuncao" class="form-input">
+                <option value="TECNICO">Técnico</option>
+                <option value="AUXILIAR">Auxiliar</option>
+                <option value="COMISSAO">Comissão</option>
+              </select>
+            </div>
+
+            <button class="btn" onclick="salvarTecnico()">
+              Salvar técnico
+            </button>
+
+            <div id="msgTecnico" class="message"></div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Técnicos cadastrados</h3>
+            <div id="listaTecnicos" class="empty-state">
+              Nenhum técnico cadastrado.
+            </div>
+          </div>
+
+          <div id="tab-trocas" class="content-panel tab-content">
+            <h2 class="section-title">Trocas entre times</h2>
+            <p class="section-text">
+              Nesta área ficarão as solicitações de troca, respostas e saldo
+              disponível.
+            </p>
+            <div class="empty-state">
+              Assim que o sorteio dos jogadores for concluído, vamos ativar esta
+              parte com envio, aceite, recusa e contraproposta.
+            </div>
+          </div>
+        </main>
+      </section>
+    </div>
+
+    <script>
+      // COLE AQUI A URL DO SEU WEB APP DO APPS SCRIPT
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbxQDVeQiy-SFgc01kK1kwUtmF8v7cljQidVF5x_oCK5lJx_wFuzlVxyWjVqXKD3YMvf/exec";
+
+      const loginScreen = document.getElementById("loginScreen");
+      const dashboardScreen = document.getElementById("dashboardScreen");
+      const mensagemLogin = document.getElementById("mensagemLogin");
+
+      const btnEntrar = document.getElementById("btnEntrar");
+      const btnSair = document.getElementById("btnSair");
+
+      const teamName = document.getElementById("teamName");
+      const teamLogin = document.getElementById("teamLogin");
+      const teamCrest = document.getElementById("teamCrest");
+
+      const rep1 = document.getElementById("rep1");
+      const rep2 = document.getElementById("rep2");
+      const prazoFinal = document.getElementById("prazoFinal");
+      const statusTime = document.getElementById("statusTime");
+      const bloqueioTroca = document.getElementById("bloqueioTroca");
+      const bloqueioCadastros = document.getElementById("bloqueioCadastros");
+      const statusSistema = document.getElementById("statusSistema");
+
+      const cardJogadores = document.getElementById("cardJogadores");
+      const cardTrocas = document.getElementById("cardTrocas");
+      const cardTrocasSub = document.getElementById("cardTrocasSub");
+      const cardSaldoTrocas = document.getElementById("cardSaldoTrocas");
+      const cardGoleiros = document.getElementById("cardGoleiros");
+      const cardGoleirosSub = document.getElementById("cardGoleirosSub");
+      const cardExtras = document.getElementById("cardExtras");
+      const cardExtrasSub = document.getElementById("cardExtrasSub");
+      const cardTecnicos = document.getElementById("cardTecnicos");
+      const cardTecnicosSub = document.getElementById("cardTecnicosSub");
+
+      let sessaoAtual = null;
+
+      function mostrarMensagem(texto, tipo = "error") {
+        mensagemLogin.className = `message ${tipo}`;
+        mensagemLogin.textContent = texto;
+      }
+
+      function limparMensagem() {
+        mensagemLogin.className = "message";
+        mensagemLogin.textContent = "";
+      }
+
+      function normalizarNomeArquivo(nome) {
+        return String(nome || "")
+          .trim()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\s+/g, "-");
+      }
+
+      function getEscudoTime(nomeTime) {
+        const nome = normalizarNomeArquivo(nomeTime);
+
+        const mapa = {
+          argentina: "./assets/escudos/argentina.png",
+          brasil: "./assets/escudos/brasil.png",
+          franca: "./assets/escudos/franca.png",
+          portugal: "./assets/escudos/portugal.png",
+          espanha: "./assets/escudos/espanha.png",
+          alemanha: "./assets/escudos/alemanha.png",
+          italia: "./assets/escudos/italia.png",
+          inglaterra: "./assets/escudos/inglaterra.png",
+          senegal: "./assets/escudos/senegal.png",
+          marrocos: "./assets/escudos/marrocos.png",
+        };
+
+        return mapa[nome] || "./assets/escudos/escudo-padrao.png";
+      }
+
+      async function getApi(params = {}) {
+        const url = new URL(SCRIPT_URL);
+
+        Object.keys(params).forEach((chave) => {
+          url.searchParams.append(chave, params[chave]);
+        });
+
+        const resposta = await fetch(url.toString(), {
+          method: "GET",
+        });
+
+        return await resposta.json();
+      }
+
+      async function fazerLoginFront() {
+        limparMensagem();
+
+        const login = document.getElementById("login").value.trim();
+        const senha = document.getElementById("senha").value.trim();
+
+        if (!login || !senha) {
+          mostrarMensagem("Informe o login e a senha do time.");
+          return;
+        }
+
+        btnEntrar.disabled = true;
+        btnEntrar.textContent = "Entrando...";
+
+        try {
+          const resultado = await getApi({
+            route: "login",
+            login,
+            senha,
+          });
+
+          if (!resultado.sucesso) {
+            mostrarMensagem(resultado.mensagem || "Não foi possível entrar.");
+            return;
+          }
+
+          sessaoAtual = resultado.time;
+          localStorage.setItem(
+            "apecad_time_session",
+            JSON.stringify(sessaoAtual),
+          );
+
+          mostrarMensagem("Login realizado com sucesso.", "success");
+
+          await carregarResumoTime(sessaoAtual.time_id);
+          await carregarGoleiros();
+          await carregarExtras();
+          await carregarTecnicos();
+          abrirDashboard();
+        } catch (erro) {
+          mostrarMensagem(
+            "Erro ao conectar com o sistema. Verifique a URL do web app.",
+          );
+          console.error(erro);
+        } finally {
+          btnEntrar.disabled = false;
+          btnEntrar.textContent = "Entrar no painel";
+        }
+      }
+
+      async function carregarResumoTime(timeId) {
+        try {
+          const resultado = await getApi({
+            route: "resumoTime",
+            time_id: timeId,
+          });
+
+          if (!resultado.sucesso) {
+            throw new Error(resultado.mensagem || "Erro ao carregar resumo.");
+          }
+
+          preencherDashboard(resultado.resumo);
+        } catch (erro) {
+          console.error("Erro ao carregar resumo:", erro);
+        }
+      }
+
+      function preencherDashboard(resumo) {
+        if (!sessaoAtual) return;
+
+        teamName.textContent = sessaoAtual.nome_time || "-";
+        teamLogin.textContent = "@" + (sessaoAtual.login || "-");
+        teamCrest.src = getEscudoTime(sessaoAtual.nome_time);
+        teamCrest.alt = `Escudo ${sessaoAtual.nome_time || "do time"}`;
+
+        rep1.textContent = sessaoAtual.representante_1 || "-";
+        rep2.textContent = sessaoAtual.representante_2 || "-";
+        statusTime.textContent = sessaoAtual.status_time || "-";
+        prazoFinal.textContent = formatarDataHora(resumo.data_limite_geral);
+
+        const trocasBloqueadas = resumo.bloquear_trocas === "SIM";
+        const goleirosBloqueados = resumo.bloquear_cadastro_goleiros === "SIM";
+        const extrasBloqueados = resumo.bloquear_cadastro_extras === "SIM";
+        const tecnicosBloqueados = resumo.bloquear_cadastro_tecnicos === "SIM";
+
+        bloqueioTroca.textContent = trocasBloqueadas
+          ? "Bloqueadas"
+          : "Liberadas";
+        bloqueioCadastros.textContent =
+          goleirosBloqueados && extrasBloqueados && tecnicosBloqueados
+            ? "Bloqueados"
+            : "Liberados";
+
+        statusSistema.textContent =
+          resumo.sistema_ativo === "SIM"
+            ? "Sistema ativo"
+            : "Sistema desativado";
+
+        cardJogadores.textContent = 0;
+        cardTrocas.textContent = resumo.trocas_realizadas ?? 0;
+        cardTrocasSub.textContent = `de ${resumo.trocas_maximas ?? 0} permitidas`;
+        cardSaldoTrocas.textContent = resumo.saldo_trocas ?? 0;
+
+        cardGoleiros.textContent = resumo.goleiros_cadastrados ?? 0;
+        cardGoleirosSub.textContent = `de ${resumo.goleiros_maximos ?? 0} permitidos`;
+
+        cardExtras.textContent = resumo.extras_cadastrados ?? 0;
+        cardExtrasSub.textContent = `de ${resumo.extras_maximos ?? 0} permitidos`;
+
+        cardTecnicos.textContent = resumo.tecnicos_cadastrados ?? 0;
+        cardTecnicosSub.textContent = `de ${resumo.tecnicos_maximos ?? 0} permitidos`;
+      }
+
+      function formatarDataHora(valor) {
+        if (!valor) return "-";
+
+        const data = new Date(valor);
+        if (isNaN(data.getTime())) return String(valor);
+
+        return data.toLocaleString("pt-BR");
+      }
+
+      function abrirDashboard() {
+        loginScreen.classList.add("hidden");
+        dashboardScreen.classList.remove("hidden");
+      }
+
+      function voltarLogin() {
+        dashboardScreen.classList.add("hidden");
+        loginScreen.classList.remove("hidden");
+      }
+
+      function sairSistema() {
+        localStorage.removeItem("apecad_time_session");
+        sessaoAtual = null;
+        voltarLogin();
+        document.getElementById("login").value = "";
+        document.getElementById("senha").value = "";
+        limparMensagem();
+      }
+
+      function restaurarSessao() {
+        const sessao = localStorage.getItem("apecad_time_session");
+        if (!sessao) return;
+
+        try {
+          sessaoAtual = JSON.parse(sessao);
+          abrirDashboard();
+          carregarResumoTime(sessaoAtual.time_id);
+          carregarGoleiros();
+          carregarTecnicos();
+        } catch (erro) {
+          localStorage.removeItem("apecad_time_session");
+        }
+      }
+
+      function configurarTabs() {
+        const botoes = document.querySelectorAll(".menu-btn");
+        const tabs = document.querySelectorAll(".tab-content");
+
+        botoes.forEach((botao) => {
+          botao.addEventListener("click", () => {
+            botoes.forEach((b) => b.classList.remove("active"));
+            tabs.forEach((t) => t.classList.remove("active"));
+
+            botao.classList.add("active");
+            const tab = document.getElementById(`tab-${botao.dataset.tab}`);
+            if (tab) tab.classList.add("active");
+          });
+        });
+      }
+      async function salvarGoleiro() {
+        const registroId = document
+          .getElementById("goleiroRegistroId")
+          .value.trim();
+        const nome = document.getElementById("goleiroNome").value.trim();
+        const doc = document.getElementById("goleiroDoc").value.trim();
+        const tel = document.getElementById("goleiroTel").value.trim();
+        const msg = document.getElementById("msgGoleiro");
+
+        if (!nome) {
+          msg.className = "message error";
+          msg.textContent = "Informe o nome do goleiro.";
+          return;
+        }
+
+        try {
+          let resultado;
+
+          if (registroId) {
+            resultado = await getApi({
+              route: "editarGoleiro",
+              registro_id: registroId,
+              nome,
+              documento: doc,
+              telefone: tel,
+            });
+          } else {
+            resultado = await getApi({
+              route: "cadastrarGoleiro",
+              time_id: sessaoAtual.time_id,
+              nome,
+              documento: doc,
+              telefone: tel,
+              usuario: sessaoAtual.login,
+            });
+          }
+
+          if (resultado.sucesso) {
+            msg.className = "message success";
+            msg.textContent = resultado.mensagem;
+
+            limparFormularioGoleiro();
+            await carregarResumoTime(sessaoAtual.time_id);
+            await carregarGoleiros();
+          } else {
+            msg.className = "message error";
+            msg.textContent = resultado.mensagem || "Erro ao salvar goleiro.";
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao comunicar com o sistema.";
+          console.error(erro);
+        }
+      }
+
+      function limparFormularioGoleiro() {
+        document.getElementById("goleiroRegistroId").value = "";
+        document.getElementById("goleiroNome").value = "";
+        document.getElementById("goleiroDoc").value = "";
+        document.getElementById("goleiroTel").value = "";
+
+        const msg = document.getElementById("msgGoleiro");
+        msg.className = "message";
+        msg.textContent = "";
+      }
+
+      async function carregarGoleiros() {
+        const container = document.getElementById("listaGoleiros");
+
+        try {
+          const resultado = await getApi({
+            route: "listarGoleiros",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (!resultado.sucesso) {
+            container.innerHTML = `<div class="empty-state">${resultado.mensagem || "Erro ao carregar goleiros."}</div>`;
+            return;
+          }
+
+          if (!resultado.goleiros || resultado.goleiros.length === 0) {
+            container.innerHTML = `<div class="empty-state">Nenhum goleiro cadastrado até o momento.</div>`;
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="table-like-list">
+        ${resultado.goleiros
+          .map(
+            (g) => `
+          <div class="goalkeeper-card">
+            <div class="goalkeeper-info">
+              <div class="goalkeeper-name">${g.nome_completo || "-"}</div>
+              <div class="goalkeeper-meta">
+                <div><strong>Documento:</strong> ${g.documento || "-"}</div>
+                <div><strong>Telefone:</strong> ${g.telefone || "-"}</div>
+                <div><strong>Cadastrado em:</strong> ${g.data_cadastro || "-"} ${g.hora_cadastro || ""}</div>
+              </div>
+            </div>
+            <div class="goalkeeper-actions">
+              <button class="btn-small btn-edit" onclick="editarGoleiroFront('${g.registro_id}', '${escapeJs(g.nome_completo)}', '${escapeJs(g.documento)}', '${escapeJs(g.telefone)}')">Editar</button>
+              <button class="btn-small btn-delete" onclick="excluirGoleiroFront('${g.registro_id}')">Excluir</button>
+            </div>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = `<div class="empty-state">Erro ao carregar goleiros.</div>`;
+          console.error(erro);
+        }
+      }
+
+      function editarGoleiroFront(registroId, nome, documento, telefone) {
+        document.getElementById("goleiroRegistroId").value = registroId || "";
+        document.getElementById("goleiroNome").value = nome || "";
+        document.getElementById("goleiroDoc").value = documento || "";
+        document.getElementById("goleiroTel").value = telefone || "";
+
+        window.scrollTo({
+          top: document.getElementById("tab-goleiros").offsetTop - 20,
+          behavior: "smooth",
+        });
+      }
+
+      async function excluirGoleiroFront(registroId) {
+        const confirmar = confirm("Deseja realmente excluir este goleiro?");
+        if (!confirmar) return;
+
+        const msg = document.getElementById("msgGoleiro");
+
+        try {
+          const resultado = await getApi({
+            route: "excluirGoleiro",
+            registro_id: registroId,
+          });
+
+          if (resultado.sucesso) {
+            msg.className = "message success";
+            msg.textContent = resultado.mensagem;
+
+            limparFormularioGoleiro();
+            await carregarResumoTime(sessaoAtual.time_id);
+            await carregarGoleiros();
+          } else {
+            msg.className = "message error";
+            msg.textContent = resultado.mensagem || "Erro ao excluir goleiro.";
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao comunicar com o sistema.";
+          console.error(erro);
+        }
+      }
+
+      function escapeJs(valor) {
+        return String(valor || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/'/g, "\\'")
+          .replace(/"/g, "&quot;")
+          .replace(/\n/g, " ");
+      }
+      async function salvarExtra() {
+        const registroId = document
+          .getElementById("extraRegistroId")
+          .value.trim();
+        const nome = document.getElementById("extraNome").value.trim();
+        const doc = document.getElementById("extraDoc").value.trim();
+        const tel = document.getElementById("extraTel").value.trim();
+
+        const msg = document.getElementById("msgExtra");
+
+        if (!nome) {
+          msg.className = "message error";
+          msg.textContent = "Informe o nome.";
+          return;
+        }
+
+        let resultado;
+
+        if (registroId) {
+          resultado = await getApi({
+            route: "editarExtra",
+            registro_id: registroId,
+            nome,
+            documento: doc,
+            telefone: tel,
+          });
+        } else {
+          resultado = await getApi({
+            route: "cadastrarExtra",
+            time_id: sessaoAtual.time_id,
+            nome,
+            documento: doc,
+            telefone: tel,
+            usuario: sessaoAtual.login,
+          });
+        }
+
+        if (resultado.sucesso) {
+          msg.className = "message success";
+          msg.textContent = resultado.mensagem;
+
+          limparFormularioExtra();
+          await carregarResumoTime(sessaoAtual.time_id);
+          await carregarExtras();
+        } else {
+          msg.className = "message error";
+          msg.textContent = resultado.mensagem;
+        }
+      }
+      async function carregarExtras() {
+        const container = document.getElementById("listaExtras");
+
+        try {
+          const resultado = await getApi({
+            route: "listarExtras",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (!resultado.sucesso) {
+            container.innerHTML = `<div class="empty-state">${resultado.mensagem || "Erro ao carregar extras."}</div>`;
+            return;
+          }
+
+          if (!resultado.extras || resultado.extras.length === 0) {
+            container.innerHTML = `<div class="empty-state">Nenhum extra cadastrado.</div>`;
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="table-like-list">
+        ${resultado.extras
+          .map(
+            (e) => `
+          <div class="goalkeeper-card">
+            <div class="goalkeeper-info">
+              <div class="goalkeeper-name">${e.nome_completo || "-"}</div>
+              <div class="goalkeeper-meta">
+                <div><strong>Documento:</strong> ${e.documento || "-"}</div>
+                <div><strong>Telefone:</strong> ${e.telefone || "-"}</div>
+                <div><strong>Pagamento:</strong> ${e.status_pagamento || "-"}</div>
+                <div><strong>Cadastrado em:</strong> ${e.data_cadastro || "-"} ${e.hora_cadastro || ""}</div>
+              </div>
+            </div>
+            <div class="goalkeeper-actions">
+              <button class="btn-small btn-edit"
+                onclick="editarExtraFront('${e.registro_id}', '${escapeJs(e.nome_completo)}', '${escapeJs(e.documento)}', '${escapeJs(e.telefone)}')">
+                Editar
+              </button>
+              <button class="btn-small btn-delete"
+                onclick="excluirExtraFront('${e.registro_id}')">
+                Excluir
+              </button>
+            </div>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = `<div class="empty-state">Erro ao carregar extras.</div>`;
+          console.error("Erro ao carregar extras:", erro);
+        }
+      }
+      function editarExtraFront(id, nome, doc, tel) {
+        document.getElementById("extraRegistroId").value = id;
+        document.getElementById("extraNome").value = nome;
+        document.getElementById("extraDoc").value = doc;
+        document.getElementById("extraTel").value = tel;
+      }
+
+      async function excluirExtraFront(id) {
+        if (!confirm("Excluir este extra?")) return;
+
+        const resultado = await getApi({
+          route: "excluirExtra",
+          registro_id: id,
+        });
+
+        if (resultado.sucesso) {
+          await carregarExtras();
+          await carregarResumoTime(sessaoAtual.time_id);
+        } else {
+          alert(resultado.mensagem);
+        }
+      }
+
+      function limparFormularioExtra() {
+        document.getElementById("extraRegistroId").value = "";
+        document.getElementById("extraNome").value = "";
+        document.getElementById("extraDoc").value = "";
+        document.getElementById("extraTel").value = "";
+      }
+      async function salvarTecnico() {
+        const registroId = document
+          .getElementById("tecnicoRegistroId")
+          .value.trim();
+        const nome = document.getElementById("tecnicoNome").value.trim();
+        const tel = document.getElementById("tecnicoTel").value.trim();
+        const funcao = document.getElementById("tecnicoFuncao").value;
+        const msg = document.getElementById("msgTecnico");
+
+        if (!nome) {
+          msg.className = "message error";
+          msg.textContent = "Informe o nome.";
+          return;
+        }
+
+        try {
+          let resultado;
+
+          if (registroId) {
+            resultado = await getApi({
+              route: "editarTecnico",
+              registro_id: registroId,
+              nome,
+              telefone: tel,
+              funcao,
+            });
+          } else {
+            resultado = await getApi({
+              route: "cadastrarTecnico",
+              time_id: sessaoAtual.time_id,
+              nome,
+              telefone: tel,
+              funcao,
+              usuario: sessaoAtual.login,
+            });
+          }
+
+          if (resultado.sucesso) {
+            msg.className = "message success";
+            msg.textContent = resultado.mensagem;
+
+            limparFormularioTecnico();
+            await carregarResumoTime(sessaoAtual.time_id);
+            await carregarTecnicos();
+          } else {
+            msg.className = "message error";
+            msg.textContent = resultado.mensagem || "Erro ao salvar técnico.";
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao comunicar com o sistema.";
+          console.error(erro);
+        }
+      }
+
+      async function carregarTecnicos() {
+        const container = document.getElementById("listaTecnicos");
+
+        try {
+          const resultado = await getApi({
+            route: "listarTecnicos",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (!resultado.sucesso) {
+            container.innerHTML = `<div class="empty-state">${resultado.mensagem || "Erro ao carregar técnicos."}</div>`;
+            return;
+          }
+
+          if (!resultado.tecnicos || resultado.tecnicos.length === 0) {
+            container.innerHTML = `<div class="empty-state">Nenhum técnico cadastrado.</div>`;
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="table-like-list">
+        ${resultado.tecnicos
+          .map(
+            (t) => `
+          <div class="goalkeeper-card">
+            <div class="goalkeeper-info">
+              <div class="goalkeeper-name">${t.nome_completo || "-"}</div>
+              <div class="goalkeeper-meta">
+                <div><strong>Telefone:</strong> ${t.telefone || "-"}</div>
+                <div><strong>Função:</strong> ${t.funcao || "-"}</div>
+                <div><strong>Cadastrado em:</strong> ${t.data_cadastro || "-"} ${t.hora_cadastro || ""}</div>
+              </div>
+            </div>
+            <div class="goalkeeper-actions">
+              <button class="btn-small btn-edit"
+                onclick="editarTecnicoFront('${t.registro_id}', '${escapeJs(t.nome_completo)}', '${escapeJs(t.telefone)}', '${escapeJs(t.funcao)}')">
+                Editar
+              </button>
+              <button class="btn-small btn-delete"
+                onclick="excluirTecnicoFront('${t.registro_id}')">
+                Excluir
+              </button>
+            </div>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = `<div class="empty-state">Erro ao carregar técnicos.</div>`;
+          console.error(erro);
+        }
+      }
+
+      function editarTecnicoFront(registroId, nome, telefone, funcao) {
+        document.getElementById("tecnicoRegistroId").value = registroId || "";
+        document.getElementById("tecnicoNome").value = nome || "";
+        document.getElementById("tecnicoTel").value = telefone || "";
+        document.getElementById("tecnicoFuncao").value = funcao || "TECNICO";
+      }
+
+      async function excluirTecnicoFront(registroId) {
+        const confirmar = confirm("Deseja realmente excluir este técnico?");
+        if (!confirmar) return;
+
+        const msg = document.getElementById("msgTecnico");
+
+        try {
+          const resultado = await getApi({
+            route: "excluirTecnico",
+            registro_id: registroId,
+          });
+
+          if (resultado.sucesso) {
+            msg.className = "message success";
+            msg.textContent = resultado.mensagem;
+
+            limparFormularioTecnico();
+            await carregarResumoTime(sessaoAtual.time_id);
+            await carregarTecnicos();
+          } else {
+            msg.className = "message error";
+            msg.textContent = resultado.mensagem || "Erro ao excluir técnico.";
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao comunicar com o sistema.";
+          console.error(erro);
+        }
+      }
+
+      function limparFormularioTecnico() {
+        document.getElementById("tecnicoRegistroId").value = "";
+        document.getElementById("tecnicoNome").value = "";
+        document.getElementById("tecnicoTel").value = "";
+        document.getElementById("tecnicoFuncao").value = "TECNICO";
+
+        const msg = document.getElementById("msgTecnico");
+        msg.className = "message";
+        msg.textContent = "";
+      }
+      btnEntrar.addEventListener("click", fazerLoginFront);
+      btnSair.addEventListener("click", sairSistema);
+
+      configurarTabs();
+      restaurarSessao();
+    </script>
+  </body>
+</html>
