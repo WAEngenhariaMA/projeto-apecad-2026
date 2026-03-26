@@ -223,6 +223,16 @@
         background: #ecfdf3;
         color: #027a48;
       }
+      .admin-table-center th,
+      .admin-table-center td {
+        text-align: center !important;
+        vertical-align: middle;
+      }
+
+      .admin-table-center td:first-child,
+      .admin-table-center th:first-child {
+        text-align: center !important;
+      }
     </style>
   </head>
   <body>
@@ -501,6 +511,16 @@
               </select>
             </div>
 
+            <div class="form-group">
+              <label>Observações da súmula</label>
+              <input
+                id="observacoesSumula"
+                type="text"
+                class="form-input"
+                placeholder="Observações gerais da partida"
+              />
+            </div>
+
             <button class="btn" onclick="salvarResultado()">
               Salvar resultado
             </button>
@@ -550,11 +570,40 @@
               Registrar evento
             </button>
             <div id="msgEvento" class="message"></div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Gols registrados</h3>
+            <div id="listaGolsSumula" class="empty-state">
+              Nenhum gol registrado.
+            </div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Cartões registrados</h3>
+            <div id="listaCartoesSumula" class="empty-state">
+              Nenhum cartão registrado.
+            </div>
           </div>
         </div>
         <div id="tab-configuracoes" class="admin-tab hidden">
           <div class="content-block">
-            Tela de configurações virá no próximo passo.
+            <h2>Configurações do sistema</h2>
+            <p style="margin: 8px 0 20px; color: #667085">
+              Altere aqui os parâmetros gerais do campeonato e do sistema.
+            </p>
+
+            <div
+              id="configuracoesAdminForm"
+              style="display: grid; gap: 16px"
+            ></div>
+
+            <div style="margin-top: 20px">
+              <button class="btn" onclick="salvarConfiguracoesAdmin()">
+                Salvar configurações
+              </button>
+              <div id="msgConfiguracoesAdmin" class="message"></div>
+            </div>
           </div>
         </div>
       </main>
@@ -562,11 +611,12 @@
 
     <script>
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbxQDVeQiy-SFgc01kK1kwUtmF8v7cljQidVF5x_oCK5lJx_wFuzlVxyWjVqXKD3YMvf/exec";
+        "https://script.google.com/macros/s/AKfycbxr8bL5ixxGvd2e2NgEV11ISjjDGA-Y_XyjzjIKK6vgxtzOXXjFurrPnxOIsx3Lz00S/exec";
       let adminSessao = null;
       let confrontosSumulaCache = [];
       let elencoConfrontoCache = [];
       let confrontoSelecionadoCache = null;
+      let configuracoesAdminCache = [];
 
       async function getApi(params = {}) {
         const url = new URL(SCRIPT_URL);
@@ -707,8 +757,13 @@
               await carregarTimesSelectConfronto();
               await carregarConfrontosAdmin();
             }
+
             if (tab === "sumula") {
               await carregarConfrontosSumula();
+            }
+
+            if (tab === "configuracoes") {
+              await carregarConfiguracoesAdmin();
             }
           });
         });
@@ -720,46 +775,49 @@
           const resultado = await getApi({ route: "listarTimesAdmin" });
 
           if (!resultado.sucesso) {
-            container.innerHTML = resultado.mensagem;
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar times.";
             return;
           }
 
-          if (!resultado.times.length) {
+          if (!resultado.times || !resultado.times.length) {
             container.innerHTML = "Nenhum time cadastrado.";
             return;
           }
 
           container.innerHTML = `
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="background:#f4f7fb">
-            <th>Time</th>
-            <th>Login</th>
-            <th>Representante</th>
-            <th>Goleiros</th>
-            <th>Extras</th>
-            <th>Técnicos</th>
-            <th>Trocas</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${resultado.times
-            .map(
-              (t) => `
+      <div class="admin-table-wrap">
+        <table class="admin-table admin-table-center">
+          <thead>
             <tr>
-              <td>${t.nome_time || "-"}</td>
-              <td>${t.login || "-"}</td>
-              <td>${t.representante || "-"}</td>
-              <td>${t.total_goleiros || 0}</td>
-              <td>${t.total_extras || 0}</td>
-              <td>${t.total_tecnicos || 0}</td>
-              <td>${t.trocas_realizadas || 0}</td>
+              <th>Time</th>
+              <th>Login</th>
+              <th>Representante</th>
+              <th>Goleiros</th>
+              <th>Extras</th>
+              <th>Técnicos</th>
+              <th>Trocas</th>
             </tr>
-          `,
-            )
-            .join("")}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            ${resultado.times
+              .map(
+                (t) => `
+              <tr>
+                <td>${t.nome_time || "-"}</td>
+                <td>${t.login || "-"}</td>
+                <td>${t.representante_1 || "-"}</td>
+                <td>${Number(t.goleiros_cadastrados || 0)}</td>
+                <td>${Number(t.extras_cadastrados || 0)}</td>
+                <td>${Number(t.tecnicos_cadastrados || 0)}</td>
+                <td>${Number(t.trocas_realizadas || 0)}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
     `;
         } catch (erro) {
           container.innerHTML = "Erro ao carregar times.";
@@ -988,33 +1046,7 @@
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
       }
-      async function salvarResultado() {
-        const confrontoId = document.getElementById("sumulaConfronto").value;
-        const golsCasa = document.getElementById("golsCasa").value;
-        const golsFora = document.getElementById("golsFora").value;
-        const houveWo = document.getElementById("woFlag").value;
-        const ladoWo = document.getElementById("ladoWo").value;
-        const msg = document.getElementById("msgSumula");
 
-        if (!confrontoId) {
-          msg.className = "message error";
-          msg.textContent = "Selecione um confronto.";
-          return;
-        }
-
-        const resultado = await getApi({
-          route: "atualizarResultadoConfronto",
-          confronto_id: confrontoId,
-          gols_casa: golsCasa,
-          gols_fora: golsFora,
-          status: "FINALIZADO",
-          houve_wo: houveWo,
-          lado_wo: ladoWo,
-        });
-
-        msg.className = resultado.sucesso ? "message success" : "message error";
-        msg.textContent = resultado.mensagem;
-      }
       async function registrarEvento() {
         const confrontoId = document.getElementById("sumulaConfronto").value;
         const tipo = document.getElementById("tipoEvento").value;
@@ -1028,6 +1060,9 @@
           : "";
         const timeNome = jogadorOption
           ? jogadorOption.getAttribute("data-time-nome")
+          : "";
+        const tipoJogador = jogadorOption
+          ? jogadorOption.getAttribute("data-tipo-jogador")
           : "";
         const minuto = document.getElementById("minutoEvento").value;
         const msg = document.getElementById("msgEvento");
@@ -1060,8 +1095,8 @@
             nome_jogador: nomeJogador,
             time_id: timeId,
             nome_time: timeNome,
+            tipo_jogador: tipoJogador,
             minuto,
-            tipo_gol: "NORMAL",
             usuario: adminSessao?.login || "ADMIN",
           });
         } else {
@@ -1072,6 +1107,7 @@
             nome_jogador: nomeJogador,
             time_id: timeId,
             nome_time: timeNome,
+            tipo_jogador: tipoJogador,
             tipo_cartao: tipo,
             minuto,
             usuario: adminSessao?.login || "ADMIN",
@@ -1084,8 +1120,42 @@
         if (resultado.sucesso) {
           document.getElementById("minutoEvento").value = "";
           document.getElementById("jogadorEvento").value = "";
+          await aoSelecionarConfrontoSumula();
         }
       }
+      async function salvarResultado() {
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+        const golsCasa = document.getElementById("golsCasa").value;
+        const golsFora = document.getElementById("golsFora").value;
+        const houveWo = document.getElementById("woFlag").value;
+        const ladoWo = document.getElementById("ladoWo").value;
+        const observacoes = document
+          .getElementById("observacoesSumula")
+          .value.trim();
+        const msg = document.getElementById("msgSumula");
+
+        if (!confrontoId) {
+          msg.className = "message error";
+          msg.textContent = "Selecione um confronto.";
+          return;
+        }
+
+        const resultado = await getApi({
+          route: "atualizarResultadoConfronto",
+          confronto_id: confrontoId,
+          gols_casa: golsCasa,
+          gols_fora: golsFora,
+          status: "FINALIZADO",
+          houve_wo: houveWo,
+          lado_wo: ladoWo,
+          observacoes,
+          usuario: adminSessao?.login || "ADMIN",
+        });
+
+        msg.className = resultado.sucesso ? "message success" : "message error";
+        msg.textContent = resultado.mensagem;
+      }
+
       async function carregarOpcoesFiltroTimesAdmin() {
         try {
           const resultado = await getApi({ route: "listarTimesAdmin" });
@@ -1481,39 +1551,76 @@
           selectTime.innerHTML = '<option value="">Selecione o time</option>';
           selectJogador.innerHTML =
             '<option value="">Selecione o jogador</option>';
+          document.getElementById("golsCasa").value = 0;
+          document.getElementById("golsFora").value = 0;
+          document.getElementById("woFlag").value = "NAO";
+          document.getElementById("ladoWo").value = "";
+          document.getElementById("observacoesSumula").value = "";
+          document.getElementById("listaGolsSumula").innerHTML =
+            "Nenhum gol registrado.";
+          document.getElementById("listaCartoesSumula").innerHTML =
+            "Nenhum cartão registrado.";
           return;
         }
 
         try {
-          const resultado = await getApi({
+          const dadosConfronto = await getApi({
             route: "listarJogadoresDoConfronto",
             confronto_id: confrontoId,
           });
 
-          if (!resultado.sucesso) {
+          if (!dadosConfronto.sucesso) {
             infoBox.innerHTML =
-              resultado.mensagem || "Erro ao carregar confronto.";
+              dadosConfronto.mensagem || "Erro ao carregar confronto.";
             return;
           }
 
-          confrontoSelecionadoCache = resultado.confronto;
-          elencoConfrontoCache = resultado.elenco || [];
+          confrontoSelecionadoCache = dadosConfronto.confronto;
+          elencoConfrontoCache = dadosConfronto.elenco || [];
 
           infoBox.innerHTML = `
-      <strong>Rodada:</strong> ${resultado.confronto.rodada || "-"}<br>
-      <strong>Confronto:</strong> ${resultado.confronto.nome_time_casa || "-"} x ${resultado.confronto.nome_time_fora || "-"}<br>
-      <strong>Data/Hora:</strong> ${resultado.confronto.data_jogo || "-"} ${resultado.confronto.hora_jogo || ""}<br>
-      <strong>Local:</strong> ${resultado.confronto.local || "-"}
+      <strong>Rodada:</strong> ${dadosConfronto.confronto.rodada || "-"}<br>
+      <strong>Confronto:</strong> ${dadosConfronto.confronto.nome_time_casa || "-"} x ${dadosConfronto.confronto.nome_time_fora || "-"}<br>
+      <strong>Data/Hora:</strong> ${dadosConfronto.confronto.data_jogo || "-"} ${dadosConfronto.confronto.hora_jogo || ""}<br>
+      <strong>Local:</strong> ${dadosConfronto.confronto.local || "-"}
     `;
 
           selectTime.innerHTML = `
       <option value="">Selecione o time</option>
-      <option value="${resultado.confronto.time_casa_id}">${resultado.confronto.nome_time_casa}</option>
-      <option value="${resultado.confronto.time_fora_id}">${resultado.confronto.nome_time_fora}</option>
+      <option value="${dadosConfronto.confronto.time_casa_id}">${dadosConfronto.confronto.nome_time_casa}</option>
+      <option value="${dadosConfronto.confronto.time_fora_id}">${dadosConfronto.confronto.nome_time_fora}</option>
     `;
 
           selectJogador.innerHTML =
             '<option value="">Selecione o jogador</option>';
+
+          const dadosSumula = await getApi({
+            route: "buscarDadosSumula",
+            confronto_id: confrontoId,
+          });
+
+          if (dadosSumula.sucesso) {
+            document.getElementById("golsCasa").value = Number(
+              dadosSumula.resumo?.gols_casa || 0,
+            );
+            document.getElementById("golsFora").value = Number(
+              dadosSumula.resumo?.gols_fora || 0,
+            );
+            document.getElementById("woFlag").value =
+              dadosSumula.resumo?.houve_wo || "NAO";
+            document.getElementById("ladoWo").value =
+              dadosSumula.resumo?.lado_wo || "";
+
+            renderizarListaGolsSumula(dadosSumula.gols || []);
+            renderizarListaCartoesSumula(dadosSumula.cartoes || []);
+          } else {
+            document.getElementById("golsCasa").value = 0;
+            document.getElementById("golsFora").value = 0;
+            document.getElementById("woFlag").value = "NAO";
+            document.getElementById("ladoWo").value = "";
+            renderizarListaGolsSumula([]);
+            renderizarListaCartoesSumula([]);
+          }
         } catch (erro) {
           infoBox.innerHTML = "Erro ao carregar confronto.";
           console.error(erro);
@@ -1542,13 +1649,373 @@
         value="${j.jogador_id}" 
         data-nome="${j.nome_jogador}" 
         data-time-id="${j.time_id}" 
-        data-time-nome="${j.nome_time}">
+        data-time-nome="${j.nome_time}"
+        data-tipo-jogador="${j.tipo_jogador}">
         ${j.nome_jogador} (${j.tipo_jogador})
       </option>
     `,
       )
       .join("")}
   `;
+      }
+      function renderizarListaGolsSumula(gols) {
+        const container = document.getElementById("listaGolsSumula");
+
+        if (!gols || gols.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state">Nenhum gol registrado.</div>';
+          return;
+        }
+
+        container.innerHTML = `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Jogador</th>
+            <th>Time</th>
+            <th>Qtd</th>
+            <th>Observação</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${gols
+            .map(
+              (g) => `
+            <tr>
+              <td>${g.nome_jogador || "-"}</td>
+              <td>${g.nome_time || "-"}</td>
+              <td>${g.quantidade_gols || 1}</td>
+              <td>${g.observacao || "-"}</td>
+              <td>
+                <button onclick="excluirGolFront('${g.gol_id}')">Excluir</button>
+              </td>
+            </tr>
+          `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+      }
+      function renderizarListaCartoesSumula(cartoes) {
+        const container = document.getElementById("listaCartoesSumula");
+
+        if (!cartoes || cartoes.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state">Nenhum cartão registrado.</div>';
+          return;
+        }
+
+        container.innerHTML = `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Jogador</th>
+            <th>Time</th>
+            <th>Tipo</th>
+            <th>Qtd</th>
+            <th>Observação</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${cartoes
+            .map(
+              (c) => `
+            <tr>
+              <td>${c.nome_jogador || "-"}</td>
+              <td>${c.nome_time || "-"}</td>
+              <td>${c.tipo_cartao || "-"}</td>
+              <td>${c.quantidade || 1}</td>
+              <td>${c.observacao || "-"}</td>
+              <td>
+                <button onclick="excluirCartaoFront('${c.cartao_id}')">Excluir</button>
+              </td>
+            </tr>
+          `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+      }
+      async function excluirGolFront(golId) {
+        if (!confirm("Deseja excluir este gol?")) return;
+
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+
+        const resultado = await getApi({
+          route: "excluirGolPartida",
+          gol_id: golId,
+        });
+
+        if (resultado.sucesso && confrontoId) {
+          await aoSelecionarConfrontoSumula();
+        } else {
+          alert(resultado.mensagem || "Erro ao excluir gol.");
+        }
+      }
+      async function excluirCartaoFront(cartaoId) {
+        if (!confirm("Deseja excluir este cartão?")) return;
+
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+
+        const resultado = await getApi({
+          route: "excluirCartaoPartida",
+          cartao_id: cartaoId,
+        });
+
+        if (resultado.sucesso && confrontoId) {
+          await aoSelecionarConfrontoSumula();
+        } else {
+          alert(resultado.mensagem || "Erro ao excluir cartão.");
+        }
+      }
+      async function carregarConfiguracoesAdmin() {
+        const container = document.getElementById("configuracoesAdminForm");
+
+        try {
+          const resultado = await getApi({ route: "listarConfiguracoesAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar configurações.";
+            return;
+          }
+
+          configuracoesAdminCache = resultado.configuracoes || [];
+
+          if (!configuracoesAdminCache.length) {
+            container.innerHTML = "Nenhuma configuração encontrada.";
+            return;
+          }
+
+          container.innerHTML = configuracoesAdminCache
+            .map((cfg) => {
+              const chave = cfg.chave || "";
+              const valor = cfg.valor ?? "";
+              const descricao = cfg.descricao || "";
+
+              const ehBooleano = ["SIM", "NAO"].includes(
+                String(valor).trim().toUpperCase(),
+              );
+
+              if (chave === "data_limite_geral") {
+                const valorFormatado = formatarDataParaInputDatetime(valor);
+                return `
+          <div>
+            <label class="form-label">${chave}</label>
+            <input class="form-input config-input" data-chave="${chave}" type="datetime-local" value="${valorFormatado}">
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              if (ehBooleano) {
+                return `
+          <div>
+            <label class="form-label">${chave}</label>
+            <select class="form-input config-input" data-chave="${chave}">
+              <option value="SIM" ${String(valor).trim().toUpperCase() === "SIM" ? "selected" : ""}>SIM</option>
+              <option value="NAO" ${String(valor).trim().toUpperCase() === "NAO" ? "selected" : ""}>NAO</option>
+            </select>
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              return `
+        <div>
+          <label class="form-label">${chave}</label>
+          <input class="form-input config-input" data-chave="${chave}" type="text" value="${escapeHtml(valor)}">
+          <small style="color:#667085;">${descricao}</small>
+        </div>
+      `;
+            })
+            .join("");
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar configurações.";
+          console.error(erro);
+        }
+      }
+      async function carregarConfiguracoesAdmin() {
+        const container = document.getElementById("configuracoesAdminForm");
+
+        try {
+          const resultado = await getApi({ route: "listarConfiguracoesAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar configurações.";
+            return;
+          }
+
+          configuracoesAdminCache = resultado.configuracoes || [];
+
+          if (!configuracoesAdminCache.length) {
+            container.innerHTML = "Nenhuma configuração encontrada.";
+            return;
+          }
+
+          container.innerHTML = configuracoesAdminCache
+            .map((cfg) => {
+              const chave = cfg.chave || "";
+              const valor = cfg.valor ?? "";
+              const descricao = cfg.descricao || "";
+
+              const ehBooleano = ["SIM", "NAO"].includes(
+                String(valor).trim().toUpperCase(),
+              );
+
+              if (chave === "data_limite_geral") {
+                const valorFormatado = formatarDataParaInputDatetime(valor);
+                return `
+          <div>
+            <label class="form-label">${formatarChaveConfiguracao(chave)}</label>
+            <input class="form-input config-input" data-chave="${chave}" type="datetime-local" value="${valorFormatado}">
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              if (ehBooleano) {
+                return `
+          <div>
+            <label class="form-label">${formatarChaveConfiguracao(chave)}</label>
+            <select class="form-input config-input" data-chave="${chave}">
+              <option value="SIM" ${String(valor).trim().toUpperCase() === "SIM" ? "selected" : ""}>SIM</option>
+              <option value="NAO" ${String(valor).trim().toUpperCase() === "NAO" ? "selected" : ""}>NAO</option>
+            </select>
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              return `
+        <div>
+          <label class="form-label">${formatarChaveConfiguracao(chave)}</label>
+          <input class="form-input config-input" data-chave="${chave}" type="text" value="${escapeHtml(valor)}">
+          <small style="color:#667085;">${descricao}</small>
+        </div>
+      `;
+            })
+            .join("");
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar configurações.";
+          console.error(erro);
+        }
+      }
+      async function salvarConfiguracoesAdmin() {
+        const msg = document.getElementById("msgConfiguracoesAdmin");
+        const inputs = document.querySelectorAll(".config-input");
+
+        try {
+          const configs = Array.from(inputs).map((input) => {
+            let valor = input.value;
+
+            if (input.type === "datetime-local" && valor) {
+              valor = valor.replace("T", " ") + ":00";
+            }
+
+            return {
+              chave: input.dataset.chave,
+              valor,
+            };
+          });
+
+          const resultado = await getApi({
+            route: "atualizarMultiplasConfiguracoesAdmin",
+            configs: JSON.stringify(configs),
+            usuario: adminSessao?.login || "ADMIN",
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            await carregarConfiguracoesAdmin();
+            await carregarResumoAdmin();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao salvar configurações.";
+          console.error(erro);
+        }
+      }
+      async function salvarConfiguracoesAdmin() {
+        const msg = document.getElementById("msgConfiguracoesAdmin");
+        const inputs = document.querySelectorAll(".config-input");
+
+        try {
+          const configs = Array.from(inputs).map((input) => {
+            let valor = input.value;
+
+            if (input.type === "datetime-local" && valor) {
+              valor = valor.replace("T", " ") + ":00";
+            }
+
+            return {
+              chave: input.dataset.chave,
+              valor,
+            };
+          });
+
+          const resultado = await getApi({
+            route: "atualizarMultiplasConfiguracoesAdmin",
+            configs: JSON.stringify(configs),
+            usuario: adminSessao?.login || "ADMIN",
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            await carregarConfiguracoesAdmin();
+            await carregarResumoAdmin();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao salvar configurações.";
+          console.error(erro);
+        }
+      }
+      function formatarDataParaInputDatetime(valor) {
+        if (!valor) return "";
+
+        const texto = String(valor).trim();
+
+        if (texto.includes("T")) {
+          return texto.slice(0, 16);
+        }
+
+        if (texto.includes(" ")) {
+          return texto.replace(" ", "T").slice(0, 16);
+        }
+
+        return texto;
+      }
+      function formatarChaveConfiguracao(chave) {
+        if (!chave) return "";
+
+        return chave
+          .toLowerCase()
+          .split("_")
+          .map((palavra, index) => {
+            if (index === 0) {
+              return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+            }
+            return palavra;
+          })
+          .join(" ");
       }
       document
         .getElementById("btnEntrarAdmin")
