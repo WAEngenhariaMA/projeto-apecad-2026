@@ -544,6 +544,44 @@
         background: linear-gradient(135deg, #ef4444, #b91c1c);
         color: white;
       }
+      .team-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .team-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      .team-table th,
+      .team-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .team-table th {
+        background: #f4f7fb;
+        color: #0f2747;
+        font-weight: 800;
+      }
+
+      .team-table tr:hover td {
+        background: #f9fbff;
+      }
+
+      .team-tag {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #eef4ff;
+        color: #0f2747;
+      }
     </style>
   </head>
   <body>
@@ -622,15 +660,14 @@
             <div id="teamName" class="team-name">Seleção</div>
             <div id="teamLogin" class="team-login">@time</div>
           </div>
-
           <div class="menu">
             <button class="menu-btn active" data-tab="inicio">Início</button>
+            <button class="menu-btn" data-tab="jogadores">Jogadores</button>
             <button class="menu-btn" data-tab="goleiros">Goleiros</button>
             <button class="menu-btn" data-tab="extras">Extras</button>
             <button class="menu-btn" data-tab="tecnicos">Técnicos</button>
             <button class="menu-btn" data-tab="trocas">Trocas</button>
           </div>
-
           <div class="sidebar-footer">
             <button class="logout-btn" id="btnSair">Sair</button>
           </div>
@@ -925,6 +962,17 @@
               Nenhuma solicitação enviada.
             </div>
           </div>
+          <div id="tab-jogadores" class="content-panel tab-content">
+            <h2 class="section-title">Elenco do time</h2>
+            <p class="section-text">
+              Visualize todos os jogadores, goleiros, extras e comissão do seu
+              time, com estatísticas da competição.
+            </p>
+
+            <div id="listaJogadoresTime" class="empty-state">
+              Carregando elenco...
+            </div>
+          </div>
         </main>
       </section>
     </div>
@@ -932,7 +980,7 @@
     <script>
       // COLE AQUI A URL DO SEU WEB APP DO APPS SCRIPT
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbwOdSwnJfU87ri3xUkMLOfdLwquBnkyUO1WQkR2Rhx61pzFd3FygZ1QNgL18zLzT6iQ/exec";
+        "https://script.google.com/macros/s/AKfycbyTKzr1ZGK3A6jjE_AlI5hwpGhacPWNOFvkhYWlVvLDwyqNSieiK-B0zTm9CgCHFEaI/exec";
 
       const loginScreen = document.getElementById("loginScreen");
       const dashboardScreen = document.getElementById("dashboardScreen");
@@ -1189,6 +1237,10 @@
             botao.classList.add("active");
             const tab = document.getElementById(`tab-${botao.dataset.tab}`);
             if (tab) tab.classList.add("active");
+
+            if (botao.dataset.tab === "jogadores") {
+              carregarJogadoresTime();
+            }
 
             if (botao.dataset.tab === "trocas") {
               carregarTrocasModulo();
@@ -2039,6 +2091,64 @@
           }
         } catch (erro) {
           console.error("Erro ao aplicar bloqueio visual de trocas:", erro);
+        }
+      }
+      async function carregarJogadoresTime() {
+        const container = document.getElementById("listaJogadoresTime");
+
+        try {
+          const resultado = await getApi({
+            route: "listarElencoCompletoTime",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (!resultado.sucesso) {
+            container.innerHTML = `<div class="empty-state">${resultado.mensagem || "Erro ao carregar elenco."}</div>`;
+            return;
+          }
+
+          const elenco = resultado.elenco || [];
+
+          if (!elenco.length) {
+            container.innerHTML = `<div class="empty-state">Nenhum atleta ou membro cadastrado para este time.</div>`;
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="team-table-wrap">
+        <table class="team-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Posição / Função</th>
+              <th>Tipo</th>
+              <th>Gols</th>
+              <th>Amarelos</th>
+              <th>Vermelhos</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${elenco
+              .map(
+                (j) => `
+              <tr>
+                <td>${j.nome || "-"}</td>
+                <td>${j.posicao || "-"}</td>
+                <td><span class="team-tag">${j.tipo || "-"}</span></td>
+                <td>${Number(j.gols || 0)}</td>
+                <td>${Number(j.amarelos || 0)}</td>
+                <td>${Number(j.vermelhos || 0)}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = `<div class="empty-state">Erro ao carregar elenco.</div>`;
+          console.error(erro);
         }
       }
       btnEntrar.addEventListener("click", fazerLoginFront);
