@@ -270,6 +270,7 @@
         <button class="admin-menu-btn" data-tab="tecnicos">Técnicos</button>
         <button class="admin-menu-btn" data-tab="confrontos">Confrontos</button>
         <button class="admin-menu-btn" data-tab="sumula">Súmula</button>
+        <button class="admin-menu-btn" data-tab="trocas">Trocas</button>
         <button class="admin-menu-btn" data-tab="configuracoes">
           Configurações
         </button>
@@ -606,12 +607,18 @@
             </div>
           </div>
         </div>
+        <div id="tab-trocas" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Histórico de trocas</h2>
+            <div id="listaTrocasAdmin">Carregando...</div>
+          </div>
+        </div>
       </main>
     </section>
 
     <script>
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbxr8bL5ixxGvd2e2NgEV11ISjjDGA-Y_XyjzjIKK6vgxtzOXXjFurrPnxOIsx3Lz00S/exec";
+        "https://script.google.com/macros/s/AKfycbwOdSwnJfU87ri3xUkMLOfdLwquBnkyUO1WQkR2Rhx61pzFd3FygZ1QNgL18zLzT6iQ/exec";
       let adminSessao = null;
       let confrontosSumulaCache = [];
       let elencoConfrontoCache = [];
@@ -752,6 +759,7 @@
             if (tab === "goleiros") await carregarGoleirosAdmin();
             if (tab === "extras") await carregarExtrasAdmin();
             if (tab === "tecnicos") await carregarTecnicosAdmin();
+            if (tab === "trocas") await carregarTrocasAdmin();
 
             if (tab === "confrontos") {
               await carregarTimesSelectConfronto();
@@ -2016,6 +2024,66 @@
             return palavra;
           })
           .join(" ");
+      }
+      async function carregarTrocasAdmin() {
+        const container = document.getElementById("listaTrocasAdmin");
+
+        try {
+          const resultado = await getApi({
+            route: "listarHistoricoTrocasAdmin",
+          });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar trocas.";
+            return;
+          }
+
+          const trocas = resultado.trocas || [];
+
+          if (!trocas.length) {
+            container.innerHTML = "Nenhuma troca registrada.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table admin-table-center">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Solicitante</th>
+              <th>Destino</th>
+              <th>Oferecido</th>
+              <th>Desejado</th>
+              <th>Status</th>
+              <th>Resposta</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${trocas
+              .map(
+                (t) => `
+              <tr>
+                <td>${t.troca_id || "-"}</td>
+                <td>${t.nome_time_solicitante || "-"}</td>
+                <td>${t.nome_time_destino || "-"}</td>
+                <td>${t.jogador_oferecido_nome || "-"}</td>
+                <td>${t.jogador_desejado_nome || "-"}</td>
+                <td>${t.status_troca || "-"}</td>
+                <td>${t.resposta_time_destino || "-"}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar histórico de trocas.";
+          console.error(erro);
+        }
       }
       document
         .getElementById("btnEntrarAdmin")

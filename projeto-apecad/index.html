@@ -858,12 +858,71 @@
           <div id="tab-trocas" class="content-panel tab-content">
             <h2 class="section-title">Trocas entre times</h2>
             <p class="section-text">
-              Nesta área ficarão as solicitações de troca, respostas e saldo
-              disponível.
+              Solicite trocas do seu elenco com outros times, respeitando o
+              saldo disponível.
             </p>
-            <div class="empty-state">
-              Assim que o sorteio dos jogadores for concluído, vamos ativar esta
-              parte com envio, aceite, recusa e contraproposta.
+
+            <div class="info-grid" style="margin-bottom: 24px">
+              <div class="info-box">
+                <strong>Saldo de trocas</strong>
+                <span id="trocaSaldoInfo">-</span>
+              </div>
+              <div class="info-box">
+                <strong>Limite total</strong>
+                <span id="trocaLimiteInfo">-</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Meu jogador</label>
+              <select id="trocaMeuJogador" class="form-input"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Time destino</label>
+              <select
+                id="trocaTimeDestino"
+                class="form-input"
+                onchange="carregarElencoDestinoTroca()"
+              ></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Jogador desejado</label>
+              <select id="trocaJogadorDesejado" class="form-input">
+                <option value="">Selecione o jogador</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Mensagem</label>
+              <input
+                id="trocaMensagem"
+                class="form-input"
+                type="text"
+                placeholder="Ex.: gostaria de trocar por necessidade tática"
+              />
+            </div>
+
+            <button class="btn" onclick="enviarSolicitacaoTroca()">
+              Enviar solicitação
+            </button>
+            <div id="msgTroca" class="message"></div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3 style="margin-bottom: 12px; color: #0f2747">
+              Trocas recebidas
+            </h3>
+            <div id="listaTrocasRecebidas" class="empty-state">
+              Nenhuma solicitação recebida.
+            </div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3 style="margin-bottom: 12px; color: #0f2747">Trocas enviadas</h3>
+            <div id="listaTrocasEnviadas" class="empty-state">
+              Nenhuma solicitação enviada.
             </div>
           </div>
         </main>
@@ -873,7 +932,7 @@
     <script>
       // COLE AQUI A URL DO SEU WEB APP DO APPS SCRIPT
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbxr8bL5ixxGvd2e2NgEV11ISjjDGA-Y_XyjzjIKK6vgxtzOXXjFurrPnxOIsx3Lz00S/exec";
+        "https://script.google.com/macros/s/AKfycbwOdSwnJfU87ri3xUkMLOfdLwquBnkyUO1WQkR2Rhx61pzFd3FygZ1QNgL18zLzT6iQ/exec";
 
       const loginScreen = document.getElementById("loginScreen");
       const dashboardScreen = document.getElementById("dashboardScreen");
@@ -906,6 +965,9 @@
       const cardTecnicosSub = document.getElementById("cardTecnicosSub");
 
       let sessaoAtual = null;
+      let elencoTrocaMeuTimeCache = [];
+      let timesDisponiveisTrocaCache = [];
+      let elencoDestinoTrocaCache = [];
 
       function mostrarMensagem(texto, tipo = "error") {
         mensagemLogin.className = `message ${tipo}`;
@@ -1127,6 +1189,10 @@
             botao.classList.add("active");
             const tab = document.getElementById(`tab-${botao.dataset.tab}`);
             if (tab) tab.classList.add("active");
+
+            if (botao.dataset.tab === "trocas") {
+              carregarTrocasModulo();
+            }
           });
         });
       }
@@ -1573,7 +1639,6 @@
           console.error(erro);
         }
       }
-
       function limparFormularioTecnico() {
         document.getElementById("tecnicoRegistroId").value = "";
         document.getElementById("tecnicoNome").value = "";
@@ -1583,6 +1648,398 @@
         const msg = document.getElementById("msgTecnico");
         msg.className = "message";
         msg.textContent = "";
+      }
+      async function carregarTrocasModulo() {
+        await carregarResumoTime(sessaoAtual.time_id);
+        await carregarElencoMeuTimeTroca();
+        await carregarTimesDisponiveisTroca();
+        await carregarTrocasRecebidas();
+        await carregarTrocasEnviadas();
+
+        if (sessaoAtual) {
+          document.getElementById("trocaSaldoInfo").textContent =
+            sessaoAtual.saldo_trocas ?? 0;
+          document.getElementById("trocaLimiteInfo").textContent =
+            sessaoAtual.trocas_maximas ?? 0;
+        }
+
+        aplicarBloqueioVisualTrocas();
+      }
+      async function carregarElencoMeuTimeTroca() {
+        const select = document.getElementById("trocaMeuJogador");
+
+        try {
+          const resultado = await getApi({
+            route: "listarElencoTroca",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (!resultado.sucesso || !resultado.jogadores) {
+            select.innerHTML =
+              '<option value="">Erro ao carregar elenco</option>';
+            return;
+          }
+
+          elencoTrocaMeuTimeCache = resultado.jogadores;
+
+          select.innerHTML = `
+      <option value="">Selecione seu jogador</option>
+      ${resultado.jogadores
+        .map(
+          (j) => `
+        <option value="${j.jogador_id}">
+          ${j.nome_completo} (${j.posicao})
+        </option>
+      `,
+        )
+        .join("")}
+    `;
+        } catch (erro) {
+          select.innerHTML =
+            '<option value="">Erro ao carregar elenco</option>';
+          console.error(erro);
+        }
+      }
+      async function carregarTimesDisponiveisTroca() {
+        const select = document.getElementById("trocaTimeDestino");
+
+        try {
+          const resultado = await getApi({
+            route: "listarTimesDisponiveisTroca",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (!resultado.sucesso || !resultado.times) {
+            select.innerHTML =
+              '<option value="">Erro ao carregar times</option>';
+            return;
+          }
+
+          timesDisponiveisTrocaCache = resultado.times;
+
+          select.innerHTML = `
+      <option value="">Selecione o time</option>
+      ${resultado.times
+        .map(
+          (t) => `
+        <option value="${t.time_id}">
+          ${t.nome_time} (saldo: ${t.saldo_trocas ?? 0})
+        </option>
+      `,
+        )
+        .join("")}
+    `;
+        } catch (erro) {
+          select.innerHTML = '<option value="">Erro ao carregar times</option>';
+          console.error(erro);
+        }
+      }
+      async function carregarElencoDestinoTroca() {
+        const timeDestinoId = document.getElementById("trocaTimeDestino").value;
+        const select = document.getElementById("trocaJogadorDesejado");
+
+        if (!timeDestinoId) {
+          select.innerHTML = '<option value="">Selecione o jogador</option>';
+          return;
+        }
+
+        try {
+          const resultado = await getApi({
+            route: "listarElencoTroca",
+            time_id: timeDestinoId,
+          });
+
+          if (!resultado.sucesso || !resultado.jogadores) {
+            select.innerHTML =
+              '<option value="">Erro ao carregar jogadores</option>';
+            return;
+          }
+
+          elencoDestinoTrocaCache = resultado.jogadores;
+
+          select.innerHTML = `
+      <option value="">Selecione o jogador</option>
+      ${resultado.jogadores
+        .map(
+          (j) => `
+        <option value="${j.jogador_id}">
+          ${j.nome_completo} (${j.posicao})
+        </option>
+      `,
+        )
+        .join("")}
+    `;
+        } catch (erro) {
+          select.innerHTML =
+            '<option value="">Erro ao carregar jogadores</option>';
+          console.error(erro);
+        }
+      }
+      async function enviarSolicitacaoTroca() {
+        const jogadorOferecidoId =
+          document.getElementById("trocaMeuJogador").value;
+        const timeDestinoId = document.getElementById("trocaTimeDestino").value;
+        const jogadorDesejadoId = document.getElementById(
+          "trocaJogadorDesejado",
+        ).value;
+        const mensagem = document.getElementById("trocaMensagem").value.trim();
+        const msg = document.getElementById("msgTroca");
+
+        if (!jogadorOferecidoId || !timeDestinoId || !jogadorDesejadoId) {
+          msg.className = "message error";
+          msg.textContent =
+            "Selecione seu jogador, o time destino e o jogador desejado.";
+          return;
+        }
+
+        try {
+          const resultado = await getApi({
+            route: "solicitarTroca",
+            time_solicitante_id: sessaoAtual.time_id,
+            time_destino_id: timeDestinoId,
+            jogador_oferecido_id: jogadorOferecidoId,
+            jogador_desejado_id: jogadorDesejadoId,
+            mensagem,
+            usuario: sessaoAtual.login,
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            document.getElementById("trocaMeuJogador").value = "";
+            document.getElementById("trocaTimeDestino").value = "";
+            document.getElementById("trocaJogadorDesejado").innerHTML =
+              '<option value="">Selecione o jogador</option>';
+            document.getElementById("trocaMensagem").value = "";
+
+            await carregarTrocasRecebidas();
+            await carregarTrocasEnviadas();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao enviar solicitação de troca.";
+          console.error(erro);
+        }
+      }
+      async function carregarTrocasRecebidas() {
+        const container = document.getElementById("listaTrocasRecebidas");
+
+        try {
+          const resultado = await getApi({
+            route: "listarTrocasRecebidas",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (
+            !resultado.sucesso ||
+            !resultado.trocas ||
+            resultado.trocas.length === 0
+          ) {
+            container.innerHTML = "Nenhuma solicitação recebida.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="table-like-list">
+        ${resultado.trocas
+          .map(
+            (t) => `
+          <div class="goalkeeper-card">
+            <div class="goalkeeper-info">
+              <div class="goalkeeper-name">${t.nome_time_solicitante} quer trocar</div>
+              <div class="goalkeeper-meta">
+                <div><strong>Oferece:</strong> ${t.jogador_oferecido_nome} (${t.jogador_oferecido_posicao})</div>
+                <div><strong>Quer:</strong> ${t.jogador_desejado_nome} (${t.jogador_desejado_posicao})</div>
+                <div><strong>Mensagem:</strong> ${t.mensagem_solicitacao || "-"}</div>
+                <div><strong>Status:</strong> ${t.status_troca || "-"}</div>
+              </div>
+            </div>
+            <div class="goalkeeper-actions">
+              <button class="btn-small btn-edit" onclick="responderTrocaFront('${t.troca_id}', 'ACEITAR')">Aceitar</button>
+              <button class="btn-small btn-delete" onclick="responderTrocaFront('${t.troca_id}', 'RECUSAR')">Recusar</button>
+            </div>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar trocas recebidas.";
+          console.error(erro);
+        }
+      }
+      async function carregarTrocasEnviadas() {
+        const container = document.getElementById("listaTrocasEnviadas");
+
+        try {
+          const resultado = await getApi({
+            route: "listarTrocasEnviadas",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (
+            !resultado.sucesso ||
+            !resultado.trocas ||
+            resultado.trocas.length === 0
+          ) {
+            container.innerHTML = "Nenhuma solicitação enviada.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="table-like-list">
+        ${resultado.trocas
+          .map(
+            (t) => `
+          <div class="goalkeeper-card">
+            <div class="goalkeeper-info">
+              <div class="goalkeeper-name">Para ${t.nome_time_destino}</div>
+              <div class="goalkeeper-meta">
+                <div><strong>Você ofereceu:</strong> ${t.jogador_oferecido_nome} (${t.jogador_oferecido_posicao})</div>
+                <div><strong>Você pediu:</strong> ${t.jogador_desejado_nome} (${t.jogador_desejado_posicao})</div>
+                <div><strong>Status:</strong> ${t.status_troca || "-"}</div>
+                <div><strong>Resposta:</strong> ${t.resposta_time_destino || "-"}</div>
+              </div>
+            </div>
+            <div class="goalkeeper-actions">
+              ${
+                String(t.status_troca || "").toUpperCase() === "PENDENTE"
+                  ? `<button class="btn-small btn-delete" onclick="cancelarTrocaFront('${t.troca_id}')">Cancelar</button>`
+                  : ""
+              }
+            </div>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar trocas enviadas.";
+          console.error(erro);
+        }
+      }
+      async function responderTrocaFront(trocaId, acao) {
+        const mensagem =
+          prompt(
+            acao === "ACEITAR"
+              ? "Digite uma observação para aceitar a troca:"
+              : "Digite o motivo da recusa:",
+          ) || "";
+
+        const msg = document.getElementById("msgTroca");
+
+        try {
+          const resultado = await getApi({
+            route: "responderTroca",
+            troca_id: trocaId,
+            acao,
+            mensagem,
+            usuario: sessaoAtual.login,
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            await carregarResumoTime(sessaoAtual.time_id);
+
+            if (sessaoAtual) {
+              const resumoAtualizado = await getApi({
+                route: "resumoTime",
+                time_id: sessaoAtual.time_id,
+              });
+
+              if (resumoAtualizado.sucesso) {
+                sessaoAtual.saldo_trocas = resumoAtualizado.resumo.saldo_trocas;
+                sessaoAtual.trocas_realizadas =
+                  resumoAtualizado.resumo.trocas_realizadas;
+                localStorage.setItem(
+                  "apecad_time_session",
+                  JSON.stringify(sessaoAtual),
+                );
+              }
+            }
+
+            await carregarTrocasRecebidas();
+            await carregarTrocasEnviadas();
+            await carregarElencoMeuTimeTroca();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao responder solicitação.";
+          console.error(erro);
+        }
+      }
+      async function cancelarTrocaFront(trocaId) {
+        const confirmar = confirm("Deseja cancelar esta solicitação de troca?");
+        if (!confirmar) return;
+
+        const msg = document.getElementById("msgTroca");
+
+        try {
+          const resultado = await getApi({
+            route: "cancelarTroca",
+            troca_id: trocaId,
+            usuario: sessaoAtual.login,
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            await carregarTrocasRecebidas();
+            await carregarTrocasEnviadas();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao cancelar solicitação.";
+          console.error(erro);
+        }
+      }
+      async function aplicarBloqueioVisualTrocas() {
+        try {
+          const resumo = await getApi({
+            route: "resumoTime",
+            time_id: sessaoAtual.time_id,
+          });
+
+          if (!resumo.sucesso) return;
+
+          sessaoAtual.saldo_trocas = resumo.resumo.saldo_trocas;
+          sessaoAtual.trocas_realizadas = resumo.resumo.trocas_realizadas;
+          localStorage.setItem(
+            "apecad_time_session",
+            JSON.stringify(sessaoAtual),
+          );
+
+          const saldo = Number(resumo.resumo.saldo_trocas || 0);
+          const btn = document.querySelector("#tab-trocas .btn");
+
+          if (btn) {
+            if (saldo <= 0) {
+              btn.disabled = true;
+              btn.textContent = "Sem saldo de trocas";
+              btn.style.opacity = "0.65";
+              btn.style.cursor = "not-allowed";
+            } else {
+              btn.disabled = false;
+              btn.textContent = "Enviar solicitação";
+              btn.style.opacity = "1";
+              btn.style.cursor = "pointer";
+            }
+          }
+        } catch (erro) {
+          console.error("Erro ao aplicar bloqueio visual de trocas:", erro);
+        }
       }
       btnEntrar.addEventListener("click", fazerLoginFront);
       btnSair.addEventListener("click", sairSistema);
