@@ -710,7 +710,9 @@
             <div class="card">
               <div class="card-label">Jogadores no elenco</div>
               <div id="cardJogadores" class="card-value">0</div>
-              <div class="card-sub">Será atualizado após o sorteio</div>
+              <div id="cardJogadoresSub" class="card-sub">
+                Principais + goleiros + extras
+              </div>
             </div>
 
             <div class="card">
@@ -1004,7 +1006,7 @@
     <script>
       // COLE AQUI A URL DO SEU WEB APP DO APPS SCRIPT
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbyTKzr1ZGK3A6jjE_AlI5hwpGhacPWNOFvkhYWlVvLDwyqNSieiK-B0zTm9CgCHFEaI/exec";
+        "https://script.google.com/macros/s/AKfycbyi3PaAY77yYtNxc5OZrEx0GFOOgl8f42vNYznkFPgTfELoVHXPi2hszZ4XWH6JL_Mk/exec";
 
       const loginScreen = document.getElementById("loginScreen");
       const dashboardScreen = document.getElementById("dashboardScreen");
@@ -1191,7 +1193,7 @@
             ? "Sistema ativo"
             : "Sistema desativado";
 
-        cardJogadores.textContent = 0;
+        cardJogadores.textContent = resumo.total_jogadores_elenco ?? 0;
         cardTrocas.textContent = resumo.trocas_realizadas ?? 0;
         cardTrocasSub.textContent = `de ${resumo.trocas_maximas ?? 0} permitidas`;
         cardSaldoTrocas.textContent = resumo.saldo_trocas ?? 0;
@@ -2174,6 +2176,10 @@
           container.innerHTML = `<div class="empty-state">Erro ao carregar elenco.</div>`;
           console.error(erro);
         }
+      }
+      const cardJogadoresSub = document.getElementById("cardJogadoresSub");
+      if (cardJogadoresSub) {
+        cardJogadoresSub.textContent = `Principais: ${resumo.total_jogadores_principais ?? 0} • Goleiros + Extras incluídos`;
       }
       btnEntrar.addEventListener("click", fazerLoginFront);
       btnSair.addEventListener("click", sairSistema);
