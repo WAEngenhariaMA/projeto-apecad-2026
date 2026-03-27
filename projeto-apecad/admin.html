@@ -233,6 +233,26 @@
       .admin-table-center th:first-child {
         text-align: center !important;
       }
+      .btn-delete {
+        background: linear-gradient(135deg, #ff4d4f, #d9363e);
+        color: #fff;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .btn-delete:hover {
+        background: linear-gradient(135deg, #ff7875, #ff4d4f);
+        transform: translateY(-1px);
+      }
+
+      .btn-delete:active {
+        transform: scale(0.97);
+      }
     </style>
   </head>
   <body>
@@ -1697,7 +1717,7 @@
               <td>${g.quantidade_gols || 1}</td>
               <td>${g.observacao || "-"}</td>
               <td>
-                <button onclick="excluirGolFront('${g.gol_id}')">Excluir</button>
+                <button class="btn-delete" onclick="excluirGolFront('${g.gol_id}')">Excluir</button>
               </td>
             </tr>
           `,
@@ -1741,7 +1761,7 @@
               <td>${c.quantidade || 1}</td>
               <td>${c.observacao || "-"}</td>
               <td>
-                <button onclick="excluirCartaoFront('${c.cartao_id}')">Excluir</button>
+                <button class="btn-delete" onclick="excluirCartaoFront('${c.cartao_id}')">Excluir</button>
               </td>
             </tr>
           `,
