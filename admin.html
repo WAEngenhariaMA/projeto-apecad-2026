@@ -1,0 +1,2123 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>APECAD 2026 - Painel Admin</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+      body {
+        margin: 0;
+        background: #f4f7fb;
+        color: #1c2430;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .login-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .login-card,
+      .panel-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 460px;
+      }
+      .logo {
+        width: 110px;
+        display: block;
+        margin: 0 auto 18px;
+      }
+      .title {
+        text-align: center;
+        color: #0f2747;
+        margin-bottom: 8px;
+      }
+      .sub {
+        text-align: center;
+        color: #667085;
+        margin-bottom: 24px;
+      }
+      .form-group {
+        margin-bottom: 14px;
+      }
+      .form-label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .form-input {
+        width: 100%;
+        height: 48px;
+        border: 1px solid #d0d9e5;
+        border-radius: 12px;
+        padding: 0 14px;
+      }
+      .btn {
+        width: 100%;
+        height: 48px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #56a8ff, #0f2747);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .message {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 12px;
+        display: none;
+      }
+      .message.error {
+        display: block;
+        background: #fdecec;
+        color: #b42318;
+      }
+      .message.success {
+        display: block;
+        background: #ecfdf3;
+        color: #027a48;
+      }
+
+      .admin-layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: #0f2747;
+        color: #fff;
+        padding: 24px 18px;
+      }
+      .sidebar h2 {
+        margin: 0 0 20px;
+      }
+      .sidebar button {
+        width: 100%;
+        height: 46px;
+        border: none;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        text-align: left;
+        padding: 0 14px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .sidebar button.active {
+        background: linear-gradient(135deg, #d8a635, #f0c86a);
+        color: #1c2430;
+      }
+      .main {
+        padding: 24px;
+      }
+      .top h1 {
+        margin: 0 0 6px;
+        color: #0f2747;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+      }
+      .card-label {
+        color: #667085;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+      .card-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #0f2747;
+      }
+      .content-block {
+        margin-top: 24px;
+        background: #fff;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+      }
+      @media (max-width: 1200px) {
+        .cards {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 800px) {
+        .admin-layout {
+          grid-template-columns: 1fr;
+        }
+        .cards {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 560px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+      .admin-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background: #fff;
+      }
+
+      .admin-table th,
+      .admin-table td {
+        padding: 12px 10px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
+      }
+
+      .admin-table th {
+        background: #f4f7fb;
+        color: #0f2747;
+        font-weight: 800;
+      }
+
+      .admin-table tr:hover td {
+        background: #f9fbff;
+      }
+
+      .tag-status {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #eef4ff;
+        color: #0f2747;
+      }
+
+      .tag-pendente {
+        background: #fff7e6;
+        color: #b26b00;
+      }
+
+      .tag-pago {
+        background: #ecfdf3;
+        color: #027a48;
+      }
+      .admin-table-center th,
+      .admin-table-center td {
+        text-align: center !important;
+        vertical-align: middle;
+      }
+
+      .admin-table-center td:first-child,
+      .admin-table-center th:first-child {
+        text-align: center !important;
+      }
+      .btn-delete {
+        background: linear-gradient(135deg, #ff4d4f, #d9363e);
+        color: #fff;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .btn-delete:hover {
+        background: linear-gradient(135deg, #ff7875, #ff4d4f);
+        transform: translateY(-1px);
+      }
+
+      .btn-delete:active {
+        transform: scale(0.97);
+      }
+    </style>
+  </head>
+  <body>
+    <section id="adminLoginScreen" class="login-wrap">
+      <div class="login-card">
+        <img
+          class="logo"
+          src="projeto-apecad/assets/logo-apecad.png"
+          alt="Logo APECAD"
+        />
+        <h1 class="title">Painel Admin</h1>
+        <p class="sub">Acesso administrativo do campeonato</p>
+
+        <div class="form-group">
+          <label class="form-label">Login</label>
+          <input id="adminLogin" class="form-input" type="text" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <input id="adminSenha" class="form-input" type="password" />
+        </div>
+
+        <button id="btnEntrarAdmin" class="btn">Entrar</button>
+        <div id="msgAdminLogin" class="message"></div>
+      </div>
+    </section>
+
+    <section id="adminScreen" class="admin-layout hidden">
+      <aside class="sidebar">
+        <h2>Admin APECAD</h2>
+        <button class="admin-menu-btn active" data-tab="dashboard">
+          Dashboard
+        </button>
+        <button class="admin-menu-btn" data-tab="times">Times</button>
+        <button class="admin-menu-btn" data-tab="jogadores">Jogadores</button>
+        <button class="admin-menu-btn" data-tab="goleiros">Goleiros</button>
+        <button class="admin-menu-btn" data-tab="extras">Extras</button>
+        <button class="admin-menu-btn" data-tab="tecnicos">Técnicos</button>
+        <button class="admin-menu-btn" data-tab="confrontos">Confrontos</button>
+        <button class="admin-menu-btn" data-tab="sumula">Súmula</button>
+        <button class="admin-menu-btn" data-tab="trocas">Trocas</button>
+        <button class="admin-menu-btn" data-tab="configuracoes">
+          Configurações
+        </button>
+        <button id="btnSairAdmin">Sair</button>
+      </aside>
+
+      <main class="main">
+        <div id="tab-dashboard" class="admin-tab">
+          <div class="top">
+            <h1>Dashboard administrativo</h1>
+            <p id="adminNomeInfo">Bem-vindo.</p>
+          </div>
+
+          <div class="cards">
+            <div class="card">
+              <div class="card-label">Times</div>
+              <div id="admTotalTimes" class="card-value">0</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Jogadores</div>
+              <div id="admTotalJogadores" class="card-value">0</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Goleiros</div>
+              <div id="admTotalGoleiros" class="card-value">0</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Extras</div>
+              <div id="admTotalExtras" class="card-value">0</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Técnicos</div>
+              <div id="admTotalTecnicos" class="card-value">0</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Confrontos</div>
+              <div id="admTotalConfrontos" class="card-value">0</div>
+            </div>
+          </div>
+
+          <div class="content-block">
+            <strong>Status do sistema:</strong>
+            <span id="admStatusSistema">-</span><br /><br />
+            <strong>Prazo geral:</strong> <span id="admPrazoGeral">-</span>
+          </div>
+        </div>
+
+        <div id="tab-times" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Times cadastrados</h2>
+            <div id="listaTimesAdmin">Carregando...</div>
+          </div>
+        </div>
+        <div id="tab-jogadores" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Jogadores cadastrados</h2>
+
+            <div class="form-group" style="max-width: 320px; margin-top: 16px">
+              <label class="form-label">Filtrar por time</label>
+              <select
+                id="filtroJogadoresTime"
+                class="form-input"
+                onchange="carregarJogadoresAdmin()"
+              >
+                <option value="">Todos os times</option>
+              </select>
+            </div>
+
+            <div id="listaJogadoresAdmin" style="margin-top: 20px">
+              Carregando...
+            </div>
+          </div>
+        </div>
+        <div id="tab-goleiros" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Goleiros cadastrados</h2>
+
+            <div class="form-group" style="max-width: 320px; margin-top: 16px">
+              <label class="form-label">Filtrar por time</label>
+              <select
+                id="filtroGoleirosTime"
+                class="form-input"
+                onchange="carregarGoleirosAdmin()"
+              >
+                <option value="">Todos os times</option>
+              </select>
+            </div>
+
+            <div id="listaGoleirosAdmin" style="margin-top: 20px">
+              Carregando...
+            </div>
+          </div>
+        </div>
+        <div id="tab-extras" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Extras cadastrados</h2>
+
+            <div class="form-group" style="max-width: 320px; margin-top: 16px">
+              <label class="form-label">Filtrar por time</label>
+              <select
+                id="filtroExtrasTime"
+                class="form-input"
+                onchange="carregarExtrasAdmin()"
+              >
+                <option value="">Todos os times</option>
+              </select>
+            </div>
+
+            <div id="listaExtrasAdmin" style="margin-top: 20px">
+              Carregando...
+            </div>
+          </div>
+        </div>
+        <div id="tab-tecnicos" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Técnicos cadastrados</h2>
+
+            <div class="form-group" style="max-width: 320px; margin-top: 16px">
+              <label class="form-label">Filtrar por time</label>
+              <select
+                id="filtroTecnicosTime"
+                class="form-input"
+                onchange="carregarTecnicosAdmin()"
+              >
+                <option value="">Todos os times</option>
+              </select>
+            </div>
+
+            <div id="listaTecnicosAdmin" style="margin-top: 20px">
+              Carregando...
+            </div>
+          </div>
+        </div>
+        <div id="tab-confrontos" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Cadastro de confrontos</h2>
+
+            <input type="hidden" id="confrontoId" />
+
+            <div class="form-group">
+              <label class="form-label">Rodada</label>
+              <input
+                id="confrontoRodada"
+                class="form-input"
+                type="text"
+                placeholder="Ex.: 1"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Data do jogo</label>
+              <input id="confrontoData" class="form-input" type="date" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Hora do jogo</label>
+              <input id="confrontoHora" class="form-input" type="time" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Time casa</label>
+              <select id="confrontoTimeCasa" class="form-input"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Time fora</label>
+              <select id="confrontoTimeFora" class="form-input"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Local</label>
+              <input id="confrontoLocal" class="form-input" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Observações</label>
+              <input id="confrontoObs" class="form-input" type="text" />
+            </div>
+
+            <button class="btn" onclick="salvarConfronto()">
+              Salvar confronto
+            </button>
+            <div id="msgConfronto" class="message"></div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Confrontos cadastrados</h3>
+            <div id="listaConfrontosAdmin">Carregando...</div>
+          </div>
+        </div>
+        <div id="tab-sumula" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Súmula da partida</h2>
+
+            <div class="form-group">
+              <label class="form-label">Confronto</label>
+              <select
+                id="sumulaConfronto"
+                class="form-input"
+                onchange="aoSelecionarConfrontoSumula()"
+              >
+                <option value="">Selecione o confronto</option>
+              </select>
+            </div>
+
+            <div
+              id="infoConfrontoSumula"
+              class="empty-state"
+              style="margin-bottom: 20px"
+            >
+              Selecione um confronto para carregar os times e jogadores.
+            </div>
+
+            <div class="form-group">
+              <label>Gols time casa</label>
+              <input id="golsCasa" type="number" class="form-input" value="0" />
+            </div>
+
+            <div class="form-group">
+              <label>Gols time fora</label>
+              <input id="golsFora" type="number" class="form-input" value="0" />
+            </div>
+
+            <div class="form-group">
+              <label>WO?</label>
+              <select id="woFlag" class="form-input">
+                <option value="NAO">Não</option>
+                <option value="SIM">Sim</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Lado do WO</label>
+              <select id="ladoWo" class="form-input">
+                <option value="">Selecione</option>
+                <option value="CASA">Casa</option>
+                <option value="FORA">Fora</option>
+                <option value="AMBOS">Ambos</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Observações da súmula</label>
+              <input
+                id="observacoesSumula"
+                type="text"
+                class="form-input"
+                placeholder="Observações gerais da partida"
+              />
+            </div>
+
+            <button class="btn" onclick="salvarResultado()">
+              Salvar resultado
+            </button>
+            <div id="msgSumula" class="message"></div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Registrar evento</h3>
+
+            <div class="form-group">
+              <label class="form-label">Tipo do evento</label>
+              <select id="tipoEvento" class="form-input">
+                <option value="GOL">Gol</option>
+                <option value="AMARELO">Cartão amarelo</option>
+                <option value="VERMELHO">Cartão vermelho</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Time do jogador</label>
+              <select
+                id="timeEvento"
+                class="form-input"
+                onchange="filtrarJogadoresEvento()"
+              >
+                <option value="">Selecione o time</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Jogador</label>
+              <select id="jogadorEvento" class="form-input">
+                <option value="">Selecione o jogador</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Minuto</label>
+              <input
+                id="minutoEvento"
+                class="form-input"
+                placeholder="Ex.: 12"
+              />
+            </div>
+
+            <button class="btn" onclick="registrarEvento()">
+              Registrar evento
+            </button>
+            <div id="msgEvento" class="message"></div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Gols registrados</h3>
+            <div id="listaGolsSumula" class="empty-state">
+              Nenhum gol registrado.
+            </div>
+
+            <hr style="margin: 30px 0" />
+
+            <h3>Cartões registrados</h3>
+            <div id="listaCartoesSumula" class="empty-state">
+              Nenhum cartão registrado.
+            </div>
+          </div>
+        </div>
+        <div id="tab-configuracoes" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Configurações do sistema</h2>
+            <p style="margin: 8px 0 20px; color: #667085">
+              Altere aqui os parâmetros gerais do campeonato e do sistema.
+            </p>
+
+            <div
+              id="configuracoesAdminForm"
+              style="display: grid; gap: 16px"
+            ></div>
+
+            <div style="margin-top: 20px">
+              <button class="btn" onclick="salvarConfiguracoesAdmin()">
+                Salvar configurações
+              </button>
+              <div id="msgConfiguracoesAdmin" class="message"></div>
+            </div>
+          </div>
+        </div>
+        <div id="tab-trocas" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Histórico de trocas</h2>
+            <div id="listaTrocasAdmin">Carregando...</div>
+          </div>
+        </div>
+      </main>
+    </section>
+
+    <script>
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyTKzr1ZGK3A6jjE_AlI5hwpGhacPWNOFvkhYWlVvLDwyqNSieiK-B0zTm9CgCHFEaI/exec";
+      let adminSessao = null;
+      let confrontosSumulaCache = [];
+      let elencoConfrontoCache = [];
+      let confrontoSelecionadoCache = null;
+      let configuracoesAdminCache = [];
+
+      async function getApi(params = {}) {
+        const url = new URL(SCRIPT_URL);
+        Object.keys(params).forEach((chave) =>
+          url.searchParams.append(chave, params[chave]),
+        );
+        const resposta = await fetch(url.toString(), { method: "GET" });
+        return await resposta.json();
+      }
+
+      function mostrarMsgAdmin(texto, tipo = "error") {
+        const el = document.getElementById("msgAdminLogin");
+        el.className = `message ${tipo}`;
+        el.textContent = texto;
+      }
+
+      async function fazerLoginAdminFront() {
+        const login = document.getElementById("adminLogin").value.trim();
+        const senha = document.getElementById("adminSenha").value.trim();
+
+        if (!login || !senha) {
+          mostrarMsgAdmin("Informe login e senha.");
+          return;
+        }
+
+        try {
+          const resultado = await getApi({
+            route: "loginAdmin",
+            login,
+            senha,
+          });
+
+          if (!resultado.sucesso) {
+            mostrarMsgAdmin(resultado.mensagem || "Não foi possível entrar.");
+            return;
+          }
+
+          adminSessao = resultado.admin;
+          localStorage.setItem(
+            "apecad_admin_session",
+            JSON.stringify(adminSessao),
+          );
+
+          await carregarResumoAdmin();
+          await carregarOpcoesFiltroTimesAdmin();
+          abrirPainelAdmin();
+        } catch (erro) {
+          mostrarMsgAdmin("Erro ao conectar com o sistema.");
+          console.error(erro);
+        }
+      }
+
+      async function carregarResumoAdmin() {
+        try {
+          const resultado = await getApi({ route: "resumoAdmin" });
+
+          if (!resultado.sucesso) {
+            throw new Error(
+              resultado.mensagem || "Erro ao carregar resumo admin.",
+            );
+          }
+
+          const r = resultado.resumo;
+          document.getElementById("adminNomeInfo").textContent =
+            `Bem-vindo, ${adminSessao?.nome || "Administrador"}.`;
+          document.getElementById("admTotalTimes").textContent =
+            r.total_times ?? 0;
+          document.getElementById("admTotalJogadores").textContent =
+            r.total_jogadores ?? 0;
+          document.getElementById("admTotalGoleiros").textContent =
+            r.total_goleiros ?? 0;
+          document.getElementById("admTotalExtras").textContent =
+            r.total_extras ?? 0;
+          document.getElementById("admTotalTecnicos").textContent =
+            r.total_tecnicos ?? 0;
+          document.getElementById("admTotalConfrontos").textContent =
+            r.total_confrontos ?? 0;
+          document.getElementById("admStatusSistema").textContent =
+            r.sistema_ativo === "SIM" ? "Ativo" : "Desativado";
+          document.getElementById("admPrazoGeral").textContent =
+            r.data_limite_geral || "-";
+        } catch (erro) {
+          console.error(erro);
+        }
+      }
+
+      function abrirPainelAdmin() {
+        document.getElementById("adminLoginScreen").classList.add("hidden");
+        document.getElementById("adminScreen").classList.remove("hidden");
+      }
+
+      function sairAdmin() {
+        localStorage.removeItem("apecad_admin_session");
+        adminSessao = null;
+        document.getElementById("adminScreen").classList.add("hidden");
+        document.getElementById("adminLoginScreen").classList.remove("hidden");
+      }
+
+      function restaurarSessaoAdmin() {
+        const sessao = localStorage.getItem("apecad_admin_session");
+        if (!sessao) return;
+
+        try {
+          adminSessao = JSON.parse(sessao);
+          abrirPainelAdmin();
+          carregarResumoAdmin();
+          carregarOpcoesFiltroTimesAdmin();
+        } catch (erro) {
+          localStorage.removeItem("apecad_admin_session");
+        }
+      }
+
+      function configurarTabsAdmin() {
+        const botoes = document.querySelectorAll(".admin-menu-btn");
+        const tabs = document.querySelectorAll(".admin-tab");
+
+        botoes.forEach((botao) => {
+          botao.addEventListener("click", async () => {
+            const tab = botao.dataset.tab;
+
+            botoes.forEach((b) => b.classList.remove("active"));
+            tabs.forEach((t) => t.classList.add("hidden"));
+
+            botao.classList.add("active");
+
+            const aba = document.getElementById(`tab-${tab}`);
+            if (aba) aba.classList.remove("hidden");
+
+            await carregarOpcoesFiltroTimesAdmin();
+
+            if (tab === "times") await carregarTimesAdmin();
+            if (tab === "jogadores") await carregarJogadoresAdmin();
+            if (tab === "goleiros") await carregarGoleirosAdmin();
+            if (tab === "extras") await carregarExtrasAdmin();
+            if (tab === "tecnicos") await carregarTecnicosAdmin();
+            if (tab === "trocas") await carregarTrocasAdmin();
+
+            if (tab === "confrontos") {
+              await carregarTimesSelectConfronto();
+              await carregarConfrontosAdmin();
+            }
+
+            if (tab === "sumula") {
+              await carregarConfrontosSumula();
+            }
+
+            if (tab === "configuracoes") {
+              await carregarConfiguracoesAdmin();
+            }
+          });
+        });
+      }
+      async function carregarTimesAdmin() {
+        const container = document.getElementById("listaTimesAdmin");
+
+        try {
+          const resultado = await getApi({ route: "listarTimesAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar times.";
+            return;
+          }
+
+          if (!resultado.times || !resultado.times.length) {
+            container.innerHTML = "Nenhum time cadastrado.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table admin-table-center">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Login</th>
+              <th>Representante</th>
+              <th>Goleiros</th>
+              <th>Extras</th>
+              <th>Técnicos</th>
+              <th>Trocas</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${resultado.times
+              .map(
+                (t) => `
+              <tr>
+                <td>${t.nome_time || "-"}</td>
+                <td>${t.login || "-"}</td>
+                <td>${t.representante_1 || "-"}</td>
+                <td>${Number(t.goleiros_cadastrados || 0)}</td>
+                <td>${Number(t.extras_cadastrados || 0)}</td>
+                <td>${Number(t.tecnicos_cadastrados || 0)}</td>
+                <td>${Number(t.trocas_realizadas || 0)}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar times.";
+          console.error(erro);
+        }
+      }
+      async function carregarTimesSelectConfronto() {
+        try {
+          const resultado = await getApi({ route: "listarTimesAdmin" });
+
+          const selectCasa = document.getElementById("confrontoTimeCasa");
+          const selectFora = document.getElementById("confrontoTimeFora");
+
+          if (!resultado.sucesso || !resultado.times) {
+            selectCasa.innerHTML = '<option value="">Erro ao carregar</option>';
+            selectFora.innerHTML = '<option value="">Erro ao carregar</option>';
+            return;
+          }
+
+          const opcoes = ['<option value="">Selecione</option>']
+            .concat(
+              resultado.times.map(
+                (t) => `<option value="${t.time_id}">${t.nome_time}</option>`,
+              ),
+            )
+            .join("");
+
+          selectCasa.innerHTML = opcoes;
+          selectFora.innerHTML = opcoes;
+        } catch (erro) {
+          console.error("Erro ao carregar times para confronto:", erro);
+        }
+      }
+      async function salvarConfronto() {
+        const confrontoId = document.getElementById("confrontoId").value.trim();
+        const rodada = document.getElementById("confrontoRodada").value.trim();
+        const dataJogo = document.getElementById("confrontoData").value;
+        const horaJogo = document.getElementById("confrontoHora").value;
+        const timeCasaId = document.getElementById("confrontoTimeCasa").value;
+        const timeForaId = document.getElementById("confrontoTimeFora").value;
+        const local = document.getElementById("confrontoLocal").value.trim();
+        const observacoes = document
+          .getElementById("confrontoObs")
+          .value.trim();
+        const msg = document.getElementById("msgConfronto");
+
+        if (!timeCasaId || !timeForaId) {
+          msg.className = "message error";
+          msg.textContent = "Selecione os dois times.";
+          return;
+        }
+
+        try {
+          let resultado;
+
+          if (confrontoId) {
+            resultado = await getApi({
+              route: "editarConfronto",
+              confronto_id: confrontoId,
+              rodada,
+              data_jogo: dataJogo,
+              hora_jogo: horaJogo,
+              time_casa_id: timeCasaId,
+              time_fora_id: timeForaId,
+              local,
+              observacoes,
+            });
+          } else {
+            resultado = await getApi({
+              route: "cadastrarConfronto",
+              rodada,
+              data_jogo: dataJogo,
+              hora_jogo: horaJogo,
+              time_casa_id: timeCasaId,
+              time_fora_id: timeForaId,
+              local,
+              observacoes,
+            });
+          }
+
+          if (resultado.sucesso) {
+            msg.className = "message success";
+            msg.textContent = resultado.mensagem;
+
+            limparFormularioConfronto();
+            await carregarConfrontosAdmin();
+            await carregarResumoAdmin();
+          } else {
+            msg.className = "message error";
+            msg.textContent = resultado.mensagem || "Erro ao salvar confronto.";
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao comunicar com o sistema.";
+          console.error(erro);
+        }
+      }
+      async function carregarConfrontosAdmin() {
+        const container = document.getElementById("listaConfrontosAdmin");
+
+        try {
+          const resultado = await getApi({ route: "listarConfrontosAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar confrontos.";
+            return;
+          }
+
+          if (!resultado.confrontos || resultado.confrontos.length === 0) {
+            container.innerHTML = "Nenhum confronto cadastrado.";
+            return;
+          }
+
+          container.innerHTML = `
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:#f4f7fb">
+            <th>Rodada</th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Casa</th>
+            <th>Fora</th>
+            <th>Local</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${resultado.confrontos
+            .map(
+              (c) => `
+            <tr>
+              <td>${c.rodada || "-"}</td>
+              <td>${c.data_jogo || "-"}</td>
+              <td>${c.hora_jogo || "-"}</td>
+              <td>${c.nome_time_casa || "-"}</td>
+              <td>${c.nome_time_fora || "-"}</td>
+              <td>${c.local || "-"}</td>
+              <td>${c.status_confronto || "-"}</td>
+              <td>
+                <button onclick="editarConfrontoFront('${c.confronto_id}', '${escapeHtml(c.rodada)}', '${escapeHtml(c.data_jogo)}', '${escapeHtml(c.hora_jogo)}', '${escapeHtml(c.time_casa_id)}', '${escapeHtml(c.time_fora_id)}', '${escapeHtml(c.local)}', '${escapeHtml(c.observacoes)}')">Editar</button>
+                <button onclick="excluirConfrontoFront('${c.confronto_id}')">Excluir</button>
+              </td>
+            </tr>
+          `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar confrontos.";
+          console.error(erro);
+        }
+      }
+      function editarConfrontoFront(
+        id,
+        rodada,
+        dataJogo,
+        horaJogo,
+        timeCasaId,
+        timeForaId,
+        local,
+        observacoes,
+      ) {
+        document.getElementById("confrontoId").value = id || "";
+        document.getElementById("confrontoRodada").value = rodada || "";
+        document.getElementById("confrontoData").value = dataJogo || "";
+        document.getElementById("confrontoHora").value = horaJogo || "";
+        document.getElementById("confrontoTimeCasa").value = timeCasaId || "";
+        document.getElementById("confrontoTimeFora").value = timeForaId || "";
+        document.getElementById("confrontoLocal").value = local || "";
+        document.getElementById("confrontoObs").value = observacoes || "";
+      }
+
+      async function excluirConfrontoFront(confrontoId) {
+        if (!confirm("Deseja realmente excluir este confronto?")) return;
+
+        const msg = document.getElementById("msgConfronto");
+
+        try {
+          const resultado = await getApi({
+            route: "excluirConfronto",
+            confronto_id: confrontoId,
+          });
+
+          if (resultado.sucesso) {
+            msg.className = "message success";
+            msg.textContent = resultado.mensagem;
+            limparFormularioConfronto();
+            await carregarConfrontosAdmin();
+            await carregarResumoAdmin();
+          } else {
+            msg.className = "message error";
+            msg.textContent =
+              resultado.mensagem || "Erro ao excluir confronto.";
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao comunicar com o sistema.";
+          console.error(erro);
+        }
+      }
+
+      function limparFormularioConfronto() {
+        document.getElementById("confrontoId").value = "";
+        document.getElementById("confrontoRodada").value = "";
+        document.getElementById("confrontoData").value = "";
+        document.getElementById("confrontoHora").value = "";
+        document.getElementById("confrontoTimeCasa").value = "";
+        document.getElementById("confrontoTimeFora").value = "";
+        document.getElementById("confrontoLocal").value = "";
+        document.getElementById("confrontoObs").value = "";
+
+        const msg = document.getElementById("msgConfronto");
+        msg.className = "message";
+        msg.textContent = "";
+      }
+
+      function escapeHtml(valor) {
+        return String(valor || "")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      async function registrarEvento() {
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+        const tipo = document.getElementById("tipoEvento").value;
+        const timeId = document.getElementById("timeEvento").value;
+        const jogadorSelect = document.getElementById("jogadorEvento");
+        const jogadorId = jogadorSelect.value;
+        const jogadorOption =
+          jogadorSelect.options[jogadorSelect.selectedIndex];
+        const nomeJogador = jogadorOption
+          ? jogadorOption.getAttribute("data-nome")
+          : "";
+        const timeNome = jogadorOption
+          ? jogadorOption.getAttribute("data-time-nome")
+          : "";
+        const tipoJogador = jogadorOption
+          ? jogadorOption.getAttribute("data-tipo-jogador")
+          : "";
+        const minuto = document.getElementById("minutoEvento").value;
+        const msg = document.getElementById("msgEvento");
+
+        if (!confrontoId) {
+          msg.className = "message error";
+          msg.textContent = "Selecione um confronto.";
+          return;
+        }
+
+        if (!timeId) {
+          msg.className = "message error";
+          msg.textContent = "Selecione o time do jogador.";
+          return;
+        }
+
+        if (!jogadorId) {
+          msg.className = "message error";
+          msg.textContent = "Selecione o jogador.";
+          return;
+        }
+
+        let resultado;
+
+        if (tipo === "GOL") {
+          resultado = await getApi({
+            route: "registrarGol",
+            confronto_id: confrontoId,
+            jogador_id: jogadorId,
+            nome_jogador: nomeJogador,
+            time_id: timeId,
+            nome_time: timeNome,
+            tipo_jogador: tipoJogador,
+            minuto,
+            usuario: adminSessao?.login || "ADMIN",
+          });
+        } else {
+          resultado = await getApi({
+            route: "registrarCartao",
+            confronto_id: confrontoId,
+            jogador_id: jogadorId,
+            nome_jogador: nomeJogador,
+            time_id: timeId,
+            nome_time: timeNome,
+            tipo_jogador: tipoJogador,
+            tipo_cartao: tipo,
+            minuto,
+            usuario: adminSessao?.login || "ADMIN",
+          });
+        }
+
+        msg.className = resultado.sucesso ? "message success" : "message error";
+        msg.textContent = resultado.mensagem;
+
+        if (resultado.sucesso) {
+          document.getElementById("minutoEvento").value = "";
+          document.getElementById("jogadorEvento").value = "";
+          await aoSelecionarConfrontoSumula();
+        }
+      }
+      async function salvarResultado() {
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+        const golsCasa = document.getElementById("golsCasa").value;
+        const golsFora = document.getElementById("golsFora").value;
+        const houveWo = document.getElementById("woFlag").value;
+        const ladoWo = document.getElementById("ladoWo").value;
+        const observacoes = document
+          .getElementById("observacoesSumula")
+          .value.trim();
+        const msg = document.getElementById("msgSumula");
+
+        if (!confrontoId) {
+          msg.className = "message error";
+          msg.textContent = "Selecione um confronto.";
+          return;
+        }
+
+        const resultado = await getApi({
+          route: "atualizarResultadoConfronto",
+          confronto_id: confrontoId,
+          gols_casa: golsCasa,
+          gols_fora: golsFora,
+          status: "FINALIZADO",
+          houve_wo: houveWo,
+          lado_wo: ladoWo,
+          observacoes,
+          usuario: adminSessao?.login || "ADMIN",
+        });
+
+        msg.className = resultado.sucesso ? "message success" : "message error";
+        msg.textContent = resultado.mensagem;
+      }
+
+      async function carregarOpcoesFiltroTimesAdmin() {
+        try {
+          const resultado = await getApi({ route: "listarTimesAdmin" });
+          if (!resultado.sucesso || !resultado.times) return;
+
+          const selectsIds = [
+            "filtroJogadoresTime",
+            "filtroGoleirosTime",
+            "filtroExtrasTime",
+            "filtroTecnicosTime",
+          ];
+
+          const opcoes = ['<option value="">Todos os times</option>']
+            .concat(
+              resultado.times.map(
+                (t) => `<option value="${t.time_id}">${t.nome_time}</option>`,
+              ),
+            )
+            .join("");
+
+          selectsIds.forEach((id) => {
+            const select = document.getElementById(id);
+            if (select) select.innerHTML = opcoes;
+          });
+        } catch (erro) {
+          console.error("Erro ao carregar filtros de times:", erro);
+        }
+      }
+      async function carregarOpcoesFiltroTimesAdmin() {
+        try {
+          const resultado = await getApi({ route: "listarTimesAdmin" });
+          if (!resultado.sucesso || !resultado.times) return;
+
+          const selectsIds = [
+            "filtroJogadoresTime",
+            "filtroGoleirosTime",
+            "filtroExtrasTime",
+            "filtroTecnicosTime",
+          ];
+
+          const opcoes = ['<option value="">Todos os times</option>']
+            .concat(
+              resultado.times.map(
+                (t) => `<option value="${t.time_id}">${t.nome_time}</option>`,
+              ),
+            )
+            .join("");
+
+          selectsIds.forEach((id) => {
+            const select = document.getElementById(id);
+            if (select) select.innerHTML = opcoes;
+          });
+        } catch (erro) {
+          console.error("Erro ao carregar filtros de times:", erro);
+        }
+      }
+      async function carregarJogadoresAdmin() {
+        const container = document.getElementById("listaJogadoresAdmin");
+        const filtroTime =
+          document.getElementById("filtroJogadoresTime")?.value || "";
+
+        try {
+          const resultado = await getApi({ route: "listarJogadoresAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar jogadores.";
+            return;
+          }
+
+          let jogadores = resultado.jogadores || [];
+
+          if (filtroTime) {
+            jogadores = jogadores.filter(
+              (j) =>
+                String(j.time_atual_id || "").trim() ===
+                String(filtroTime).trim(),
+            );
+          }
+
+          if (!jogadores.length) {
+            container.innerHTML = "Nenhum jogador encontrado.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Posição</th>
+              <th>Time atual</th>
+              <th>Origem</th>
+              <th>Troca permitida</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${jogadores
+              .map(
+                (j) => `
+              <tr>
+                <td>${j.jogador_id || "-"}</td>
+                <td>${j.nome_completo || "-"}</td>
+                <td>${j.posicao || "-"}</td>
+                <td>${j.nome_time_atual || "-"}</td>
+                <td>${j.origem_movimentacao || "-"}</td>
+                <td>${j.pode_ser_trocado || "-"}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar jogadores.";
+          console.error(erro);
+        }
+      }
+      async function carregarGoleirosAdmin() {
+        const container = document.getElementById("listaGoleirosAdmin");
+        const filtroTime =
+          document.getElementById("filtroGoleirosTime")?.value || "";
+
+        try {
+          const resultado = await getApi({ route: "listarGoleirosAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar goleiros.";
+            return;
+          }
+
+          let goleiros = resultado.goleiros || [];
+
+          if (filtroTime) {
+            goleiros = goleiros.filter(
+              (g) =>
+                String(g.time_id || "").trim() === String(filtroTime).trim(),
+            );
+          }
+
+          if (!goleiros.length) {
+            container.innerHTML = "Nenhum goleiro encontrado.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Time</th>
+              <th>Documento</th>
+              <th>Telefone</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${goleiros
+              .map(
+                (g) => `
+              <tr>
+                <td>${g.registro_id || "-"}</td>
+                <td>${g.nome_completo || "-"}</td>
+                <td>${g.nome_time || "-"}</td>
+                <td>${g.documento || "-"}</td>
+                <td>${g.telefone || "-"}</td>
+                <td><span class="tag-status">${g.status_registro || "-"}</span></td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar goleiros.";
+          console.error(erro);
+        }
+      }
+      async function carregarExtrasAdmin() {
+        const container = document.getElementById("listaExtrasAdmin");
+        const filtroTime =
+          document.getElementById("filtroExtrasTime")?.value || "";
+
+        try {
+          const resultado = await getApi({ route: "listarExtrasAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar extras.";
+            return;
+          }
+
+          let extras = resultado.extras || [];
+
+          if (filtroTime) {
+            extras = extras.filter(
+              (e) =>
+                String(e.time_id || "").trim() === String(filtroTime).trim(),
+            );
+          }
+
+          if (!extras.length) {
+            container.innerHTML = "Nenhum extra encontrado.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Time</th>
+              <th>Documento</th>
+              <th>Telefone</th>
+              <th>Pagamento</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${extras
+              .map(
+                (e) => `
+              <tr>
+                <td>${e.registro_id || "-"}</td>
+                <td>${e.nome_completo || "-"}</td>
+                <td>${e.nome_time || "-"}</td>
+                <td>${e.documento || "-"}</td>
+                <td>${e.telefone || "-"}</td>
+                <td>
+                  <span class="${String(e.status_pagamento || "").toUpperCase() === "PAGO" ? "tag-status tag-pago" : "tag-status tag-pendente"}">
+                    ${e.status_pagamento || "-"}
+                  </span>
+                </td>
+                <td><span class="tag-status">${e.status_registro || "-"}</span></td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar extras.";
+          console.error(erro);
+        }
+      }
+      async function carregarTecnicosAdmin() {
+        const container = document.getElementById("listaTecnicosAdmin");
+        const filtroTime =
+          document.getElementById("filtroTecnicosTime")?.value || "";
+
+        try {
+          const resultado = await getApi({ route: "listarTecnicosAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar técnicos.";
+            return;
+          }
+
+          let tecnicos = resultado.tecnicos || [];
+
+          if (filtroTime) {
+            tecnicos = tecnicos.filter(
+              (t) =>
+                String(t.time_id || "").trim() === String(filtroTime).trim(),
+            );
+          }
+
+          if (!tecnicos.length) {
+            container.innerHTML = "Nenhum técnico encontrado.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Time</th>
+              <th>Telefone</th>
+              <th>Função</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tecnicos
+              .map(
+                (t) => `
+              <tr>
+                <td>${t.registro_id || "-"}</td>
+                <td>${t.nome_completo || "-"}</td>
+                <td>${t.nome_time || "-"}</td>
+                <td>${t.telefone || "-"}</td>
+                <td>${t.funcao || "-"}</td>
+                <td><span class="tag-status">${t.status_registro || "-"}</span></td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar técnicos.";
+          console.error(erro);
+        }
+      }
+      async function carregarConfrontosSumula() {
+        try {
+          const resultado = await getApi({ route: "listarConfrontosSumula" });
+          const select = document.getElementById("sumulaConfronto");
+
+          if (!resultado.sucesso || !resultado.confrontos) {
+            select.innerHTML =
+              '<option value="">Erro ao carregar confrontos</option>';
+            return;
+          }
+
+          confrontosSumulaCache = resultado.confrontos;
+
+          select.innerHTML = `
+      <option value="">Selecione o confronto</option>
+      ${resultado.confrontos
+        .map(
+          (c) => `
+        <option value="${c.confronto_id}">
+          Rodada ${c.rodada || "-"} - ${c.nome_time_casa || "-"} x ${c.nome_time_fora || "-"} - ${c.data_jogo || "-"} ${c.hora_jogo || ""}
+        </option>
+      `,
+        )
+        .join("")}
+    `;
+        } catch (erro) {
+          console.error("Erro ao carregar confrontos da súmula:", erro);
+        }
+      }
+      async function carregarConfrontosSumula() {
+        try {
+          const resultado = await getApi({ route: "listarConfrontosSumula" });
+          const select = document.getElementById("sumulaConfronto");
+
+          if (!resultado.sucesso || !resultado.confrontos) {
+            select.innerHTML =
+              '<option value="">Erro ao carregar confrontos</option>';
+            return;
+          }
+
+          confrontosSumulaCache = resultado.confrontos;
+
+          select.innerHTML = `
+      <option value="">Selecione o confronto</option>
+      ${resultado.confrontos
+        .map(
+          (c) => `
+        <option value="${c.confronto_id}">
+          Rodada ${c.rodada || "-"} - ${c.nome_time_casa || "-"} x ${c.nome_time_fora || "-"} - ${c.data_jogo || "-"} ${c.hora_jogo || ""}
+        </option>
+      `,
+        )
+        .join("")}
+    `;
+        } catch (erro) {
+          console.error("Erro ao carregar confrontos da súmula:", erro);
+        }
+      }
+      async function aoSelecionarConfrontoSumula() {
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+        const infoBox = document.getElementById("infoConfrontoSumula");
+        const selectTime = document.getElementById("timeEvento");
+        const selectJogador = document.getElementById("jogadorEvento");
+
+        if (!confrontoId) {
+          confrontoSelecionadoCache = null;
+          elencoConfrontoCache = [];
+          infoBox.innerHTML =
+            "Selecione um confronto para carregar os times e jogadores.";
+          selectTime.innerHTML = '<option value="">Selecione o time</option>';
+          selectJogador.innerHTML =
+            '<option value="">Selecione o jogador</option>';
+          document.getElementById("golsCasa").value = 0;
+          document.getElementById("golsFora").value = 0;
+          document.getElementById("woFlag").value = "NAO";
+          document.getElementById("ladoWo").value = "";
+          document.getElementById("observacoesSumula").value = "";
+          document.getElementById("listaGolsSumula").innerHTML =
+            "Nenhum gol registrado.";
+          document.getElementById("listaCartoesSumula").innerHTML =
+            "Nenhum cartão registrado.";
+          return;
+        }
+
+        try {
+          const dadosConfronto = await getApi({
+            route: "listarJogadoresDoConfronto",
+            confronto_id: confrontoId,
+          });
+
+          if (!dadosConfronto.sucesso) {
+            infoBox.innerHTML =
+              dadosConfronto.mensagem || "Erro ao carregar confronto.";
+            return;
+          }
+
+          confrontoSelecionadoCache = dadosConfronto.confronto;
+          elencoConfrontoCache = dadosConfronto.elenco || [];
+
+          infoBox.innerHTML = `
+      <strong>Rodada:</strong> ${dadosConfronto.confronto.rodada || "-"}<br>
+      <strong>Confronto:</strong> ${dadosConfronto.confronto.nome_time_casa || "-"} x ${dadosConfronto.confronto.nome_time_fora || "-"}<br>
+      <strong>Data/Hora:</strong> ${dadosConfronto.confronto.data_jogo || "-"} ${dadosConfronto.confronto.hora_jogo || ""}<br>
+      <strong>Local:</strong> ${dadosConfronto.confronto.local || "-"}
+    `;
+
+          selectTime.innerHTML = `
+      <option value="">Selecione o time</option>
+      <option value="${dadosConfronto.confronto.time_casa_id}">${dadosConfronto.confronto.nome_time_casa}</option>
+      <option value="${dadosConfronto.confronto.time_fora_id}">${dadosConfronto.confronto.nome_time_fora}</option>
+    `;
+
+          selectJogador.innerHTML =
+            '<option value="">Selecione o jogador</option>';
+
+          const dadosSumula = await getApi({
+            route: "buscarDadosSumula",
+            confronto_id: confrontoId,
+          });
+
+          if (dadosSumula.sucesso) {
+            document.getElementById("golsCasa").value = Number(
+              dadosSumula.resumo?.gols_casa || 0,
+            );
+            document.getElementById("golsFora").value = Number(
+              dadosSumula.resumo?.gols_fora || 0,
+            );
+            document.getElementById("woFlag").value =
+              dadosSumula.resumo?.houve_wo || "NAO";
+            document.getElementById("ladoWo").value =
+              dadosSumula.resumo?.lado_wo || "";
+
+            renderizarListaGolsSumula(dadosSumula.gols || []);
+            renderizarListaCartoesSumula(dadosSumula.cartoes || []);
+          } else {
+            document.getElementById("golsCasa").value = 0;
+            document.getElementById("golsFora").value = 0;
+            document.getElementById("woFlag").value = "NAO";
+            document.getElementById("ladoWo").value = "";
+            renderizarListaGolsSumula([]);
+            renderizarListaCartoesSumula([]);
+          }
+        } catch (erro) {
+          infoBox.innerHTML = "Erro ao carregar confronto.";
+          console.error(erro);
+        }
+      }
+      function filtrarJogadoresEvento() {
+        const timeId = document.getElementById("timeEvento").value;
+        const selectJogador = document.getElementById("jogadorEvento");
+
+        if (!timeId) {
+          selectJogador.innerHTML =
+            '<option value="">Selecione o jogador</option>';
+          return;
+        }
+
+        const jogadores = elencoConfrontoCache.filter(
+          (j) => String(j.time_id || "").trim() === String(timeId).trim(),
+        );
+
+        selectJogador.innerHTML = `
+    <option value="">Selecione o jogador</option>
+    ${jogadores
+      .map(
+        (j) => `
+      <option 
+        value="${j.jogador_id}" 
+        data-nome="${j.nome_jogador}" 
+        data-time-id="${j.time_id}" 
+        data-time-nome="${j.nome_time}"
+        data-tipo-jogador="${j.tipo_jogador}">
+        ${j.nome_jogador} (${j.tipo_jogador})
+      </option>
+    `,
+      )
+      .join("")}
+  `;
+      }
+      function renderizarListaGolsSumula(gols) {
+        const container = document.getElementById("listaGolsSumula");
+
+        if (!gols || gols.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state">Nenhum gol registrado.</div>';
+          return;
+        }
+
+        container.innerHTML = `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Jogador</th>
+            <th>Time</th>
+            <th>Qtd</th>
+            <th>Observação</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${gols
+            .map(
+              (g) => `
+            <tr>
+              <td>${g.nome_jogador || "-"}</td>
+              <td>${g.nome_time || "-"}</td>
+              <td>${g.quantidade_gols || 1}</td>
+              <td>${g.observacao || "-"}</td>
+              <td>
+                <button class="btn-delete" onclick="excluirGolFront('${g.gol_id}')">Excluir</button>
+              </td>
+            </tr>
+          `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+      }
+      function renderizarListaCartoesSumula(cartoes) {
+        const container = document.getElementById("listaCartoesSumula");
+
+        if (!cartoes || cartoes.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state">Nenhum cartão registrado.</div>';
+          return;
+        }
+
+        container.innerHTML = `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Jogador</th>
+            <th>Time</th>
+            <th>Tipo</th>
+            <th>Qtd</th>
+            <th>Observação</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${cartoes
+            .map(
+              (c) => `
+            <tr>
+              <td>${c.nome_jogador || "-"}</td>
+              <td>${c.nome_time || "-"}</td>
+              <td>${c.tipo_cartao || "-"}</td>
+              <td>${c.quantidade || 1}</td>
+              <td>${c.observacao || "-"}</td>
+              <td>
+                <button class="btn-delete" onclick="excluirCartaoFront('${c.cartao_id}')">Excluir</button>
+              </td>
+            </tr>
+          `,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+      }
+      async function excluirGolFront(golId) {
+        if (!confirm("Deseja excluir este gol?")) return;
+
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+
+        const resultado = await getApi({
+          route: "excluirGolPartida",
+          gol_id: golId,
+        });
+
+        if (resultado.sucesso && confrontoId) {
+          await aoSelecionarConfrontoSumula();
+        } else {
+          alert(resultado.mensagem || "Erro ao excluir gol.");
+        }
+      }
+      async function excluirCartaoFront(cartaoId) {
+        if (!confirm("Deseja excluir este cartão?")) return;
+
+        const confrontoId = document.getElementById("sumulaConfronto").value;
+
+        const resultado = await getApi({
+          route: "excluirCartaoPartida",
+          cartao_id: cartaoId,
+        });
+
+        if (resultado.sucesso && confrontoId) {
+          await aoSelecionarConfrontoSumula();
+        } else {
+          alert(resultado.mensagem || "Erro ao excluir cartão.");
+        }
+      }
+      async function carregarConfiguracoesAdmin() {
+        const container = document.getElementById("configuracoesAdminForm");
+
+        try {
+          const resultado = await getApi({ route: "listarConfiguracoesAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar configurações.";
+            return;
+          }
+
+          configuracoesAdminCache = resultado.configuracoes || [];
+
+          if (!configuracoesAdminCache.length) {
+            container.innerHTML = "Nenhuma configuração encontrada.";
+            return;
+          }
+
+          container.innerHTML = configuracoesAdminCache
+            .map((cfg) => {
+              const chave = cfg.chave || "";
+              const valor = cfg.valor ?? "";
+              const descricao = cfg.descricao || "";
+
+              const ehBooleano = ["SIM", "NAO"].includes(
+                String(valor).trim().toUpperCase(),
+              );
+
+              if (chave === "data_limite_geral") {
+                const valorFormatado = formatarDataParaInputDatetime(valor);
+                return `
+          <div>
+            <label class="form-label">${chave}</label>
+            <input class="form-input config-input" data-chave="${chave}" type="datetime-local" value="${valorFormatado}">
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              if (ehBooleano) {
+                return `
+          <div>
+            <label class="form-label">${chave}</label>
+            <select class="form-input config-input" data-chave="${chave}">
+              <option value="SIM" ${String(valor).trim().toUpperCase() === "SIM" ? "selected" : ""}>SIM</option>
+              <option value="NAO" ${String(valor).trim().toUpperCase() === "NAO" ? "selected" : ""}>NAO</option>
+            </select>
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              return `
+        <div>
+          <label class="form-label">${chave}</label>
+          <input class="form-input config-input" data-chave="${chave}" type="text" value="${escapeHtml(valor)}">
+          <small style="color:#667085;">${descricao}</small>
+        </div>
+      `;
+            })
+            .join("");
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar configurações.";
+          console.error(erro);
+        }
+      }
+      async function carregarConfiguracoesAdmin() {
+        const container = document.getElementById("configuracoesAdminForm");
+
+        try {
+          const resultado = await getApi({ route: "listarConfiguracoesAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar configurações.";
+            return;
+          }
+
+          configuracoesAdminCache = resultado.configuracoes || [];
+
+          if (!configuracoesAdminCache.length) {
+            container.innerHTML = "Nenhuma configuração encontrada.";
+            return;
+          }
+
+          container.innerHTML = configuracoesAdminCache
+            .map((cfg) => {
+              const chave = cfg.chave || "";
+              const valor = cfg.valor ?? "";
+              const descricao = cfg.descricao || "";
+
+              const ehBooleano = ["SIM", "NAO"].includes(
+                String(valor).trim().toUpperCase(),
+              );
+
+              if (chave === "data_limite_geral") {
+                const valorFormatado = formatarDataParaInputDatetime(valor);
+                return `
+          <div>
+            <label class="form-label">${formatarChaveConfiguracao(chave)}</label>
+            <input class="form-input config-input" data-chave="${chave}" type="datetime-local" value="${valorFormatado}">
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              if (ehBooleano) {
+                return `
+          <div>
+            <label class="form-label">${formatarChaveConfiguracao(chave)}</label>
+            <select class="form-input config-input" data-chave="${chave}">
+              <option value="SIM" ${String(valor).trim().toUpperCase() === "SIM" ? "selected" : ""}>SIM</option>
+              <option value="NAO" ${String(valor).trim().toUpperCase() === "NAO" ? "selected" : ""}>NAO</option>
+            </select>
+            <small style="color:#667085;">${descricao}</small>
+          </div>
+        `;
+              }
+
+              return `
+        <div>
+          <label class="form-label">${formatarChaveConfiguracao(chave)}</label>
+          <input class="form-input config-input" data-chave="${chave}" type="text" value="${escapeHtml(valor)}">
+          <small style="color:#667085;">${descricao}</small>
+        </div>
+      `;
+            })
+            .join("");
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar configurações.";
+          console.error(erro);
+        }
+      }
+      async function salvarConfiguracoesAdmin() {
+        const msg = document.getElementById("msgConfiguracoesAdmin");
+        const inputs = document.querySelectorAll(".config-input");
+
+        try {
+          const configs = Array.from(inputs).map((input) => {
+            let valor = input.value;
+
+            if (input.type === "datetime-local" && valor) {
+              valor = valor.replace("T", " ") + ":00";
+            }
+
+            return {
+              chave: input.dataset.chave,
+              valor,
+            };
+          });
+
+          const resultado = await getApi({
+            route: "atualizarMultiplasConfiguracoesAdmin",
+            configs: JSON.stringify(configs),
+            usuario: adminSessao?.login || "ADMIN",
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            await carregarConfiguracoesAdmin();
+            await carregarResumoAdmin();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao salvar configurações.";
+          console.error(erro);
+        }
+      }
+      async function salvarConfiguracoesAdmin() {
+        const msg = document.getElementById("msgConfiguracoesAdmin");
+        const inputs = document.querySelectorAll(".config-input");
+
+        try {
+          const configs = Array.from(inputs).map((input) => {
+            let valor = input.value;
+
+            if (input.type === "datetime-local" && valor) {
+              valor = valor.replace("T", " ") + ":00";
+            }
+
+            return {
+              chave: input.dataset.chave,
+              valor,
+            };
+          });
+
+          const resultado = await getApi({
+            route: "atualizarMultiplasConfiguracoesAdmin",
+            configs: JSON.stringify(configs),
+            usuario: adminSessao?.login || "ADMIN",
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            await carregarConfiguracoesAdmin();
+            await carregarResumoAdmin();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao salvar configurações.";
+          console.error(erro);
+        }
+      }
+      function formatarDataParaInputDatetime(valor) {
+        if (!valor) return "";
+
+        const texto = String(valor).trim();
+
+        if (texto.includes("T")) {
+          return texto.slice(0, 16);
+        }
+
+        if (texto.includes(" ")) {
+          return texto.replace(" ", "T").slice(0, 16);
+        }
+
+        return texto;
+      }
+      function formatarChaveConfiguracao(chave) {
+        if (!chave) return "";
+
+        return chave
+          .toLowerCase()
+          .split("_")
+          .map((palavra, index) => {
+            if (index === 0) {
+              return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+            }
+            return palavra;
+          })
+          .join(" ");
+      }
+      async function carregarTrocasAdmin() {
+        const container = document.getElementById("listaTrocasAdmin");
+
+        try {
+          const resultado = await getApi({
+            route: "listarHistoricoTrocasAdmin",
+          });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar trocas.";
+            return;
+          }
+
+          const trocas = resultado.trocas || [];
+
+          if (!trocas.length) {
+            container.innerHTML = "Nenhuma troca registrada.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table admin-table-center">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Solicitante</th>
+              <th>Destino</th>
+              <th>Oferecido</th>
+              <th>Desejado</th>
+              <th>Status</th>
+              <th>Resposta</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${trocas
+              .map(
+                (t) => `
+              <tr>
+                <td>${t.troca_id || "-"}</td>
+                <td>${t.nome_time_solicitante || "-"}</td>
+                <td>${t.nome_time_destino || "-"}</td>
+                <td>${t.jogador_oferecido_nome || "-"}</td>
+                <td>${t.jogador_desejado_nome || "-"}</td>
+                <td>${t.status_troca || "-"}</td>
+                <td>${t.resposta_time_destino || "-"}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar histórico de trocas.";
+          console.error(erro);
+        }
+      }
+      document
+        .getElementById("btnEntrarAdmin")
+        .addEventListener("click", fazerLoginAdminFront);
+      document
+        .getElementById("btnSairAdmin")
+        .addEventListener("click", sairAdmin);
+
+      configurarTabsAdmin();
+      restaurarSessaoAdmin();
+    </script>
+  </body>
+</html>

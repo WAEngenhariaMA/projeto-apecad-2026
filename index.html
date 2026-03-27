@@ -608,7 +608,10 @@
         <div class="login-left">
           <div class="login-card">
             <div class="logo-wrap">
-              <img src="./assets/logo-apecad.png" alt="Logo APECAD" />
+              <img
+                src="projeto-apecad/assets/logo-apecad.png"
+                alt="Logo APECAD"
+              />
             </div>
 
             <h1 class="login-title">Painel dos Times</h1>
@@ -669,13 +672,13 @@
           <div class="sidebar-top">
             <img
               class="sidebar-logo"
-              src="./assets/logo-apecad.png"
+              src="projeto-apecad/assets/logo-apecad.png"
               alt="Logo APECAD"
             />
             <img
               id="teamCrest"
               class="team-crest"
-              src="./assets/escudos/escudo-padrao.png"
+              src="projeto-apecad/assets/escudos/escudo-padrao.png"
               alt="Escudo do time"
             />
             <div id="teamName" class="team-name">Seleção</div>
@@ -1061,19 +1064,19 @@
         const nome = normalizarNomeArquivo(nomeTime);
 
         const mapa = {
-          argentina: "./assets/escudos/argentina.png",
-          brasil: "./assets/escudos/brasil.png",
-          franca: "./assets/escudos/franca.png",
-          portugal: "./assets/escudos/portugal.png",
-          espanha: "./assets/escudos/espanha.png",
-          alemanha: "./assets/escudos/alemanha.png",
-          italia: "./assets/escudos/italia.png",
-          inglaterra: "./assets/escudos/inglaterra.png",
-          senegal: "./assets/escudos/senegal.png",
-          marrocos: "./assets/escudos/marrocos.png",
+          argentina: "projeto-apecad/assets/escudos/argentina.png",
+          brasil: "projeto-apecad/assets/escudos/brasil.png",
+          franca: "projeto-apecad/assets/escudos/franca.png",
+          portugal: "projeto-apecad/assets/escudos/portugal.png",
+          espanha: "projeto-apecad/assets/escudos/espanha.png",
+          alemanha: "projeto-apecad/assets/escudos/alemanha.png",
+          italia: "projeto-apecad/assets/escudos/italia.png",
+          inglaterra: "projeto-apecad/assets/escudos/inglaterra.png",
+          senegal: "projeto-apecad/assets/escudos/senegal.png",
+          marrocos: "projeto-apecad/assets/escudos/marrocos.png",
         };
 
-        return mapa[nome] || "./assets/escudos/escudo-padrao.png";
+        return mapa[nome] || "projeto-apecad/assets/escudos/escudo-padrao.png";
       }
 
       async function getApi(params = {}) {
