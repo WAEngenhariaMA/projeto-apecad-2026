@@ -2177,10 +2177,7 @@
           console.error(erro);
         }
       }
-      const cardJogadoresSub = document.getElementById("cardJogadoresSub");
-      if (cardJogadoresSub) {
-        cardJogadoresSub.textContent = `Principais: ${resumo.total_jogadores_principais ?? 0} • Goleiros + Extras incluídos`;
-      }
+
       btnEntrar.addEventListener("click", fazerLoginFront);
       btnSair.addEventListener("click", sairSistema);
 
