@@ -420,6 +420,34 @@
         margin-bottom: 6px;
       }
 
+      .loading-box {
+        display: none;
+        margin-bottom: 20px;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #f8fbff, #eef4fb);
+        border: 1px solid #d8e4f2;
+        color: var(--azul-escuro);
+        font-weight: 700;
+      }
+
+      .loading-box.active {
+        display: block;
+      }
+
+      .loading-box small {
+        display: block;
+        margin-top: 6px;
+        color: var(--texto-suave);
+        font-weight: 500;
+      }
+
+      .trocas-loading {
+        opacity: 0.55;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
       .tab-content {
         display: none;
       }
@@ -925,7 +953,16 @@
               saldo disponível.
             </p>
 
-            <div class="info-grid" style="margin-bottom: 24px">
+            <div id="trocasLoadingBox" class="loading-box">
+              Carregando base de trocas...
+              <small>
+                Estamos buscando seu elenco, os times disponíveis e o histórico
+                de solicitações.
+              </small>
+            </div>
+
+            <div id="trocasContentArea">
+              <div class="info-grid" style="margin-bottom: 24px">
               <div class="info-box">
                 <strong>Saldo de trocas</strong>
                 <span id="trocaSaldoInfo">-</span>
@@ -986,6 +1023,7 @@
             <h3 style="margin-bottom: 12px; color: #0f2747">Trocas enviadas</h3>
             <div id="listaTrocasEnviadas" class="empty-state">
               Nenhuma solicitação enviada.
+            </div>
             </div>
           </div>
           <div id="tab-jogadores" class="content-panel tab-content">
@@ -1738,21 +1776,76 @@
         msg.className = "message";
         msg.textContent = "";
       }
-      async function carregarTrocasModulo() {
-        await carregarResumoTime(sessaoAtual.time_id);
-        await carregarElencoMeuTimeTroca();
-        await carregarTimesDisponiveisTroca();
-        await carregarTrocasRecebidas();
-        await carregarTrocasEnviadas();
+      function limparFormularioTroca() {
+        const selectMeuJogador = document.getElementById("trocaMeuJogador");
+        const selectTimeDestino = document.getElementById("trocaTimeDestino");
+        const selectJogadorDesejado = document.getElementById(
+          "trocaJogadorDesejado",
+        );
+        const mensagem = document.getElementById("trocaMensagem");
+        const msg = document.getElementById("msgTroca");
 
-        if (sessaoAtual) {
-          document.getElementById("trocaSaldoInfo").textContent =
-            sessaoAtual.saldo_trocas ?? 0;
-          document.getElementById("trocaLimiteInfo").textContent =
-            sessaoAtual.trocas_maximas ?? 0;
+        if (selectMeuJogador) {
+          selectMeuJogador.innerHTML =
+            '<option value="">Selecione seu jogador</option>';
+          selectMeuJogador.value = "";
         }
 
-        aplicarBloqueioVisualTrocas();
+        if (selectTimeDestino) {
+          selectTimeDestino.innerHTML =
+            '<option value="">Selecione o time</option>';
+          selectTimeDestino.value = "";
+        }
+
+        if (selectJogadorDesejado) {
+          selectJogadorDesejado.innerHTML =
+            '<option value="">Selecione o jogador</option>';
+          selectJogadorDesejado.value = "";
+        }
+
+        if (mensagem) {
+          mensagem.value = "";
+        }
+
+        if (msg) {
+          msg.className = "message";
+          msg.textContent = "";
+        }
+      }
+      async function carregarTrocasModulo() {
+        setTrocasLoading(true);
+        limparFormularioTroca();
+
+        try {
+          await carregarResumoTime(sessaoAtual.time_id);
+          await carregarElencoMeuTimeTroca();
+          await carregarTimesDisponiveisTroca();
+          await carregarTrocasRecebidas();
+          await carregarTrocasEnviadas();
+
+          if (sessaoAtual) {
+            document.getElementById("trocaSaldoInfo").textContent =
+              sessaoAtual.saldo_trocas ?? 0;
+            document.getElementById("trocaLimiteInfo").textContent =
+              sessaoAtual.trocas_maximas ?? 0;
+          }
+
+          aplicarBloqueioVisualTrocas();
+        } finally {
+          setTrocasLoading(false);
+        }
+      }
+      function setTrocasLoading(loading) {
+        const box = document.getElementById("trocasLoadingBox");
+        const content = document.getElementById("trocasContentArea");
+
+        if (box) {
+          box.classList.toggle("active", loading);
+        }
+
+        if (content) {
+          content.classList.toggle("trocas-loading", loading);
+        }
       }
       async function carregarElencoMeuTimeTroca() {
         const select = document.getElementById("trocaMeuJogador");
@@ -1783,6 +1876,7 @@
         )
         .join("")}
     `;
+          select.value = "";
         } catch (erro) {
           select.innerHTML =
             '<option value="">Erro ao carregar elenco</option>';
@@ -1818,6 +1912,7 @@
         )
         .join("")}
     `;
+          select.value = "";
         } catch (erro) {
           select.innerHTML = '<option value="">Erro ao carregar times</option>';
           console.error(erro);
