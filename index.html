@@ -563,6 +563,11 @@
         padding: 0 14px;
       }
 
+      .btn-small:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
       .btn-edit {
         background: linear-gradient(135deg, #56a8ff, #0f2747);
         color: white;
@@ -1080,6 +1085,9 @@
       let elencoTrocaMeuTimeCache = [];
       let timesDisponiveisTrocaCache = [];
       let elencoDestinoTrocaCache = [];
+      let trocasRecebidasCache = [];
+      let trocasEnviadasCache = [];
+      let trocasEmProcessamento = {};
 
       function mostrarMensagem(texto, tipo = "error") {
         mensagemLogin.className = `message ${tipo}`;
@@ -1976,6 +1984,38 @@
           return;
         }
 
+        const existeTrocaDuplicada = [...trocasEnviadasCache, ...trocasRecebidasCache]
+          .some((troca) => {
+            const status = String(troca.status_troca || "").trim().toUpperCase();
+            if (status !== "PENDENTE") return false;
+
+            const solicitante = String(troca.time_solicitante_id || "").trim();
+            const destino = String(troca.time_destino_id || "").trim();
+            const oferecido = String(troca.jogador_oferecido_id || "").trim();
+            const desejado = String(troca.jogador_desejado_id || "").trim();
+
+            const mesmaTroca =
+              solicitante === String(sessaoAtual.time_id || "").trim() &&
+              destino === String(timeDestinoId || "").trim() &&
+              oferecido === String(jogadorOferecidoId || "").trim() &&
+              desejado === String(jogadorDesejadoId || "").trim();
+
+            const trocaEspelhada =
+              solicitante === String(timeDestinoId || "").trim() &&
+              destino === String(sessaoAtual.time_id || "").trim() &&
+              oferecido === String(jogadorDesejadoId || "").trim() &&
+              desejado === String(jogadorOferecidoId || "").trim();
+
+            return mesmaTroca || trocaEspelhada;
+          });
+
+        if (existeTrocaDuplicada) {
+          msg.className = "message error";
+          msg.textContent =
+            "Já existe uma solicitação pendente com esses mesmos jogadores. Aceite, recuse ou cancele a negociação atual.";
+          return;
+        }
+
         try {
           const resultado = await getApi({
             route: "solicitarTroca",
@@ -2022,9 +2062,12 @@
             !resultado.trocas ||
             resultado.trocas.length === 0
           ) {
+            trocasRecebidasCache = [];
             container.innerHTML = "Nenhuma solicitação recebida.";
             return;
           }
+
+          trocasRecebidasCache = resultado.trocas;
 
           container.innerHTML = `
       <div class="table-like-list">
@@ -2042,8 +2085,8 @@
               </div>
             </div>
             <div class="goalkeeper-actions">
-              <button class="btn-small btn-edit" onclick="responderTrocaFront('${t.troca_id}', 'ACEITAR')">Aceitar</button>
-              <button class="btn-small btn-delete" onclick="responderTrocaFront('${t.troca_id}', 'RECUSAR')">Recusar</button>
+              <button class="btn-small btn-edit" data-troca-id="${t.troca_id}" onclick="responderTrocaFront('${t.troca_id}', 'ACEITAR', this)">Aceitar</button>
+              <button class="btn-small btn-delete" data-troca-id="${t.troca_id}" onclick="responderTrocaFront('${t.troca_id}', 'RECUSAR', this)">Recusar</button>
             </div>
           </div>
         `,
@@ -2052,6 +2095,7 @@
       </div>
     `;
         } catch (erro) {
+          trocasRecebidasCache = [];
           container.innerHTML = "Erro ao carregar trocas recebidas.";
           console.error(erro);
         }
@@ -2070,9 +2114,12 @@
             !resultado.trocas ||
             resultado.trocas.length === 0
           ) {
+            trocasEnviadasCache = [];
             container.innerHTML = "Nenhuma solicitação enviada.";
             return;
           }
+
+          trocasEnviadasCache = resultado.trocas;
 
           container.innerHTML = `
       <div class="table-like-list">
@@ -2092,7 +2139,7 @@
             <div class="goalkeeper-actions">
               ${
                 String(t.status_troca || "").toUpperCase() === "PENDENTE"
-                  ? `<button class="btn-small btn-delete" onclick="cancelarTrocaFront('${t.troca_id}')">Cancelar</button>`
+                  ? `<button class="btn-small btn-delete" data-troca-id="${t.troca_id}" onclick="cancelarTrocaFront('${t.troca_id}', this)">Cancelar</button>`
                   : ""
               }
             </div>
@@ -2103,11 +2150,19 @@
       </div>
     `;
         } catch (erro) {
+          trocasEnviadasCache = [];
           container.innerHTML = "Erro ao carregar trocas enviadas.";
           console.error(erro);
         }
       }
-      async function responderTrocaFront(trocaId, acao) {
+      function setBotoesTrocaProcessando(trocaId, loading) {
+        document
+          .querySelectorAll(`[data-troca-id="${trocaId}"]`)
+          .forEach((button) => {
+            button.disabled = loading;
+          });
+      }
+async function responderTrocaFront(trocaId, acao, botao = null) {
         const mensagem =
           prompt(
             acao === "ACEITAR"
@@ -2115,7 +2170,11 @@
               : "Digite o motivo da recusa:",
           ) || "";
 
+        if (trocasEmProcessamento[trocaId]) return;
+
         const msg = document.getElementById("msgTroca");
+        trocasEmProcessamento[trocaId] = true;
+        setBotoesTrocaProcessando(trocaId, true);
 
         try {
           const resultado = await getApi({
@@ -2159,13 +2218,19 @@
           msg.className = "message error";
           msg.textContent = "Erro ao responder solicitação.";
           console.error(erro);
+        } finally {
+          delete trocasEmProcessamento[trocaId];
+          setBotoesTrocaProcessando(trocaId, false);
         }
       }
-      async function cancelarTrocaFront(trocaId) {
+      async function cancelarTrocaFront(trocaId, botao = null) {
         const confirmar = confirm("Deseja cancelar esta solicitação de troca?");
         if (!confirmar) return;
+        if (trocasEmProcessamento[trocaId]) return;
 
         const msg = document.getElementById("msgTroca");
+        trocasEmProcessamento[trocaId] = true;
+        setBotoesTrocaProcessando(trocaId, true);
 
         try {
           const resultado = await getApi({
@@ -2187,6 +2252,9 @@
           msg.className = "message error";
           msg.textContent = "Erro ao cancelar solicitação.";
           console.error(erro);
+        } finally {
+          delete trocasEmProcessamento[trocaId];
+          setBotoesTrocaProcessando(trocaId, false);
         }
       }
       async function aplicarBloqueioVisualTrocas() {
