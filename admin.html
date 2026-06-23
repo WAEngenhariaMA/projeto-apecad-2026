@@ -2020,6 +2020,58 @@
           console.error(erro);
         }
       }
+      async function salvarConfiguracoesAdmin() {
+        const msg = document.getElementById("msgConfiguracoesAdmin");
+        const inputs = document.querySelectorAll(".config-input");
+
+        try {
+          const configs = Array.from(inputs).map((input) => {
+            let valor = input.value;
+
+            if (input.type === "datetime-local" && valor) {
+              valor = valor.replace("T", " ") + ":00";
+            }
+
+            return {
+              chave: input.dataset.chave,
+              valor,
+            };
+          });
+
+          let falha = null;
+
+          for (const config of configs) {
+            const resultado = await getApi({
+              route: "atualizarConfiguracaoAdmin",
+              chave: config.chave,
+              valor: config.valor,
+              usuario: adminSessao?.login || "ADMIN",
+            });
+
+            if (!resultado.sucesso) {
+              falha = resultado;
+              break;
+            }
+          }
+
+          if (falha) {
+            msg.className = "message error";
+            msg.textContent =
+              falha.mensagem || "Erro ao salvar configuraÃ§Ãµes.";
+            return;
+          }
+
+          msg.className = "message success";
+          msg.textContent = "ConfiguraÃ§Ãµes salvas com sucesso.";
+
+          await carregarConfiguracoesAdmin();
+          await carregarResumoAdmin();
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao salvar configuraÃ§Ãµes.";
+          console.error(erro);
+        }
+      }
       function formatarDataParaInputDatetime(valor) {
         if (!valor) return "";
 
