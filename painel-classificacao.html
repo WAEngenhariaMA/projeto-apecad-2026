@@ -1,0 +1,2301 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>APECAD 2026 | Central da Competicao</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+      :root {
+        --bg: #07111d;
+        --bg-2: #0b1726;
+        --panel: rgba(12, 23, 37, 0.92);
+        --panel-soft: rgba(18, 32, 49, 0.9);
+        --line: rgba(255, 255, 255, 0.08);
+        --text: #f4f7fb;
+        --muted: #93a9c5;
+        --gold: #f0c352;
+        --gold-2: #ffdd81;
+        --cyan: #42c7d9;
+        --cyan-soft: rgba(66, 199, 217, 0.16);
+        --danger: #ff6f7d;
+        --danger-soft: rgba(255, 111, 125, 0.14);
+        --ok: #5cd69d;
+        --ok-soft: rgba(92, 214, 157, 0.14);
+        --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        --sidebar-w: 280px;
+        --radius-xl: 28px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        font-family: "Manrope", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(240, 195, 82, 0.16), transparent 28%),
+          radial-gradient(circle at top right, rgba(66, 199, 217, 0.12), transparent 24%),
+          linear-gradient(180deg, #08111c 0%, #07111d 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 56px 56px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent 100%);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: var(--sidebar-w) 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 22px;
+        border-right: 1px solid var(--line);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%),
+          rgba(5, 12, 20, 0.88);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        background:
+          linear-gradient(145deg, rgba(240, 195, 82, 0.16), transparent 30%),
+          rgba(255, 255, 255, 0.03);
+        box-shadow: var(--shadow);
+      }
+
+      .brand-kicker {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--gold-2);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .brand h1 {
+        margin: 14px 0 10px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 54px;
+        line-height: 0.9;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .brand p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .side-status {
+        margin-top: 18px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        font-weight: 800;
+      }
+
+      .pill.ok {
+        background: var(--ok-soft);
+        color: #b6f2d3;
+      }
+
+      .pill.warn {
+        background: rgba(240, 195, 82, 0.14);
+        color: #ffe5a5;
+      }
+
+      .pill.danger {
+        background: var(--danger-soft);
+        color: #ffc9cf;
+      }
+
+      .nav {
+        margin-top: 18px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid transparent;
+        border-radius: 16px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .nav-btn.active {
+        color: #08111c;
+        border-color: rgba(240, 195, 82, 0.4);
+        background: linear-gradient(135deg, var(--gold-2), var(--gold));
+        box-shadow: 0 16px 30px rgba(240, 195, 82, 0.2);
+      }
+
+      .nav-btn:not(.active):hover {
+        color: var(--text);
+        border-color: var(--line);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .sidebar-actions {
+        margin-top: auto;
+        padding-top: 18px;
+      }
+
+      .refresh-btn {
+        width: 100%;
+        border: 0;
+        border-radius: 16px;
+        padding: 14px 16px;
+        cursor: pointer;
+        color: #08111c;
+        background: linear-gradient(135deg, var(--cyan), #7de4f0);
+        font-weight: 800;
+        box-shadow: 0 18px 32px rgba(66, 199, 217, 0.22);
+      }
+
+      .main {
+        padding: 22px;
+        overflow: hidden;
+      }
+
+      .topbar {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .hero,
+      .tile,
+      .section,
+      .group-card,
+      .ranking-card,
+      .team-shell {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+          var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 22px 24px;
+        min-height: 184px;
+        background:
+          linear-gradient(135deg, rgba(240, 195, 82, 0.16), transparent 28%),
+          linear-gradient(120deg, rgba(66, 199, 217, 0.11), transparent 32%),
+          var(--panel);
+      }
+
+      .hero h2 {
+        margin: 0;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 56px;
+        line-height: 0.9;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .hero p {
+        margin: 12px 0 0;
+        max-width: 640px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .hero-meta {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .tile {
+        padding: 16px 18px;
+        min-height: 110px;
+      }
+
+      .tile-label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .tile-value {
+        margin-top: 10px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 44px;
+        line-height: 1;
+      }
+
+      .tile-sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .section {
+        display: none;
+        padding: 18px;
+        min-height: calc(100vh - 66px);
+      }
+
+      .section.active {
+        display: block;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        margin: 0;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 34px;
+        line-height: 1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .section-subtitle {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .badge.gold {
+        color: #08111c;
+        background: linear-gradient(135deg, var(--gold-2), var(--gold));
+      }
+
+      .badge.cyan {
+        color: #cbf8fd;
+        background: var(--cyan-soft);
+      }
+
+      .badge.danger {
+        color: #ffcfd4;
+        background: var(--danger-soft);
+      }
+
+      .class-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 18px;
+      }
+
+      .groups {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .group-card,
+      .ranking-card {
+        overflow: hidden;
+      }
+
+      .group-head,
+      .ranking-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .group-head h3,
+      .ranking-head h3,
+      .team-header h3 {
+        margin: 0;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 28px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .group-body,
+      .ranking-body {
+        padding: 10px;
+      }
+
+      .mini-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .mini-table th,
+      .mini-table td {
+        padding: 12px 10px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 13px;
+      }
+
+      .mini-table th {
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .mini-table td.team-col,
+      .mini-table th.team-col {
+        text-align: left;
+      }
+
+      .mini-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .pos {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        color: #08111c;
+        background: linear-gradient(135deg, var(--gold-2), var(--gold));
+        font-weight: 800;
+      }
+
+      .team-chip,
+      .player-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .crest {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        padding: 5px;
+        object-fit: contain;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .crest.big {
+        width: 72px;
+        height: 72px;
+        border-radius: 22px;
+      }
+
+      .team-chip strong,
+      .player-chip strong {
+        display: block;
+        font-size: 14px;
+      }
+
+      .team-chip span,
+      .player-chip span {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .ranking-grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .ranking-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .ranking-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .ranking-number {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 28px;
+        color: var(--gold-2);
+      }
+
+      .ranking-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 28px;
+      }
+
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .stat-card {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .stat-card h4 {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .stat-card strong {
+        display: block;
+        margin-top: 10px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 34px;
+        line-height: 1;
+      }
+
+      .stat-card span {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .split-layout {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .table-box {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .table-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .table-head h3 {
+        margin: 0;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 24px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .table-scroll {
+        max-height: 520px;
+        overflow: auto;
+      }
+
+      table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table.data-table th,
+      table.data-table td {
+        padding: 13px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 13px;
+        text-align: left;
+      }
+
+      table.data-table th {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        position: sticky;
+        top: 0;
+        background: rgba(11, 23, 38, 0.96);
+      }
+
+      table.data-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .team-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .team-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 8px 12px;
+        cursor: pointer;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .team-tab.active {
+        color: #08111c;
+        background: linear-gradient(135deg, var(--gold-2), var(--gold));
+      }
+
+      .team-tab img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .team-shell {
+        overflow: hidden;
+      }
+
+      .team-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 18px;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid var(--line);
+        background:
+          linear-gradient(135deg, rgba(240, 195, 82, 0.12), transparent 26%),
+          rgba(255, 255, 255, 0.03);
+      }
+
+      .team-header p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .team-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .team-pills span {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        padding: 18px;
+      }
+
+      .subpanel {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .subpanel header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .subpanel header h4 {
+        margin: 0;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .list {
+        margin: 0;
+        padding: 10px 16px 16px;
+        list-style: none;
+      }
+
+      .list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .list li:last-child {
+        border-bottom: 0;
+      }
+
+      .list small {
+        color: var(--muted);
+      }
+
+      .match-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .match-card {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background:
+          linear-gradient(150deg, rgba(66, 199, 217, 0.08), transparent 30%),
+          rgba(255, 255, 255, 0.03);
+      }
+
+      .match-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .match-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .match-team {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .match-team.away {
+        flex-direction: row-reverse;
+        text-align: right;
+      }
+
+      .score {
+        min-width: 84px;
+        text-align: center;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 40px;
+        line-height: 1;
+      }
+
+      .match-info {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .empty {
+        padding: 28px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .loading {
+        display: grid;
+        place-items: center;
+        min-height: 420px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 1240px) {
+        .topbar,
+        .class-layout,
+        .split-layout,
+        .match-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .groups,
+        .cards-grid,
+        .team-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 980px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .sidebar-actions {
+          margin-top: 18px;
+        }
+
+        .groups,
+        .cards-grid,
+        .team-grid,
+        .hero-meta,
+        .match-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .team-header {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-kicker">Central oficial da competicao</div>
+          <h1>APECAD 2026</h1>
+          <p>
+            Painel de classificacao, disciplina, artilharia, jogos e elencos,
+            conectado na mesma base online da sumula e do admin.
+          </p>
+        </div>
+
+        <div class="side-status">
+          <div id="systemStatus" class="pill ok">Base online sincronizada</div>
+          <div id="updatedInfo" class="pill">Ultima atualizacao: --:--</div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-btn active" data-tab="classificacao" type="button">
+            <span>Classificacao</span>
+            <span>01</span>
+          </button>
+          <button class="nav-btn" data-tab="estatisticas" type="button">
+            <span>Estatisticas</span>
+            <span>02</span>
+          </button>
+          <button class="nav-btn" data-tab="disciplina" type="button">
+            <span>Disciplina</span>
+            <span>03</span>
+          </button>
+          <button class="nav-btn" data-tab="artilharia" type="button">
+            <span>Artilharia</span>
+            <span>04</span>
+          </button>
+          <button class="nav-btn" data-tab="times" type="button">
+            <span>Times</span>
+            <span>05</span>
+          </button>
+          <button class="nav-btn" data-tab="jogos" type="button">
+            <span>Jogos</span>
+            <span>06</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-actions">
+          <button id="refreshBtn" class="refresh-btn" type="button">
+            Atualizar painel
+          </button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <section class="hero">
+            <h2>Central da Competicao</h2>
+            <p>
+              Classificacao oficial por grupos, com criterio de desempate
+              competitivo, mais desempenho coletivo, disciplina, artilharia e
+              painel completo por clube.
+            </p>
+
+            <div class="hero-meta">
+              <div class="tile">
+                <div class="tile-label">Jogos finalizados</div>
+                <div id="heroMatches" class="tile-value">0</div>
+                <div id="heroMatchesSub" class="tile-sub">0 cadastrados</div>
+              </div>
+              <div class="tile">
+                <div class="tile-label">Gols no campeonato</div>
+                <div id="heroGoals" class="tile-value">0</div>
+                <div id="heroGoalsSub" class="tile-sub">0 por partida</div>
+              </div>
+              <div class="tile">
+                <div class="tile-label">Lider geral</div>
+                <div id="heroLeader" class="tile-value">-</div>
+                <div id="heroLeaderSub" class="tile-sub">Aguardando jogos</div>
+              </div>
+              <div class="tile">
+                <div class="tile-label">Melhor defesa</div>
+                <div id="heroDefense" class="tile-value">-</div>
+                <div id="heroDefenseSub" class="tile-sub">Aguardando jogos</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="ranking-grid">
+            <article class="ranking-card">
+              <div class="ranking-head">
+                <h3>Regras da Tabela</h3>
+                <span class="badge gold">Oficial</span>
+              </div>
+              <div class="ranking-body">
+                <div class="ranking-list">
+                  <div class="ranking-item">
+                    <div class="ranking-number">1</div>
+                    <div>
+                      <strong>Pontos</strong>
+                      <div class="section-subtitle">Base da classificacao</div>
+                    </div>
+                  </div>
+                  <div class="ranking-item">
+                    <div class="ranking-number">2</div>
+                    <div>
+                      <strong>Vitorias</strong>
+                      <div class="section-subtitle">1 criterio de desempate</div>
+                    </div>
+                  </div>
+                  <div class="ranking-item">
+                    <div class="ranking-number">3</div>
+                    <div>
+                      <strong>Saldo e gols marcados</strong>
+                      <div class="section-subtitle">Desempenho ofensivo e defensivo</div>
+                    </div>
+                  </div>
+                  <div class="ranking-item">
+                    <div class="ranking-number">4</div>
+                    <div>
+                      <strong>Menos vermelhos e amarelos</strong>
+                      <div class="section-subtitle">Disciplina decide antes do sorteio</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </section>
+        </header>
+
+        <div id="loadingState" class="loading">Carregando painel...</div>
+
+        <section id="classificacao" class="section active" hidden>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Classificacao Oficial</h2>
+              <div class="section-subtitle">
+                Grupo A e Grupo B com ordem de desempate competitiva
+              </div>
+            </div>
+            <span class="badge cyan">Pontos | V | SG | GP | -CV | -CA</span>
+          </div>
+
+          <div class="class-layout">
+            <div class="groups">
+              <article class="group-card">
+                <div class="group-head">
+                  <h3>Grupo A</h3>
+                  <span id="groupACount" class="badge gold">0 times</span>
+                </div>
+                <div class="group-body">
+                  <table class="mini-table">
+                    <thead>
+                      <tr>
+                        <th>Pos</th>
+                        <th class="team-col">Time</th>
+                        <th>PTS</th>
+                        <th>V</th>
+                        <th>SG</th>
+                        <th>GP</th>
+                        <th>CV</th>
+                        <th>CA</th>
+                      </tr>
+                    </thead>
+                    <tbody id="groupATable"></tbody>
+                  </table>
+                </div>
+              </article>
+
+              <article class="group-card">
+                <div class="group-head">
+                  <h3>Grupo B</h3>
+                  <span id="groupBCount" class="badge gold">0 times</span>
+                </div>
+                <div class="group-body">
+                  <table class="mini-table">
+                    <thead>
+                      <tr>
+                        <th>Pos</th>
+                        <th class="team-col">Time</th>
+                        <th>PTS</th>
+                        <th>V</th>
+                        <th>SG</th>
+                        <th>GP</th>
+                        <th>CV</th>
+                        <th>CA</th>
+                      </tr>
+                    </thead>
+                    <tbody id="groupBTable"></tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+
+            <div class="ranking-grid">
+              <article class="ranking-card">
+                <div class="ranking-head">
+                  <h3>Lideres</h3>
+                  <span class="badge gold">Destaques</span>
+                </div>
+                <div id="leadersBoard" class="ranking-body"></div>
+              </article>
+
+              <article class="ranking-card">
+                <div class="ranking-head">
+                  <h3>Leitura rapida</h3>
+                  <span class="badge cyan">Ao vivo</span>
+                </div>
+                <div id="summaryBoard" class="ranking-body"></div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="estatisticas" class="section" hidden>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Estatisticas da Competicao</h2>
+              <div class="section-subtitle">
+                Indicadores gerais de desempenho por equipe
+              </div>
+            </div>
+          </div>
+
+          <div id="statsCards" class="cards-grid"></div>
+
+          <div class="split-layout">
+            <article class="table-box">
+              <div class="table-head">
+                <h3>Ranking ofensivo</h3>
+                <span class="badge gold">Gols marcados</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Pos</th>
+                      <th>Time</th>
+                      <th>GP</th>
+                      <th>Media</th>
+                      <th>V</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attackTable"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="table-box">
+              <div class="table-head">
+                <h3>Ranking defensivo</h3>
+                <span class="badge cyan">Menos gols sofridos</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Pos</th>
+                      <th>Time</th>
+                      <th>GC</th>
+                      <th>SG</th>
+                      <th>Clean sheets</th>
+                    </tr>
+                  </thead>
+                  <tbody id="defenseTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="disciplina" class="section" hidden>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Disciplina e Suspensoes</h2>
+              <div class="section-subtitle">
+                Regra do painel: 3 amarelos ou 1 vermelho
+              </div>
+            </div>
+            <span class="badge danger">Controle disciplinar</span>
+          </div>
+
+          <div class="split-layout">
+            <article class="table-box">
+              <div class="table-head">
+                <h3>Suspensos</h3>
+                <span class="badge danger">Afastados</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Jogador</th>
+                      <th>Time</th>
+                      <th>CA</th>
+                      <th>CV</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="suspendedTable"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="table-box">
+              <div class="table-head">
+                <h3>Pendurados</h3>
+                <span class="badge gold">Atencao</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Jogador</th>
+                      <th>Time</th>
+                      <th>CA</th>
+                      <th>Tipo</th>
+                    </tr>
+                  </thead>
+                  <tbody id="warningTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+
+          <div class="split-layout">
+            <article class="table-box">
+              <div class="table-head">
+                <h3>Fair Play</h3>
+                <span class="badge cyan">Menor indice</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Pos</th>
+                      <th>Time</th>
+                      <th>CA</th>
+                      <th>CV</th>
+                      <th>Indice</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fairPlayTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="artilharia" class="section" hidden>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Artilharia</h2>
+              <div class="section-subtitle">
+                Gols registrados oficialmente na sumula
+              </div>
+            </div>
+          </div>
+
+          <div class="split-layout">
+            <article class="table-box">
+              <div class="table-head">
+                <h3>Ranking geral</h3>
+                <span class="badge gold">Top scorers</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Pos</th>
+                      <th>Jogador</th>
+                      <th>Time</th>
+                      <th>Tipo</th>
+                      <th>Gols</th>
+                    </tr>
+                  </thead>
+                  <tbody id="scorersTable"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="table-box">
+              <div class="table-head">
+                <h3>Gols por equipe</h3>
+                <span class="badge cyan">Coletivo</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Pos</th>
+                      <th>Time</th>
+                      <th>Gols</th>
+                    </tr>
+                  </thead>
+                  <tbody id="teamGoalsTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="times" class="section" hidden>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Times e Elencos</h2>
+              <div class="section-subtitle">
+                Campanha, escudo, representantes e elenco completo
+              </div>
+            </div>
+          </div>
+
+          <div id="teamTabs" class="team-tabs"></div>
+          <div id="teamDetail" class="team-shell"></div>
+        </section>
+
+        <section id="jogos" class="section" hidden>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Central de Jogos</h2>
+              <div class="section-subtitle">
+                Confrontos e placares oficiais refletidos pela sumula
+              </div>
+            </div>
+          </div>
+
+          <div id="matchesGrid" class="match-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyi3PaAY77yYtNxc5OZrEx0GFOOgl8f42vNYznkFPgTfELoVHXPi2hszZ4XWH6JL_Mk/exec";
+      const AUTO_REFRESH_MS = 60000;
+      const SUSPENSION_YELLOWS = 3;
+      const WARNING_YELLOWS = 2;
+      const GROUP_OVERRIDES = {
+        belgica: "A1",
+        argentina: "A2",
+        holanda: "A3",
+        brasil: "A4",
+        uruguai: "B1",
+        marrocos: "B2",
+        inglaterra: "B3",
+        senegal: "B4",
+      };
+
+      const state = {
+        times: [],
+        confrontos: [],
+        sumulas: [],
+        elencos: {},
+        standings: [],
+        groups: { A: [], B: [] },
+        scorers: [],
+        cards: [],
+        fairPlay: [],
+        teamGoals: [],
+        selectedTeamId: null,
+        refreshedAt: null,
+      };
+
+      async function getApi(params = {}) {
+        const url = new URL(SCRIPT_URL);
+        Object.keys(params).forEach((key) => {
+          url.searchParams.append(key, params[key]);
+        });
+
+        const response = await fetch(url.toString(), { method: "GET" });
+        return await response.json();
+      }
+
+      function safeNumber(value) {
+        const number = Number(value || 0);
+        return Number.isFinite(number) ? number : 0;
+      }
+
+      function normalizeText(value) {
+        return String(value || "").trim();
+      }
+
+      function normalizeNameFile(name) {
+        return normalizeText(name)
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/\s+/g, "-");
+      }
+
+      function getTeamCrest(teamName) {
+        const name = normalizeNameFile(teamName);
+        const map = {
+          argentina: "projeto-apecad/assets/escudos/argentina.png",
+          belgica: "projeto-apecad/assets/escudos/belgica.png",
+          brasil: "projeto-apecad/assets/escudos/brasil.png",
+          holanda: "projeto-apecad/assets/escudos/holanda.png",
+          inglaterra: "projeto-apecad/assets/escudos/inglaterra.png",
+          marrocos: "projeto-apecad/assets/escudos/marrocos.png",
+          portugal: "projeto-apecad/assets/escudos/portugal.png",
+          senegal: "projeto-apecad/assets/escudos/senegal.png",
+          uruguai: "projeto-apecad/assets/escudos/uruguai.png",
+        };
+
+        return map[name] || "projeto-apecad/assets/escudos/escudo-padrao.png";
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function formatDate(value) {
+        if (!value) return "-";
+        const normalized = String(value).replace(" ", "T");
+        const date = new Date(normalized);
+        if (Number.isNaN(date.getTime())) return String(value);
+        return date.toLocaleDateString("pt-BR");
+      }
+
+      function formatUpdatedTime(date) {
+        if (!date) return "--:--";
+        return date.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function percentage(points, matches) {
+        if (!matches) return "0%";
+        return `${((points / (matches * 3)) * 100).toFixed(0)}%`;
+      }
+
+      function technicalDrawSeed(value) {
+        return normalizeText(value)
+          .split("")
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      }
+
+      function getTeamGroup(team, index, total) {
+        const normalizedName = normalizeNameFile(team.nome_time);
+        if (GROUP_OVERRIDES[normalizedName]) {
+          return GROUP_OVERRIDES[normalizedName].charAt(0);
+        }
+
+        return index < Math.ceil(total / 2) ? "A" : "B";
+      }
+
+      function isFinishedMatch(match) {
+        const status = normalizeText(match.status_confronto).toUpperCase();
+        const closed = normalizeText(match.encerrado).toUpperCase() === "SIM";
+        return status === "FINALIZADO" || closed;
+      }
+
+      function computeCards(sumulas) {
+        const playerMap = new Map();
+        const teamMap = new Map();
+
+        sumulas.forEach((item) => {
+          (item.cartoes || []).forEach((card) => {
+            const teamId = normalizeText(card.time_id);
+            const teamName = card.nome_time || "-";
+            const type = normalizeText(card.tipo_cartao).toUpperCase();
+            const qty = safeNumber(card.quantidade || 1);
+            const playerKey =
+              normalizeText(card.jogador_id) || normalizeText(card.nome_jogador);
+
+            if (playerKey) {
+              const current = playerMap.get(playerKey) || {
+                jogador_id: card.jogador_id || "",
+                nome_jogador: card.nome_jogador || "-",
+                nome_time: teamName,
+                time_id: teamId,
+                tipo_jogador: card.tipo_jogador || "-",
+                amarelos: 0,
+                vermelhos: 0,
+              };
+
+              if (type === "VERMELHO") {
+                current.vermelhos += qty;
+              } else {
+                current.amarelos += qty;
+              }
+
+              playerMap.set(playerKey, current);
+            }
+
+            if (teamId) {
+              const team = teamMap.get(teamId) || {
+                time_id: teamId,
+                nome_time: teamName,
+                amarelos: 0,
+                vermelhos: 0,
+                indice: 0,
+              };
+
+              if (type === "VERMELHO") {
+                team.vermelhos += qty;
+              } else {
+                team.amarelos += qty;
+              }
+
+              team.indice = team.vermelhos * 3 + team.amarelos;
+              teamMap.set(teamId, team);
+            }
+          });
+        });
+
+        return {
+          players: [...playerMap.values()].sort((a, b) => {
+            if (b.vermelhos !== a.vermelhos) return b.vermelhos - a.vermelhos;
+            if (b.amarelos !== a.amarelos) return b.amarelos - a.amarelos;
+            return a.nome_jogador.localeCompare(b.nome_jogador, "pt-BR");
+          }),
+          teams: [...teamMap.values()].sort((a, b) => {
+            if (a.indice !== b.indice) return a.indice - b.indice;
+            if (a.vermelhos !== b.vermelhos) return a.vermelhos - b.vermelhos;
+            if (a.amarelos !== b.amarelos) return a.amarelos - b.amarelos;
+            return a.nome_time.localeCompare(b.nome_time, "pt-BR");
+          }),
+        };
+      }
+
+      function computeScorers(sumulas) {
+        const map = new Map();
+
+        sumulas.forEach((item) => {
+          (item.gols || []).forEach((goal) => {
+            const key =
+              normalizeText(goal.jogador_id) || normalizeText(goal.nome_jogador);
+
+            if (!key) return;
+
+            const current = map.get(key) || {
+              jogador_id: goal.jogador_id || "",
+              nome_jogador: goal.nome_jogador || "-",
+              nome_time: goal.nome_time || "-",
+              tipo_jogador: goal.tipo_jogador || "-",
+              gols: 0,
+            };
+
+            current.gols += safeNumber(goal.quantidade_gols || 1);
+            map.set(key, current);
+          });
+        });
+
+        return [...map.values()].sort((a, b) => {
+          if (b.gols !== a.gols) return b.gols - a.gols;
+          return a.nome_jogador.localeCompare(b.nome_jogador, "pt-BR");
+        });
+      }
+
+      function buildStandings(times, confrontos, disciplineByTeam) {
+        const orderedTeams = [...times].sort((a, b) =>
+          String(a.time_id || "").localeCompare(String(b.time_id || ""), "pt-BR"),
+        );
+
+        const base = orderedTeams.map((team, index) => {
+          const discipline = disciplineByTeam[team.time_id] || {
+            amarelos: 0,
+            vermelhos: 0,
+          };
+
+          return {
+            time_id: team.time_id,
+            nome: team.nome_time,
+            status_time: team.status_time || "ATIVO",
+            representante_1: team.representante_1 || "",
+            representante_2: team.representante_2 || "",
+            grupo: getTeamGroup(team, index, orderedTeams.length),
+            pts: 0,
+            j: 0,
+            v: 0,
+            e: 0,
+            d: 0,
+            gp: 0,
+            gc: 0,
+            sg: 0,
+            cleanSheets: 0,
+            amarelos: discipline.amarelos,
+            vermelhos: discipline.vermelhos,
+            sorteio: technicalDrawSeed(team.time_id || team.nome_time || index),
+          };
+        });
+
+        const byId = Object.fromEntries(base.map((team) => [team.time_id, team]));
+
+        confrontos.filter(isFinishedMatch).forEach((match) => {
+          const home = byId[match.time_casa_id];
+          const away = byId[match.time_fora_id];
+          if (!home || !away) return;
+          if (home.grupo !== away.grupo) return;
+
+          const homeGoals = safeNumber(match.gols_casa);
+          const awayGoals = safeNumber(match.gols_fora);
+
+          home.j += 1;
+          away.j += 1;
+          home.gp += homeGoals;
+          home.gc += awayGoals;
+          away.gp += awayGoals;
+          away.gc += homeGoals;
+          home.sg = home.gp - home.gc;
+          away.sg = away.gp - away.gc;
+
+          if (awayGoals === 0) home.cleanSheets += 1;
+          if (homeGoals === 0) away.cleanSheets += 1;
+
+          if (homeGoals > awayGoals) {
+            home.v += 1;
+            home.pts += 3;
+            away.d += 1;
+          } else if (homeGoals < awayGoals) {
+            away.v += 1;
+            away.pts += 3;
+            home.d += 1;
+          } else {
+            home.e += 1;
+            away.e += 1;
+            home.pts += 1;
+            away.pts += 1;
+          }
+        });
+
+        return base;
+      }
+
+      function standingsSorter(a, b) {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.v !== a.v) return b.v - a.v;
+        if (b.sg !== a.sg) return b.sg - a.sg;
+        if (b.gp !== a.gp) return b.gp - a.gp;
+        if (a.vermelhos !== b.vermelhos) return a.vermelhos - b.vermelhos;
+        if (a.amarelos !== b.amarelos) return a.amarelos - b.amarelos;
+        return a.sorteio - b.sorteio;
+      }
+
+      function renderGroupTable(group, rows) {
+        const container = document.getElementById(`group${group}Table`);
+        document.getElementById(`group${group}Count`).textContent = `${rows.length} times`;
+
+        if (!rows.length) {
+          container.innerHTML =
+            '<tr><td colspan="8" class="empty">Sem times no grupo.</td></tr>';
+          return;
+        }
+
+        container.innerHTML = rows
+          .map(
+            (team, index) => `
+              <tr>
+                <td><span class="pos">${index + 1}</span></td>
+                <td class="team-col">
+                  <div class="team-chip">
+                    <img class="crest" src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
+                    <div>
+                      <strong>${escapeHtml(team.nome)}</strong>
+                      <span>${escapeHtml(team.status_time)}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>${team.pts}</td>
+                <td>${team.v}</td>
+                <td>${team.sg >= 0 ? `+${team.sg}` : team.sg}</td>
+                <td>${team.gp}</td>
+                <td>${team.vermelhos}</td>
+                <td>${team.amarelos}</td>
+              </tr>
+            `,
+          )
+          .join("");
+      }
+
+      function renderClassification() {
+        renderGroupTable("A", state.groups.A);
+        renderGroupTable("B", state.groups.B);
+
+        const all = [...state.standings].sort(standingsSorter);
+        const leader = all[0];
+        const bestAttack = [...all].sort((a, b) => b.gp - a.gp || standingsSorter(a, b))[0];
+        const bestDefense = [...all].sort((a, b) => a.gc - b.gc || standingsSorter(a, b))[0];
+        const disciplined = [...all].sort(
+          (a, b) =>
+            a.vermelhos - b.vermelhos ||
+            a.amarelos - b.amarelos ||
+            a.nome.localeCompare(b.nome, "pt-BR"),
+        )[0];
+
+        document.getElementById("leadersBoard").innerHTML = `
+          <div class="ranking-list">
+            <div class="ranking-item">
+              <div class="ranking-number">L</div>
+              <div>
+                <strong>${leader ? escapeHtml(leader.nome) : "-"}</strong>
+                <div class="section-subtitle">${leader ? `${leader.pts} pts | Grupo ${leader.grupo}` : "Sem jogos finalizados"}</div>
+              </div>
+              <div class="ranking-value">${leader ? leader.pts : 0}</div>
+            </div>
+            <div class="ranking-item">
+              <div class="ranking-number">A</div>
+              <div>
+                <strong>${bestAttack ? escapeHtml(bestAttack.nome) : "-"}</strong>
+                <div class="section-subtitle">Melhor ataque</div>
+              </div>
+              <div class="ranking-value">${bestAttack ? bestAttack.gp : 0}</div>
+            </div>
+            <div class="ranking-item">
+              <div class="ranking-number">D</div>
+              <div>
+                <strong>${bestDefense ? escapeHtml(bestDefense.nome) : "-"}</strong>
+                <div class="section-subtitle">Melhor defesa</div>
+              </div>
+              <div class="ranking-value">${bestDefense ? bestDefense.gc : 0}</div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("summaryBoard").innerHTML = `
+          <div class="ranking-list">
+            <div class="ranking-item">
+              <div class="ranking-number">A</div>
+              <div>
+                <strong>Grupo A</strong>
+                <div class="section-subtitle">${state.groups.A[0] ? escapeHtml(state.groups.A[0].nome) : "Sem lider"}</div>
+              </div>
+            </div>
+            <div class="ranking-item">
+              <div class="ranking-number">B</div>
+              <div>
+                <strong>Grupo B</strong>
+                <div class="section-subtitle">${state.groups.B[0] ? escapeHtml(state.groups.B[0].nome) : "Sem lider"}</div>
+              </div>
+            </div>
+            <div class="ranking-item">
+              <div class="ranking-number">FP</div>
+              <div>
+                <strong>${disciplined ? escapeHtml(disciplined.nome) : "-"}</strong>
+                <div class="section-subtitle">Melhor disciplina</div>
+              </div>
+              <div class="ranking-value">${disciplined ? disciplined.vermelhos * 3 + disciplined.amarelos : 0}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderHero() {
+        const finishedMatches = state.confrontos.filter(isFinishedMatch);
+        const totalGoals = state.scorers.reduce((sum, item) => sum + item.gols, 0);
+        const leader = [...state.standings].sort(standingsSorter)[0];
+        const bestDefense = [...state.standings].sort(
+          (a, b) => a.gc - b.gc || standingsSorter(a, b),
+        )[0];
+
+        document.getElementById("heroMatches").textContent = finishedMatches.length;
+        document.getElementById("heroMatchesSub").textContent =
+          `${state.confrontos.length} confrontos cadastrados`;
+        document.getElementById("heroGoals").textContent = totalGoals;
+        document.getElementById("heroGoalsSub").textContent = finishedMatches.length
+          ? `${(totalGoals / finishedMatches.length).toFixed(2)} por partida`
+          : "0 por partida";
+        document.getElementById("heroLeader").textContent = leader ? leader.nome : "-";
+        document.getElementById("heroLeaderSub").textContent = leader
+          ? `${leader.pts} pts | Grupo ${leader.grupo}`
+          : "Aguardando jogos";
+        document.getElementById("heroDefense").textContent = bestDefense
+          ? bestDefense.nome
+          : "-";
+        document.getElementById("heroDefenseSub").textContent = bestDefense
+          ? `${bestDefense.gc} gols sofridos`
+          : "Aguardando jogos";
+
+        document.getElementById("updatedInfo").textContent =
+          `Ultima atualizacao: ${formatUpdatedTime(state.refreshedAt)}`;
+      }
+
+      function renderStats() {
+        const finishedMatches = state.confrontos.filter(isFinishedMatch);
+        const totalGoals = state.scorers.reduce((sum, item) => sum + item.gols, 0);
+        const yellowCards = state.cards.reduce((sum, item) => sum + item.amarelos, 0);
+        const redCards = state.cards.reduce((sum, item) => sum + item.vermelhos, 0);
+        const mostWins = [...state.standings].sort((a, b) => b.v - a.v || standingsSorter(a, b))[0];
+        const cleanSheets = Math.max(...state.standings.map((item) => item.cleanSheets), 0);
+
+        document.getElementById("statsCards").innerHTML = `
+          <article class="stat-card">
+            <h4>Partidas finalizadas</h4>
+            <strong>${finishedMatches.length}</strong>
+            <span>${state.confrontos.length} jogos cadastrados</span>
+          </article>
+          <article class="stat-card">
+            <h4>Gols totais</h4>
+            <strong>${totalGoals}</strong>
+            <span>${finishedMatches.length ? (totalGoals / finishedMatches.length).toFixed(2) : "0.00"} por jogo</span>
+          </article>
+          <article class="stat-card">
+            <h4>Mais vitorias</h4>
+            <strong>${mostWins ? escapeHtml(mostWins.nome) : "-"}</strong>
+            <span>${mostWins ? `${mostWins.v} vitorias` : "Sem jogos"}</span>
+          </article>
+          <article class="stat-card">
+            <h4>Clean sheets</h4>
+            <strong>${cleanSheets}</strong>
+            <span>Maior numero entre os times</span>
+          </article>
+          <article class="stat-card">
+            <h4>Cartoes amarelos</h4>
+            <strong>${yellowCards}</strong>
+            <span>Indice disciplinar geral</span>
+          </article>
+          <article class="stat-card">
+            <h4>Cartoes vermelhos</h4>
+            <strong>${redCards}</strong>
+            <span>Expulsoes oficiais</span>
+          </article>
+          <article class="stat-card">
+            <h4>Grupo A lider</h4>
+            <strong>${state.groups.A[0] ? escapeHtml(state.groups.A[0].nome) : "-"}</strong>
+            <span>${state.groups.A[0] ? `${state.groups.A[0].pts} pts` : "Sem tabela"}</span>
+          </article>
+          <article class="stat-card">
+            <h4>Grupo B lider</h4>
+            <strong>${state.groups.B[0] ? escapeHtml(state.groups.B[0].nome) : "-"}</strong>
+            <span>${state.groups.B[0] ? `${state.groups.B[0].pts} pts` : "Sem tabela"}</span>
+          </article>
+        `;
+
+        document.getElementById("attackTable").innerHTML = [...state.standings]
+          .sort((a, b) => b.gp - a.gp || standingsSorter(a, b))
+          .map(
+            (team, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>
+                  <div class="team-chip">
+                    <img class="crest" src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
+                    <div>
+                      <strong>${escapeHtml(team.nome)}</strong>
+                      <span>Grupo ${team.grupo}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>${team.gp}</td>
+                <td>${team.j ? (team.gp / team.j).toFixed(2) : "0.00"}</td>
+                <td>${team.v}</td>
+              </tr>
+            `,
+          )
+          .join("");
+
+        document.getElementById("defenseTable").innerHTML = [...state.standings]
+          .sort((a, b) => a.gc - b.gc || standingsSorter(a, b))
+          .map(
+            (team, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>
+                  <div class="team-chip">
+                    <img class="crest" src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
+                    <div>
+                      <strong>${escapeHtml(team.nome)}</strong>
+                      <span>Grupo ${team.grupo}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>${team.gc}</td>
+                <td>${team.sg >= 0 ? `+${team.sg}` : team.sg}</td>
+                <td>${team.cleanSheets}</td>
+              </tr>
+            `,
+          )
+          .join("");
+      }
+
+      function renderDiscipline() {
+        const suspended = state.cards.filter(
+          (item) => item.vermelhos >= 1 || item.amarelos >= SUSPENSION_YELLOWS,
+        );
+        const warning = state.cards.filter(
+          (item) => item.vermelhos === 0 && item.amarelos === WARNING_YELLOWS,
+        );
+
+        document.getElementById("suspendedTable").innerHTML = suspended.length
+          ? suspended
+              .map(
+                (item) => `
+                  <tr>
+                    <td>
+                      <div class="player-chip">
+                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
+                        <div>
+                          <strong>${escapeHtml(item.nome_jogador)}</strong>
+                          <span>${escapeHtml(item.tipo_jogador)}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>${escapeHtml(item.nome_time)}</td>
+                    <td>${item.amarelos}</td>
+                    <td>${item.vermelhos}</td>
+                    <td>${item.vermelhos >= 1 ? '<span class="badge danger">Vermelho</span>' : '<span class="badge danger">3 amarelos</span>'}</td>
+                  </tr>
+                `,
+              )
+              .join("")
+          : '<tr><td colspan="5" class="empty">Nenhum suspenso no momento.</td></tr>';
+
+        document.getElementById("warningTable").innerHTML = warning.length
+          ? warning
+              .map(
+                (item) => `
+                  <tr>
+                    <td>
+                      <div class="player-chip">
+                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
+                        <div>
+                          <strong>${escapeHtml(item.nome_jogador)}</strong>
+                          <span>${escapeHtml(item.tipo_jogador)}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>${escapeHtml(item.nome_time)}</td>
+                    <td>${item.amarelos}</td>
+                    <td><span class="badge gold">Pendurado</span></td>
+                  </tr>
+                `,
+              )
+              .join("")
+          : '<tr><td colspan="4" class="empty">Nenhum pendurado identificado.</td></tr>';
+
+        document.getElementById("fairPlayTable").innerHTML = state.fairPlay.length
+          ? state.fairPlay
+              .map(
+                (item, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                      <div class="team-chip">
+                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
+                        <div>
+                          <strong>${escapeHtml(item.nome_time)}</strong>
+                          <span>Disciplina</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>${item.amarelos}</td>
+                    <td>${item.vermelhos}</td>
+                    <td>${item.indice}</td>
+                  </tr>
+                `,
+              )
+              .join("")
+          : '<tr><td colspan="5" class="empty">Sem cartoes registrados.</td></tr>';
+      }
+
+      function renderScorers() {
+        document.getElementById("scorersTable").innerHTML = state.scorers.length
+          ? state.scorers
+              .map(
+                (item, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                      <div class="player-chip">
+                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
+                        <div>
+                          <strong>${escapeHtml(item.nome_jogador)}</strong>
+                          <span>${escapeHtml(item.nome_time)}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>${escapeHtml(item.nome_time)}</td>
+                    <td>${escapeHtml(item.tipo_jogador)}</td>
+                    <td>${item.gols}</td>
+                  </tr>
+                `,
+              )
+              .join("")
+          : '<tr><td colspan="5" class="empty">Nenhum gol registrado ainda.</td></tr>';
+
+        document.getElementById("teamGoalsTable").innerHTML = state.teamGoals.length
+          ? state.teamGoals
+              .map(
+                (item, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                      <div class="team-chip">
+                        <img class="crest" src="${getTeamCrest(item.nome)}" alt="Escudo ${escapeHtml(item.nome)}" />
+                        <div>
+                          <strong>${escapeHtml(item.nome)}</strong>
+                          <span>Producao coletiva</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>${item.gols}</td>
+                  </tr>
+                `,
+              )
+              .join("")
+          : '<tr><td colspan="3" class="empty">Sem gols por equipe.</td></tr>';
+      }
+
+      function renderTeamTabs() {
+        const container = document.getElementById("teamTabs");
+        container.innerHTML = [...state.standings]
+          .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+          .map((team) => {
+            const active = state.selectedTeamId === team.time_id ? "active" : "";
+            return `
+              <button class="team-tab ${active}" type="button" data-team-id="${team.time_id}">
+                <img src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
+                <span>${escapeHtml(team.nome)}</span>
+              </button>
+            `;
+          })
+          .join("");
+
+        container.querySelectorAll(".team-tab").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.selectedTeamId = button.dataset.teamId;
+            renderTeamTabs();
+            renderSelectedTeam();
+          });
+        });
+      }
+
+      function renderSelectedTeam() {
+        const detail = document.getElementById("teamDetail");
+        const standing = state.standings.find((item) => item.time_id === state.selectedTeamId);
+        const rawTeam = state.times.find((item) => item.time_id === state.selectedTeamId);
+        const roster = state.elencos[state.selectedTeamId] || [];
+
+        if (!standing || !rawTeam) {
+          detail.innerHTML = '<div class="empty">Selecione um time.</div>';
+          return;
+        }
+
+        const players = roster.filter((item) => item.tipo === "PRINCIPAL");
+        const support = roster.filter((item) => item.tipo !== "PRINCIPAL");
+        const topScorer = [...roster].sort((a, b) => safeNumber(b.gols) - safeNumber(a.gols))[0];
+        const mostBooked = [...roster].sort(
+          (a, b) =>
+            safeNumber(b.vermelhos) * 3 +
+            safeNumber(b.amarelos) -
+            (safeNumber(a.vermelhos) * 3 + safeNumber(a.amarelos)),
+        )[0];
+
+        detail.innerHTML = `
+          <div class="team-header">
+            <img class="crest big" src="${getTeamCrest(standing.nome)}" alt="Escudo ${escapeHtml(standing.nome)}" />
+            <div>
+              <h3>${escapeHtml(standing.nome)}</h3>
+              <p>
+                Grupo ${standing.grupo} | ${escapeHtml(rawTeam.representante_1 || "-")}
+                ${rawTeam.representante_2 ? ` | ${escapeHtml(rawTeam.representante_2)}` : ""}
+              </p>
+            </div>
+            <div class="team-pills">
+              <span>${standing.pts} pts</span>
+              <span>${standing.v} V</span>
+              <span>${standing.gp} GP</span>
+              <span>${standing.gc} GC</span>
+              <span>${percentage(standing.pts, standing.j)}</span>
+            </div>
+          </div>
+          <div class="team-grid">
+            <section class="subpanel">
+              <header>
+                <h4>Jogadores</h4>
+                <span class="badge gold">${players.length} atletas</span>
+              </header>
+              <ul class="list">
+                ${
+                  players.length
+                    ? players
+                        .map(
+                          (item) => `
+                            <li>
+                              <div>
+                                <strong>${escapeHtml(item.nome)}</strong>
+                                <small>${escapeHtml(item.posicao || "-")}</small>
+                              </div>
+                              <small>${safeNumber(item.gols)} G | ${safeNumber(item.amarelos)} A | ${safeNumber(item.vermelhos)} V</small>
+                            </li>
+                          `,
+                        )
+                        .join("")
+                    : '<li><div class="empty" style="width:100%">Sem jogadores cadastrados.</div></li>'
+                }
+              </ul>
+            </section>
+            <section class="subpanel">
+              <header>
+                <h4>Apoio e comissao</h4>
+                <span class="badge cyan">${support.length} registros</span>
+              </header>
+              <ul class="list">
+                ${
+                  support.length
+                    ? support
+                        .map(
+                          (item) => `
+                            <li>
+                              <div>
+                                <strong>${escapeHtml(item.nome)}</strong>
+                                <small>${escapeHtml(item.tipo)} | ${escapeHtml(item.posicao || "-")}</small>
+                              </div>
+                              <small>${safeNumber(item.gols)} G | ${safeNumber(item.amarelos)} A | ${safeNumber(item.vermelhos)} V</small>
+                            </li>
+                          `,
+                        )
+                        .join("")
+                    : '<li><div class="empty" style="width:100%">Sem apoio cadastrado.</div></li>'
+                }
+              </ul>
+            </section>
+            <section class="subpanel">
+              <header>
+                <h4>Destaques</h4>
+                <span class="badge gold">Interno</span>
+              </header>
+              <ul class="list">
+                <li>
+                  <div>
+                    <strong>Artilheiro</strong>
+                    <small>${topScorer ? escapeHtml(topScorer.nome) : "Sem dados"}</small>
+                  </div>
+                  <small>${topScorer ? `${safeNumber(topScorer.gols)} gols` : "-"}</small>
+                </li>
+                <li>
+                  <div>
+                    <strong>Mais advertido</strong>
+                    <small>${mostBooked ? escapeHtml(mostBooked.nome) : "Sem dados"}</small>
+                  </div>
+                  <small>${mostBooked ? `${safeNumber(mostBooked.amarelos)} A | ${safeNumber(mostBooked.vermelhos)} V` : "-"}</small>
+                </li>
+                <li>
+                  <div>
+                    <strong>Trocas do time</strong>
+                    <small>Controle cadastral</small>
+                  </div>
+                  <small>${safeNumber(rawTeam.trocas_realizadas)} realizadas | saldo ${safeNumber(rawTeam.saldo_trocas)}</small>
+                </li>
+              </ul>
+            </section>
+            <section class="subpanel">
+              <header>
+                <h4>Ficha rapida</h4>
+                <span class="badge cyan">${escapeHtml(rawTeam.status_time || "ATIVO")}</span>
+              </header>
+              <ul class="list">
+                <li><div><strong>Representante 1</strong><small>${escapeHtml(rawTeam.representante_1 || "-")}</small></div></li>
+                <li><div><strong>Representante 2</strong><small>${escapeHtml(rawTeam.representante_2 || "-")}</small></div></li>
+                <li><div><strong>Login</strong><small>${escapeHtml(rawTeam.login || "-")}</small></div></li>
+                <li><div><strong>Grupo</strong><small>${standing.grupo}</small></div></li>
+              </ul>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderMatches() {
+        const sorted = [...state.confrontos].sort((a, b) => {
+          const aKey = `${normalizeText(a.data_jogo)} ${normalizeText(a.hora_jogo)}`;
+          const bKey = `${normalizeText(b.data_jogo)} ${normalizeText(b.hora_jogo)}`;
+          return aKey.localeCompare(bKey, "pt-BR");
+        });
+
+        document.getElementById("matchesGrid").innerHTML = sorted.length
+          ? sorted
+              .map((match) => {
+                const finished = isFinishedMatch(match);
+                const homeGoals = finished ? safeNumber(match.gols_casa) : "-";
+                const awayGoals = finished ? safeNumber(match.gols_fora) : "-";
+                const homeGroup =
+                  state.standings.find((item) => item.time_id === match.time_casa_id)?.grupo ||
+                  "-";
+                const awayGroup =
+                  state.standings.find((item) => item.time_id === match.time_fora_id)?.grupo ||
+                  "-";
+
+                return `
+                  <article class="match-card">
+                    <div class="match-top">
+                      <span class="badge ${finished ? "cyan" : "gold"}">${finished ? "Finalizado" : "Agendado"}</span>
+                      <span class="section-subtitle">Rodada ${escapeHtml(match.rodada || "-")}</span>
+                    </div>
+                    <div class="match-row">
+                      <div class="match-team">
+                        <img class="crest" src="${getTeamCrest(match.nome_time_casa)}" alt="Escudo ${escapeHtml(match.nome_time_casa)}" />
+                        <div>
+                          <strong>${escapeHtml(match.nome_time_casa || "-")}</strong>
+                          <span>Grupo ${homeGroup}</span>
+                        </div>
+                      </div>
+                      <div class="score">${homeGoals} x ${awayGoals}</div>
+                      <div class="match-team away">
+                        <img class="crest" src="${getTeamCrest(match.nome_time_fora)}" alt="Escudo ${escapeHtml(match.nome_time_fora)}" />
+                        <div>
+                          <strong>${escapeHtml(match.nome_time_fora || "-")}</strong>
+                          <span>Grupo ${awayGroup}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="match-info">
+                      ${formatDate(match.data_jogo)} | ${escapeHtml(match.hora_jogo || "-")} | ${escapeHtml(match.local || "Local a definir")}
+                    </div>
+                  </article>
+                `;
+              })
+              .join("")
+          : '<div class="empty">Nenhum confronto cadastrado.</div>';
+      }
+
+      function activateTab(tabId) {
+        document.querySelectorAll(".nav-btn").forEach((button) => {
+          button.classList.toggle("active", button.dataset.tab === tabId);
+        });
+
+        document.querySelectorAll(".section").forEach((section) => {
+          const active = section.id === tabId;
+          section.classList.toggle("active", active);
+          section.hidden = !active;
+        });
+      }
+
+      function bindTabs() {
+        document.querySelectorAll(".nav-btn").forEach((button) => {
+          button.addEventListener("click", () => activateTab(button.dataset.tab));
+        });
+      }
+
+      async function loadData() {
+        const [timesResult, confrontosResult] = await Promise.all([
+          getApi({ route: "listarTimesAdmin" }),
+          getApi({ route: "listarConfrontosAdmin" }),
+        ]);
+
+        if (!timesResult.sucesso) {
+          throw new Error(timesResult.mensagem || "Erro ao carregar times.");
+        }
+
+        if (!confrontosResult.sucesso) {
+          throw new Error(
+            confrontosResult.mensagem || "Erro ao carregar confrontos.",
+          );
+        }
+
+        state.times = timesResult.times || [];
+        state.confrontos = confrontosResult.confrontos || [];
+
+        const [sumulas, rosters] = await Promise.all([
+          Promise.all(
+            state.confrontos.map(async (match) => {
+              const result = await getApi({
+                route: "buscarDadosSumula",
+                confronto_id: match.confronto_id,
+              });
+
+              return result.sucesso
+                ? {
+                    confronto_id: match.confronto_id,
+                    gols: result.gols || [],
+                    cartoes: result.cartoes || [],
+                  }
+                : {
+                    confronto_id: match.confronto_id,
+                    gols: [],
+                    cartoes: [],
+                  };
+            }),
+          ),
+          Promise.all(
+            state.times.map(async (team) => {
+              const result = await getApi({
+                route: "listarElencoCompletoTime",
+                time_id: team.time_id,
+              });
+
+              return [team.time_id, result.sucesso ? result.elenco || [] : []];
+            }),
+          ),
+        ]);
+
+        state.sumulas = sumulas;
+        state.elencos = Object.fromEntries(rosters);
+        state.scorers = computeScorers(sumulas);
+
+        const discipline = computeCards(sumulas);
+        state.cards = discipline.players;
+        state.fairPlay = discipline.teams;
+
+        const disciplineByTeam = Object.fromEntries(
+          discipline.teams.map((item) => [
+            item.time_id,
+            { amarelos: item.amarelos, vermelhos: item.vermelhos },
+          ]),
+        );
+
+        state.standings = buildStandings(
+          state.times,
+          state.confrontos,
+          disciplineByTeam,
+        );
+        state.groups = {
+          A: state.standings
+            .filter((item) => item.grupo === "A")
+            .sort(standingsSorter),
+          B: state.standings
+            .filter((item) => item.grupo === "B")
+            .sort(standingsSorter),
+        };
+        state.teamGoals = [...state.standings]
+          .sort((a, b) => b.gp - a.gp || standingsSorter(a, b))
+          .map((item) => ({
+            nome: item.nome,
+            gols: item.gp,
+          }));
+        state.selectedTeamId =
+          state.selectedTeamId || state.standings[0]?.time_id || null;
+        state.refreshedAt = new Date();
+      }
+
+      function renderAll() {
+        renderHero();
+        renderClassification();
+        renderStats();
+        renderDiscipline();
+        renderScorers();
+        renderTeamTabs();
+        renderSelectedTeam();
+        renderMatches();
+      }
+
+      async function refreshDashboard() {
+        const loading = document.getElementById("loadingState");
+        const button = document.getElementById("refreshBtn");
+
+        try {
+          loading.hidden = false;
+          button.disabled = true;
+          button.textContent = "Atualizando...";
+          await loadData();
+          renderAll();
+          loading.hidden = true;
+        } catch (error) {
+          console.error(error);
+          loading.hidden = false;
+          loading.textContent = error.message || "Erro ao carregar painel.";
+        } finally {
+          button.disabled = false;
+          button.textContent = "Atualizar painel";
+        }
+      }
+
+      async function init() {
+        bindTabs();
+        document
+          .getElementById("refreshBtn")
+          .addEventListener("click", refreshDashboard);
+
+        await refreshDashboard();
+        window.setInterval(refreshDashboard, AUTO_REFRESH_MS);
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

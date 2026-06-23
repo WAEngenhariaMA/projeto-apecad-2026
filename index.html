@@ -1156,6 +1156,17 @@
             throw new Error(resultado.mensagem || "Erro ao carregar resumo.");
           }
 
+          if (sessaoAtual) {
+            sessaoAtual.saldo_trocas = resultado.resumo.saldo_trocas ?? 0;
+            sessaoAtual.trocas_realizadas =
+              resultado.resumo.trocas_realizadas ?? 0;
+            sessaoAtual.trocas_maximas = resultado.resumo.trocas_maximas ?? 0;
+            localStorage.setItem(
+              "apecad_time_session",
+              JSON.stringify(sessaoAtual),
+            );
+          }
+
           preencherDashboard(resultado.resumo);
         } catch (erro) {
           console.error("Erro ao carregar resumo:", erro);
