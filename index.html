@@ -968,67 +968,69 @@
 
             <div id="trocasContentArea">
               <div class="info-grid" style="margin-bottom: 24px">
-              <div class="info-box">
-                <strong>Saldo de trocas</strong>
-                <span id="trocaSaldoInfo">-</span>
+                <div class="info-box">
+                  <strong>Saldo de trocas</strong>
+                  <span id="trocaSaldoInfo">-</span>
+                </div>
+                <div class="info-box">
+                  <strong>Limite total</strong>
+                  <span id="trocaLimiteInfo">-</span>
+                </div>
               </div>
-              <div class="info-box">
-                <strong>Limite total</strong>
-                <span id="trocaLimiteInfo">-</span>
+
+              <div class="form-group">
+                <label class="form-label">Meu jogador</label>
+                <select id="trocaMeuJogador" class="form-input"></select>
               </div>
-            </div>
 
-            <div class="form-group">
-              <label class="form-label">Meu jogador</label>
-              <select id="trocaMeuJogador" class="form-input"></select>
-            </div>
+              <div class="form-group">
+                <label class="form-label">Time destino</label>
+                <select
+                  id="trocaTimeDestino"
+                  class="form-input"
+                  onchange="carregarElencoDestinoTroca()"
+                ></select>
+              </div>
 
-            <div class="form-group">
-              <label class="form-label">Time destino</label>
-              <select
-                id="trocaTimeDestino"
-                class="form-input"
-                onchange="carregarElencoDestinoTroca()"
-              ></select>
-            </div>
+              <div class="form-group">
+                <label class="form-label">Jogador desejado</label>
+                <select id="trocaJogadorDesejado" class="form-input">
+                  <option value="">Selecione o jogador</option>
+                </select>
+              </div>
 
-            <div class="form-group">
-              <label class="form-label">Jogador desejado</label>
-              <select id="trocaJogadorDesejado" class="form-input">
-                <option value="">Selecione o jogador</option>
-              </select>
-            </div>
+              <div class="form-group">
+                <label class="form-label">Mensagem</label>
+                <input
+                  id="trocaMensagem"
+                  class="form-input"
+                  type="text"
+                  placeholder="Ex.: gostaria de trocar por necessidade tática"
+                />
+              </div>
 
-            <div class="form-group">
-              <label class="form-label">Mensagem</label>
-              <input
-                id="trocaMensagem"
-                class="form-input"
-                type="text"
-                placeholder="Ex.: gostaria de trocar por necessidade tática"
-              />
-            </div>
+              <button class="btn" onclick="enviarSolicitacaoTroca()">
+                Enviar solicitação
+              </button>
+              <div id="msgTroca" class="message"></div>
 
-            <button class="btn" onclick="enviarSolicitacaoTroca()">
-              Enviar solicitação
-            </button>
-            <div id="msgTroca" class="message"></div>
+              <hr style="margin: 30px 0" />
 
-            <hr style="margin: 30px 0" />
+              <h3 style="margin-bottom: 12px; color: #0f2747">
+                Trocas recebidas
+              </h3>
+              <div id="listaTrocasRecebidas" class="empty-state">
+                Nenhuma solicitação recebida.
+              </div>
 
-            <h3 style="margin-bottom: 12px; color: #0f2747">
-              Trocas recebidas
-            </h3>
-            <div id="listaTrocasRecebidas" class="empty-state">
-              Nenhuma solicitação recebida.
-            </div>
+              <hr style="margin: 30px 0" />
 
-            <hr style="margin: 30px 0" />
-
-            <h3 style="margin-bottom: 12px; color: #0f2747">Trocas enviadas</h3>
-            <div id="listaTrocasEnviadas" class="empty-state">
-              Nenhuma solicitação enviada.
-            </div>
+              <h3 style="margin-bottom: 12px; color: #0f2747">
+                Trocas enviadas
+              </h3>
+              <div id="listaTrocasEnviadas" class="empty-state">
+                Nenhuma solicitação enviada.
+              </div>
             </div>
           </div>
           <div id="tab-jogadores" class="content-panel tab-content">
@@ -1049,7 +1051,7 @@
     <script>
       // COLE AQUI A URL DO SEU WEB APP DO APPS SCRIPT
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbyi3PaAY77yYtNxc5OZrEx0GFOOgl8f42vNYznkFPgTfELoVHXPi2hszZ4XWH6JL_Mk/exec";
+        "https://script.google.com/macros/s/AKfycbxuJX6Tvy_fuA77YS0CEkiHnQzhikEleiUwB4lYay8nbNNAwp3wqexrZ2mO3HkGbQ/exec";
 
       const loginScreen = document.getElementById("loginScreen");
       const dashboardScreen = document.getElementById("dashboardScreen");
@@ -1984,30 +1986,34 @@
           return;
         }
 
-        const existeTrocaDuplicada = [...trocasEnviadasCache, ...trocasRecebidasCache]
-          .some((troca) => {
-            const status = String(troca.status_troca || "").trim().toUpperCase();
-            if (status !== "PENDENTE") return false;
+        const existeTrocaDuplicada = [
+          ...trocasEnviadasCache,
+          ...trocasRecebidasCache,
+        ].some((troca) => {
+          const status = String(troca.status_troca || "")
+            .trim()
+            .toUpperCase();
+          if (status !== "PENDENTE") return false;
 
-            const solicitante = String(troca.time_solicitante_id || "").trim();
-            const destino = String(troca.time_destino_id || "").trim();
-            const oferecido = String(troca.jogador_oferecido_id || "").trim();
-            const desejado = String(troca.jogador_desejado_id || "").trim();
+          const solicitante = String(troca.time_solicitante_id || "").trim();
+          const destino = String(troca.time_destino_id || "").trim();
+          const oferecido = String(troca.jogador_oferecido_id || "").trim();
+          const desejado = String(troca.jogador_desejado_id || "").trim();
 
-            const mesmaTroca =
-              solicitante === String(sessaoAtual.time_id || "").trim() &&
-              destino === String(timeDestinoId || "").trim() &&
-              oferecido === String(jogadorOferecidoId || "").trim() &&
-              desejado === String(jogadorDesejadoId || "").trim();
+          const mesmaTroca =
+            solicitante === String(sessaoAtual.time_id || "").trim() &&
+            destino === String(timeDestinoId || "").trim() &&
+            oferecido === String(jogadorOferecidoId || "").trim() &&
+            desejado === String(jogadorDesejadoId || "").trim();
 
-            const trocaEspelhada =
-              solicitante === String(timeDestinoId || "").trim() &&
-              destino === String(sessaoAtual.time_id || "").trim() &&
-              oferecido === String(jogadorDesejadoId || "").trim() &&
-              desejado === String(jogadorOferecidoId || "").trim();
+          const trocaEspelhada =
+            solicitante === String(timeDestinoId || "").trim() &&
+            destino === String(sessaoAtual.time_id || "").trim() &&
+            oferecido === String(jogadorDesejadoId || "").trim() &&
+            desejado === String(jogadorOferecidoId || "").trim();
 
-            return mesmaTroca || trocaEspelhada;
-          });
+          return mesmaTroca || trocaEspelhada;
+        });
 
         if (existeTrocaDuplicada) {
           msg.className = "message error";
@@ -2162,7 +2168,7 @@
             button.disabled = loading;
           });
       }
-async function responderTrocaFront(trocaId, acao, botao = null) {
+      async function responderTrocaFront(trocaId, acao, botao = null) {
         const mensagem =
           prompt(
             acao === "ACEITAR"
