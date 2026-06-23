@@ -3,754 +3,1340 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>APECAD 2026 | Central da Competicao</title>
+    <title>APECAD 2026 | Central da Competição</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap");
 
       :root {
-        --bg: #07111d;
-        --bg-2: #0b1726;
-        --panel: rgba(12, 23, 37, 0.92);
-        --panel-soft: rgba(18, 32, 49, 0.9);
-        --line: rgba(255, 255, 255, 0.08);
-        --text: #f4f7fb;
-        --muted: #93a9c5;
+        --bg: #05080f;
+        --bg-2: #080c16;
+        --bg-3: #0c1220;
+        --blue: #1565ff;
+        --blue-dark: #0b3db5;
+        --blue-glow: rgba(21, 101, 255, 0.22);
+        --blue-line: rgba(21, 101, 255, 0.3);
+        --blue-soft: rgba(21, 101, 255, 0.1);
         --gold: #f0c352;
-        --gold-2: #ffdd81;
-        --cyan: #42c7d9;
-        --cyan-soft: rgba(66, 199, 217, 0.16);
-        --danger: #ff6f7d;
-        --danger-soft: rgba(255, 111, 125, 0.14);
-        --ok: #5cd69d;
-        --ok-soft: rgba(92, 214, 157, 0.14);
-        --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-        --sidebar-w: 280px;
-        --radius-xl: 28px;
-        --radius-lg: 22px;
-        --radius-md: 16px;
+        --gold-2: #ffd978;
+        --gold-glow: rgba(240, 195, 82, 0.2);
+        --gold-soft: rgba(240, 195, 82, 0.1);
+        --text: #edf2ff;
+        --muted: #7a8bad;
+        --line: rgba(255, 255, 255, 0.07);
+        --line-blue: rgba(21, 101, 255, 0.18);
+        --red: #ff4757;
+        --red-soft: rgba(255, 71, 87, 0.14);
+        --green: #2ed573;
+        --green-soft: rgba(46, 213, 115, 0.12);
+        --sidebar-w: 260px;
+        --radius: 20px;
+        --radius-sm: 12px;
+        --shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+        --shadow-blue: 0 8px 32px rgba(21, 101, 255, 0.25);
+        --shadow-gold: 0 8px 32px rgba(240, 195, 82, 0.2);
       }
 
-      * {
+      *,
+      *::before,
+      *::after {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
       html,
       body {
-        margin: 0;
-        min-height: 100%;
+        height: 100%;
       }
 
       body {
-        font-family: "Manrope", sans-serif;
+        font-family: "Inter", sans-serif;
         color: var(--text);
-        background:
-          radial-gradient(circle at top left, rgba(240, 195, 82, 0.16), transparent 28%),
-          radial-gradient(circle at top right, rgba(66, 199, 217, 0.12), transparent 24%),
-          linear-gradient(180deg, #08111c 0%, #07111d 100%);
+        background: var(--bg);
+        background-image:
+          radial-gradient(
+            ellipse 80% 40% at 50% 0%,
+            rgba(21, 101, 255, 0.12) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 40% 30% at 0% 50%,
+            rgba(21, 101, 255, 0.06) 0%,
+            transparent 60%
+          );
+        overflow-x: hidden;
       }
 
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background:
-          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-          linear-gradient(180deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        background-size: 56px 56px;
-        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent 100%);
-      }
-
-      button {
-        font: inherit;
-      }
-
+      /* ─── GRID PRINCIPAL ─── */
       .app {
         display: grid;
         grid-template-columns: var(--sidebar-w) 1fr;
         min-height: 100vh;
       }
 
+      /* ─── SIDEBAR ─── */
       .sidebar {
         position: sticky;
         top: 0;
         height: 100vh;
-        padding: 22px;
-        border-right: 1px solid var(--line);
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%),
-          rgba(5, 12, 20, 0.88);
-        backdrop-filter: blur(18px);
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(180deg, #080c18 0%, #060a14 100%);
+        border-right: 1px solid var(--line-blue);
+        overflow: hidden;
+        z-index: 10;
+      }
+
+      .sidebar::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--blue),
+          var(--gold),
+          var(--blue)
+        );
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite linear;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 200% center;
+        }
+        100% {
+          background-position: -200% center;
+        }
       }
 
       .brand {
-        padding: 22px;
-        border: 1px solid var(--line);
-        border-radius: 26px;
-        background:
-          linear-gradient(145deg, rgba(240, 195, 82, 0.16), transparent 30%),
-          rgba(255, 255, 255, 0.03);
-        box-shadow: var(--shadow);
+        padding: 28px 20px 20px;
+        border-bottom: 1px solid var(--line);
+        text-align: center;
       }
 
-      .brand-kicker {
-        display: inline-flex;
+      .brand-logo {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 12px;
+        filter: drop-shadow(0 4px 16px var(--blue-glow));
+      }
+
+      .brand-logo-fallback {
+        width: 72px;
+        height: 72px;
+        display: flex;
         align-items: center;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.06);
-        color: var(--gold-2);
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+        justify-content: center;
+        margin: 0 auto 12px;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+        border-radius: 18px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        color: #fff;
+        box-shadow: var(--shadow-blue);
       }
 
       .brand h1 {
-        margin: 14px 0 10px;
         font-family: "Barlow Condensed", sans-serif;
-        font-size: 54px;
-        line-height: 0.9;
-        letter-spacing: 0.04em;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
+        background: linear-gradient(135deg, #fff 30%, var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
       }
 
-      .brand p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.7;
+      .brand-sub {
+        margin-top: 5px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--blue);
       }
 
-      .side-status {
-        margin-top: 18px;
-        display: grid;
-        gap: 10px;
+      .status-row {
+        padding: 12px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        border-bottom: 1px solid var(--line);
       }
 
-      .pill {
-        display: inline-flex;
+      .status-pill {
+        display: flex;
         align-items: center;
-        justify-content: center;
-        min-height: 42px;
-        padding: 0 14px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.04);
-        font-weight: 800;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
       }
 
-      .pill.ok {
-        background: var(--ok-soft);
-        color: #b6f2d3;
+      .status-pill.live {
+        background: var(--green-soft);
+        color: var(--green);
+        border: 1px solid rgba(46, 213, 115, 0.2);
       }
 
-      .pill.warn {
-        background: rgba(240, 195, 82, 0.14);
-        color: #ffe5a5;
+      .status-pill.time {
+        background: var(--blue-soft);
+        color: #9bbaff;
+        border: 1px solid var(--blue-line);
       }
 
-      .pill.danger {
-        background: var(--danger-soft);
-        color: #ffc9cf;
+      .pulse {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        flex-shrink: 0;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(0.8);
+        }
       }
 
       .nav {
-        margin-top: 18px;
-        display: grid;
-        gap: 10px;
+        flex: 1;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow-y: auto;
       }
 
       .nav-btn {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 12px;
         width: 100%;
-        padding: 14px 16px;
+        padding: 11px 14px;
         border: 1px solid transparent;
-        border-radius: 16px;
+        border-radius: 12px;
         background: transparent;
         color: var(--muted);
         cursor: pointer;
-        font-weight: 700;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: left;
+        transition: all 0.18s;
+      }
+
+      .nav-btn .nav-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+        transition: all 0.18s;
+      }
+
+      .nav-btn .nav-num {
+        margin-left: auto;
+        font-size: 10px;
+        font-weight: 800;
+        opacity: 0.4;
+        letter-spacing: 0.08em;
       }
 
       .nav-btn.active {
-        color: #08111c;
-        border-color: rgba(240, 195, 82, 0.4);
-        background: linear-gradient(135deg, var(--gold-2), var(--gold));
-        box-shadow: 0 16px 30px rgba(240, 195, 82, 0.2);
+        background: linear-gradient(
+          135deg,
+          rgba(21, 101, 255, 0.18),
+          rgba(21, 101, 255, 0.08)
+        );
+        border-color: var(--blue-line);
+        color: #fff;
+      }
+
+      .nav-btn.active .nav-icon {
+        background: var(--blue);
+        box-shadow: 0 4px 12px rgba(21, 101, 255, 0.4);
+      }
+
+      .nav-btn.active .nav-num {
+        opacity: 1;
+        color: var(--blue);
       }
 
       .nav-btn:not(.active):hover {
-        color: var(--text);
-        border-color: var(--line);
         background: rgba(255, 255, 255, 0.03);
+        border-color: var(--line);
+        color: var(--text);
       }
 
-      .sidebar-actions {
-        margin-top: auto;
-        padding-top: 18px;
+      .sidebar-footer {
+        padding: 14px 16px 20px;
+        border-top: 1px solid var(--line);
       }
 
       .refresh-btn {
         width: 100%;
+        padding: 12px 16px;
         border: 0;
-        border-radius: 16px;
-        padding: 14px 16px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+        color: #fff;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
         cursor: pointer;
-        color: #08111c;
-        background: linear-gradient(135deg, var(--cyan), #7de4f0);
-        font-weight: 800;
-        box-shadow: 0 18px 32px rgba(66, 199, 217, 0.22);
+        letter-spacing: 0.04em;
+        box-shadow: var(--shadow-blue);
+        transition: all 0.18s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
       }
 
+      .refresh-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+      .refresh-btn:disabled {
+        opacity: 0.5;
+        transform: none;
+        cursor: default;
+      }
+
+      /* ─── MAIN ─── */
       .main {
-        padding: 22px;
-        overflow: hidden;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
       }
 
-      .topbar {
+      /* ─── TOP STATS BAR ─── */
+      .top-statsbar {
         display: grid;
-        grid-template-columns: 1.6fr 1fr;
-        gap: 18px;
-        margin-bottom: 18px;
+        grid-template-columns: repeat(4, 1fr);
+        border-bottom: 1px solid var(--line);
+        background: rgba(8, 12, 22, 0.9);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 5;
       }
 
-      .hero,
-      .tile,
-      .section,
-      .group-card,
-      .ranking-card,
-      .team-shell {
-        border: 1px solid var(--line);
-        border-radius: var(--radius-xl);
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
-          var(--panel);
-        box-shadow: var(--shadow);
-      }
-
-      .hero {
-        padding: 22px 24px;
-        min-height: 184px;
-        background:
-          linear-gradient(135deg, rgba(240, 195, 82, 0.16), transparent 28%),
-          linear-gradient(120deg, rgba(66, 199, 217, 0.11), transparent 32%),
-          var(--panel);
-      }
-
-      .hero h2 {
-        margin: 0;
-        font-family: "Barlow Condensed", sans-serif;
-        font-size: 56px;
-        line-height: 0.9;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-      }
-
-      .hero p {
-        margin: 12px 0 0;
-        max-width: 640px;
-        color: var(--muted);
-        font-size: 14px;
-        line-height: 1.7;
-      }
-
-      .hero-meta {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+      .stat-cell {
+        padding: 16px 20px;
+        border-right: 1px solid var(--line);
+        display: flex;
+        align-items: center;
         gap: 14px;
-        margin-top: 18px;
       }
 
-      .tile {
-        padding: 16px 18px;
-        min-height: 110px;
+      .stat-cell:last-child {
+        border-right: 0;
       }
 
-      .tile-label {
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.14em;
+      .stat-cell-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      .stat-cell-icon.blue {
+        background: var(--blue-soft);
+        border: 1px solid var(--blue-line);
+      }
+      .stat-cell-icon.gold {
+        background: var(--gold-soft);
+        border: 1px solid rgba(240, 195, 82, 0.2);
+      }
+      .stat-cell-icon.red {
+        background: var(--red-soft);
+        border: 1px solid rgba(255, 71, 87, 0.2);
+      }
+      .stat-cell-icon.green {
+        background: var(--green-soft);
+        border: 1px solid rgba(46, 213, 115, 0.2);
+      }
+
+      .stat-cell-info {
+        min-width: 0;
+      }
+
+      .stat-cell-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-      }
-
-      .tile-value {
-        margin-top: 10px;
-        font-family: "Barlow Condensed", sans-serif;
-        font-size: 44px;
-        line-height: 1;
-      }
-
-      .tile-sub {
-        margin-top: 8px;
         color: var(--muted);
-        font-size: 12px;
+        white-space: nowrap;
       }
 
+      .stat-cell-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .stat-cell-sub {
+        font-size: 10px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ─── CONTENT ─── */
+      .content {
+        padding: 22px;
+        flex: 1;
+      }
+
+      /* ─── LOADING ─── */
+      .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        min-height: 50vh;
+        color: var(--muted);
+      }
+
+      .loader {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--line);
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ─── SECTION ─── */
       .section {
         display: none;
-        padding: 18px;
-        min-height: calc(100vh - 66px);
       }
-
       .section.active {
         display: block;
       }
 
       .section-head {
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         justify-content: space-between;
         gap: 16px;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--line);
       }
 
       .section-title {
-        margin: 0;
         font-family: "Barlow Condensed", sans-serif;
-        font-size: 34px;
-        line-height: 1;
-        letter-spacing: 0.04em;
+        font-size: 32px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
+        background: linear-gradient(135deg, #fff 40%, var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
       }
 
-      .section-subtitle {
+      .section-sub {
+        margin-top: 4px;
+        font-size: 12px;
         color: var(--muted);
-        font-size: 13px;
       }
 
+      /* ─── BADGES ─── */
       .badge {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
+        gap: 6px;
+        padding: 5px 11px;
         border-radius: 999px;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
+        white-space: nowrap;
       }
 
+      .badge.blue {
+        background: var(--blue-soft);
+        color: #9bbaff;
+        border: 1px solid var(--blue-line);
+      }
       .badge.gold {
-        color: #08111c;
-        background: linear-gradient(135deg, var(--gold-2), var(--gold));
+        background: var(--gold-soft);
+        color: var(--gold-2);
+        border: 1px solid rgba(240, 195, 82, 0.22);
+      }
+      .badge.red {
+        background: var(--red-soft);
+        color: #ff8c96;
+        border: 1px solid rgba(255, 71, 87, 0.22);
+      }
+      .badge.green {
+        background: var(--green-soft);
+        color: var(--green);
+        border: 1px solid rgba(46, 213, 115, 0.22);
       }
 
-      .badge.cyan {
-        color: #cbf8fd;
-        background: var(--cyan-soft);
-      }
-
-      .badge.danger {
-        color: #ffcfd4;
-        background: var(--danger-soft);
-      }
-
+      /* ─── CLASSIFICAÇÃO LAYOUT ─── */
       .class-layout {
         display: grid;
-        grid-template-columns: 2fr 1fr;
+        grid-template-columns: 1fr 320px;
+        grid-template-rows: auto auto;
         gap: 18px;
+        align-items: start;
       }
 
       .groups {
+        grid-column: 1;
+        grid-row: 1;
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr 1fr;
         gap: 18px;
+        align-content: start;
       }
 
-      .group-card,
-      .ranking-card {
+      .class-side {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+
+      /* ─── CARDS CONTAINERS ─── */
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
         overflow: hidden;
       }
 
-      .group-head,
-      .ranking-head {
+      .card.blue-accent {
+        border-color: var(--blue-line);
+        background: linear-gradient(
+          145deg,
+          rgba(21, 101, 255, 0.08),
+          rgba(21, 101, 255, 0.02)
+        );
+      }
+
+      .card.gold-accent {
+        border-color: rgba(240, 195, 82, 0.22);
+        background: linear-gradient(
+          145deg,
+          rgba(240, 195, 82, 0.08),
+          rgba(240, 195, 82, 0.02)
+        );
+      }
+
+      .card-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        padding: 16px 18px;
+        padding: 14px 18px;
         border-bottom: 1px solid var(--line);
       }
 
-      .group-head h3,
-      .ranking-head h3,
-      .team-header h3 {
-        margin: 0;
+      .card-head h3 {
         font-family: "Barlow Condensed", sans-serif;
-        font-size: 28px;
-        letter-spacing: 0.04em;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
       }
 
-      .group-body,
-      .ranking-body {
-        padding: 10px;
+      .card-body {
+        padding: 0;
       }
 
-      .mini-table {
+      /* ─── TABELA GRUPOS ─── */
+      .group-table {
         width: 100%;
         border-collapse: collapse;
       }
 
-      .mini-table th,
-      .mini-table td {
-        padding: 12px 10px;
-        text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        font-size: 13px;
-      }
-
-      .mini-table th {
-        color: var(--muted);
-        font-size: 11px;
-        letter-spacing: 0.1em;
+      .group-table thead th {
+        padding: 10px 8px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
+        color: var(--muted);
+        text-align: center;
+        border-bottom: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.2);
       }
 
-      .mini-table td.team-col,
-      .mini-table th.team-col {
+      .group-table thead th.left {
         text-align: left;
+        padding-left: 16px;
       }
 
-      .mini-table tr:last-child td {
+      .group-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background 0.15s;
+      }
+
+      .group-table tbody tr:last-child {
         border-bottom: 0;
       }
 
-      .pos {
+      .group-table tbody tr:hover {
+        background: rgba(21, 101, 255, 0.05);
+      }
+
+      .group-table tbody tr.leader {
+        background: rgba(21, 101, 255, 0.07);
+      }
+
+      .group-table td {
+        padding: 10px 8px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .group-table td.left {
+        text-align: left;
+        padding-left: 12px;
+      }
+
+      .pos-badge {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        color: #08111c;
-        background: linear-gradient(135deg, var(--gold-2), var(--gold));
-        font-weight: 800;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 15px;
+        font-weight: 900;
+        flex-shrink: 0;
       }
 
-      .team-chip,
-      .player-chip {
+      .pos-badge.p1 {
+        background: linear-gradient(135deg, var(--gold-2), var(--gold));
+        color: #1a0f00;
+      }
+      .pos-badge.p2 {
+        background: rgba(200, 200, 220, 0.15);
+        color: #c8d0e0;
+      }
+      .pos-badge.p3 {
+        background: rgba(180, 120, 60, 0.2);
+        color: #d4974a;
+      }
+      .pos-badge.pn {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+      }
+
+      .team-chip {
         display: flex;
         align-items: center;
         gap: 10px;
       }
 
       .crest {
-        width: 34px;
-        height: 34px;
-        border-radius: 12px;
-        padding: 5px;
+        width: 30px;
+        height: 30px;
         object-fit: contain;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 3px;
+        flex-shrink: 0;
+      }
+
+      .crest.lg {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        padding: 6px;
+      }
+
+      .crest.xl {
+        width: 80px;
+        height: 80px;
+        border-radius: 18px;
+        padding: 8px;
         background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--line);
       }
 
-      .crest.big {
-        width: 72px;
-        height: 72px;
-        border-radius: 22px;
+      .team-name {
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.2;
       }
-
-      .team-chip strong,
-      .player-chip strong {
-        display: block;
-        font-size: 14px;
-      }
-
-      .team-chip span,
-      .player-chip span {
+      .team-status {
+        font-size: 10px;
         color: var(--muted);
-        font-size: 11px;
       }
 
-      .ranking-grid {
-        display: grid;
-        gap: 18px;
+      .pts-highlight {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
       }
 
-      .ranking-list {
-        display: grid;
-        gap: 10px;
+      .sg-pos {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .sg-neg {
+        color: var(--red);
+        font-weight: 700;
       }
 
-      .ranking-item {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
+      .card-cv {
+        color: #ff8c96;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .card-ca {
+        color: var(--gold-2);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      /* ─── PAINEL DIREITO CLASSIFICAÇÃO ─── */
+      .class-side {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      /* ─── LÍDERES ─── */
+      .leader-list {
+        padding: 6px 0;
+      }
+
+      .leader-item {
+        display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px 14px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.03);
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background 0.15s;
       }
 
-      .ranking-number {
+      .leader-item:last-child {
+        border-bottom: 0;
+      }
+      .leader-item:hover {
+        background: rgba(21, 101, 255, 0.05);
+      }
+
+      .leader-rank {
         font-family: "Barlow Condensed", sans-serif;
         font-size: 28px;
-        color: var(--gold-2);
-      }
-
-      .ranking-value {
-        font-family: "Barlow Condensed", sans-serif;
-        font-size: 28px;
-      }
-
-      .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 16px;
-      }
-
-      .stat-card {
-        padding: 18px;
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .stat-card h4 {
-        margin: 0;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-
-      .stat-card strong {
-        display: block;
-        margin-top: 10px;
-        font-family: "Barlow Condensed", sans-serif;
-        font-size: 34px;
+        font-weight: 900;
+        color: var(--blue);
+        width: 28px;
+        text-align: center;
+        flex-shrink: 0;
         line-height: 1;
       }
 
-      .stat-card span {
-        display: block;
-        margin-top: 8px;
+      .leader-rank.gold {
+        color: var(--gold);
+      }
+
+      .leader-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .leader-name {
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .leader-desc {
+        font-size: 11px;
         color: var(--muted);
+      }
+
+      .leader-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 26px;
+        font-weight: 900;
+        flex-shrink: 0;
+      }
+
+      /* ─── REGRAS ─── */
+      .rules-list {
+        padding: 6px 0;
+      }
+
+      .rule-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .rule-item:last-child {
+        border-bottom: 0;
+      }
+
+      .rule-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: var(--blue-soft);
+        border: 1px solid var(--blue-line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--blue);
+        flex-shrink: 0;
+      }
+
+      .rule-text {
         font-size: 12px;
+        font-weight: 600;
+      }
+      .rule-sub {
+        font-size: 10px;
+        color: var(--muted);
       }
 
-      .split-layout {
+      /* ─── ESTATÍSTICAS ─── */
+      .stats-kpi-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-        margin-top: 18px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
       }
 
+      .kpi-card {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
+        position: relative;
+        overflow: hidden;
+      }
+
+      .kpi-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        border-radius: 2px 2px 0 0;
+      }
+
+      .kpi-card.blue::before {
+        background: linear-gradient(90deg, var(--blue), transparent);
+      }
+      .kpi-card.gold::before {
+        background: linear-gradient(90deg, var(--gold), transparent);
+      }
+      .kpi-card.red::before {
+        background: linear-gradient(90deg, var(--red), transparent);
+      }
+      .kpi-card.green::before {
+        background: linear-gradient(90deg, var(--green), transparent);
+      }
+
+      .kpi-label {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .kpi-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 36px;
+        font-weight: 900;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .kpi-card.blue .kpi-value {
+        color: #9bbaff;
+      }
+      .kpi-card.gold .kpi-value {
+        color: var(--gold-2);
+      }
+      .kpi-card.red .kpi-value {
+        color: #ff8c96;
+      }
+      .kpi-card.green .kpi-value {
+        color: var(--green);
+      }
+
+      .kpi-sub {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+
+      .stats-tables {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      /* ─── DATA TABLE ─── */
       .table-box {
         border: 1px solid var(--line);
-        border-radius: 22px;
+        border-radius: var(--radius);
         overflow: hidden;
-        background: rgba(255, 255, 255, 0.03);
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.02),
+          transparent
+        );
       }
 
       .table-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 16px 18px;
+        padding: 14px 18px;
         border-bottom: 1px solid var(--line);
       }
 
       .table-head h3 {
-        margin: 0;
         font-family: "Barlow Condensed", sans-serif;
-        font-size: 24px;
-        letter-spacing: 0.04em;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
       }
 
       .table-scroll {
-        max-height: 520px;
-        overflow: auto;
+        max-height: 480px;
+        overflow-y: auto;
       }
 
-      table.data-table {
+      .data-table {
         width: 100%;
         border-collapse: collapse;
       }
 
-      table.data-table th,
-      table.data-table td {
-        padding: 13px 14px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        font-size: 13px;
-        text-align: left;
-      }
-
-      table.data-table th {
-        color: var(--muted);
-        font-size: 11px;
+      .data-table thead th {
+        padding: 10px 14px;
+        font-size: 9px;
         font-weight: 800;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
+        color: var(--muted);
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.25);
         position: sticky;
         top: 0;
-        background: rgba(11, 23, 38, 0.96);
+        z-index: 1;
       }
 
-      table.data-table tr:last-child td {
+      .data-table thead th.right {
+        text-align: right;
+      }
+      .data-table thead th.center {
+        text-align: center;
+      }
+
+      .data-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background 0.15s;
+      }
+
+      .data-table tbody tr:last-child {
         border-bottom: 0;
       }
+      .data-table tbody tr:hover {
+        background: rgba(21, 101, 255, 0.05);
+      }
 
+      .data-table tbody td {
+        padding: 11px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        vertical-align: middle;
+      }
+
+      .data-table tbody td.right {
+        text-align: right;
+        font-weight: 700;
+      }
+      .data-table tbody td.center {
+        text-align: center;
+      }
+
+      /* ─── DISCIPLINA ─── */
+      .disc-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      /* ─── ARTILHARIA ─── */
+      .scorer-rank {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--blue-soft);
+        border: 1px solid var(--blue-line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 16px;
+        font-weight: 900;
+        color: var(--blue);
+        flex-shrink: 0;
+      }
+
+      .scorer-rank.gold {
+        background: var(--gold-soft);
+        border-color: rgba(240, 195, 82, 0.22);
+        color: var(--gold-2);
+      }
+
+      .goals-big {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--gold-2);
+      }
+
+      /* ─── TIMES ─── */
       .team-tabs {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 16px;
+        gap: 8px;
+        margin-bottom: 18px;
       }
 
       .team-tab {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        padding: 8px 14px;
         border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 8px 12px;
-        cursor: pointer;
-        color: var(--muted);
+        border-radius: 10px;
         background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+        transition: all 0.15s;
+      }
+
+      .team-tab:hover {
+        border-color: var(--blue-line);
+        color: var(--text);
       }
 
       .team-tab.active {
-        color: #08111c;
-        background: linear-gradient(135deg, var(--gold-2), var(--gold));
+        background: linear-gradient(
+          135deg,
+          rgba(21, 101, 255, 0.18),
+          rgba(21, 101, 255, 0.08)
+        );
+        border-color: var(--blue-line);
+        color: #fff;
+        box-shadow: var(--shadow-blue);
       }
 
       .team-tab img {
-        width: 26px;
-        height: 26px;
+        width: 24px;
+        height: 24px;
         object-fit: contain;
       }
 
-      .team-shell {
+      .team-panel {
+        border: 1px solid var(--line-blue);
+        border-radius: var(--radius);
         overflow: hidden;
+        background: linear-gradient(
+          145deg,
+          rgba(21, 101, 255, 0.05),
+          rgba(21, 101, 255, 0.01)
+        );
       }
 
-      .team-header {
+      .team-panel-header {
         display: grid;
         grid-template-columns: auto 1fr auto;
-        gap: 18px;
+        gap: 20px;
         align-items: center;
-        padding: 20px;
+        padding: 24px;
         border-bottom: 1px solid var(--line);
         background:
-          linear-gradient(135deg, rgba(240, 195, 82, 0.12), transparent 26%),
-          rgba(255, 255, 255, 0.03);
+          linear-gradient(135deg, rgba(21, 101, 255, 0.1), transparent 50%),
+          rgba(0, 0, 0, 0.2);
       }
 
-      .team-header p {
-        margin: 8px 0 0;
+      .team-panel-info h2 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 32px;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1;
+      }
+
+      .team-panel-info p {
+        font-size: 12px;
         color: var(--muted);
-        font-size: 13px;
+        margin-top: 6px;
       }
 
-      .team-pills {
+      .team-stats-pills {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
       }
 
-      .team-pills span {
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.05);
-        font-size: 12px;
-        font-weight: 700;
+      .team-stat-pill {
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        text-align: center;
       }
 
-      .team-grid {
+      .team-stat-pill .val {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 24px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .team-stat-pill .lbl {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .team-panel-body {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-        padding: 18px;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
       }
 
       .subpanel {
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .subpanel header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 14px 16px;
+        border-right: 1px solid var(--line);
         border-bottom: 1px solid var(--line);
       }
 
-      .subpanel header h4 {
-        margin: 0;
-        font-family: "Barlow Condensed", sans-serif;
-        font-size: 22px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+      .subpanel:nth-child(even) {
+        border-right: 0;
       }
-
-      .list {
-        margin: 0;
-        padding: 10px 16px 16px;
-        list-style: none;
-      }
-
-      .list li {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      .list li:last-child {
+      .subpanel:nth-last-child(-n + 2) {
         border-bottom: 0;
       }
 
-      .list small {
-        color: var(--muted);
+      .subpanel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.15);
       }
 
-      .match-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
+      .subpanel-head h4 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
       }
 
-      .match-card {
-        padding: 18px;
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        background:
-          linear-gradient(150deg, rgba(66, 199, 217, 0.08), transparent 30%),
-          rgba(255, 255, 255, 0.03);
+      .subpanel-list {
+        list-style: none;
       }
 
-      .match-top {
+      .subpanel-list li {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 14px;
+        padding: 10px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 12px;
+      }
+
+      .subpanel-list li:last-child {
+        border-bottom: 0;
+      }
+
+      .subpanel-list li strong {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .subpanel-list li small {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .subpanel-list li .right-val {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      /* ─── JOGOS ─── */
+      .matches-filters {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        padding: 7px 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+        transition: all 0.15s;
+      }
+
+      .filter-btn.active,
+      .filter-btn:hover {
+        background: var(--blue-soft);
+        border-color: var(--blue-line);
+        color: #9bbaff;
+      }
+
+      .matches-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+
+      .match-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
+        transition: all 0.18s;
+      }
+
+      .match-card:hover {
+        border-color: var(--blue-line);
+        box-shadow: var(--shadow-blue);
+        transform: translateY(-2px);
+      }
+
+      .match-card.finished {
+        border-color: rgba(46, 213, 115, 0.15);
+        background: linear-gradient(
+          145deg,
+          rgba(46, 213, 115, 0.04),
+          rgba(46, 213, 115, 0.01)
+        );
+      }
+
+      .match-badge-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .match-body {
+        padding: 16px 14px;
       }
 
       .match-row {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
       }
 
       .match-team {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
       }
 
       .match-team.away {
@@ -758,45 +1344,399 @@
         text-align: right;
       }
 
-      .score {
-        min-width: 84px;
-        text-align: center;
+      .match-team-name {
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .match-team-group {
+        font-size: 10px;
+        color: var(--muted);
+      }
+
+      .score-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 6px 10px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        min-width: 70px;
+      }
+
+      .score-num {
         font-family: "Barlow Condensed", sans-serif;
-        font-size: 40px;
+        font-size: 28px;
+        font-weight: 900;
         line-height: 1;
       }
 
-      .match-info {
+      .score-sep {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--muted);
+        line-height: 1;
+      }
+
+      .match-meta {
         margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        font-size: 11px;
+        color: var(--muted);
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .match-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* ─── TABELA DE JOGOS (classificação) ─── */
+      .schedule-table-wrap {
+        grid-column: 1;
+        grid-row: 2;
+      }
+
+      .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .schedule-table thead th {
+        padding: 8px 10px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-align: center;
+        border-bottom: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      .schedule-table thead th.center { text-align: center; }
+
+      .schedule-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background 0.15s;
+      }
+
+      .schedule-table tbody tr:last-child { border-bottom: 0; }
+      .schedule-table tbody tr:hover { background: rgba(21, 101, 255, 0.05); }
+      .schedule-table tbody tr.row-finished { background: rgba(46, 213, 115, 0.03); }
+
+      .schedule-table td {
+        padding: 7px 10px;
+        font-size: 12px;
+        vertical-align: middle;
+        white-space: nowrap;
+        text-align: center;
+      }
+
+      .schedule-table td.center { text-align: center; }
+
+      .sched-date {
+        font-weight: 700;
+        color: var(--text);
+        font-size: 13px;
+      }
+
+      .sched-time {
+        font-weight: 600;
         color: var(--muted);
         font-size: 12px;
       }
 
-      .empty {
-        padding: 28px;
+      .group-tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        background: var(--blue-soft);
+        border: 1px solid var(--blue-line);
+        color: #9BBAFF;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+
+      .group-tag.b {
+        background: var(--gold-soft);
+        border-color: rgba(240, 195, 82, 0.22);
+        color: var(--gold-2);
+      }
+
+      .sched-team {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-weight: 700;
+        font-size: 12px;
+        width: 100%;
+      }
+
+      .sched-team .crest { width: 22px; height: 22px; border-radius: 5px; padding: 2px; }
+      .sched-team .group-tag { font-size: 9px; padding: 2px 6px; }
+
+      .vs-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--line);
         color: var(--muted);
+      }
+
+      .vs-badge.score {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 16px;
+        font-weight: 900;
+        background: rgba(46, 213, 115, 0.10);
+        border-color: rgba(46, 213, 115, 0.20);
+        color: var(--text);
+        padding: 3px 12px;
+        letter-spacing: 0.04em;
+      }
+
+      .local-badge {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .empty {
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      /* ─── MODAL ─── */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.72);
+        backdrop-filter: blur(6px);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .modal-overlay.open { display: flex; }
+
+      .modal {
+        width: 100%;
+        max-width: 680px;
+        max-height: 90vh;
+        border: 1px solid var(--blue-line);
+        border-radius: 24px;
+        background: linear-gradient(145deg, #0C1428, #080C18);
+        box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(21,101,255,0.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: modalIn 0.22s ease;
+      }
+
+      @keyframes modalIn {
+        from { opacity: 0; transform: translateY(12px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0)   scale(1); }
+      }
+
+      .modal-header {
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid var(--line);
+        background:
+          linear-gradient(135deg, rgba(21,101,255,0.10), transparent 50%),
+          rgba(0,0,0,0.15);
+        flex-shrink: 0;
+      }
+
+      .modal-match-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 12px;
+      }
+
+      .modal-team {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .modal-team.away { flex-direction: row-reverse; text-align: right; }
+
+      .modal-team-name {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1;
+      }
+
+      .modal-score {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 40px;
+        font-weight: 900;
+        text-align: center;
+        line-height: 1;
+        padding: 6px 18px;
+        background: rgba(0,0,0,0.3);
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        letter-spacing: 0.04em;
+      }
+
+      .modal-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 11px;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+
+      .modal-meta span { display: flex; align-items: center; gap: 4px; }
+
+      .modal-status-badge {
+        margin-left: auto;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        width: 32px; height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 16px;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+      }
+
+      .modal-close:hover { background: var(--red-soft); border-color: rgba(255,71,87,0.3); color: var(--red); }
+
+      .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .modal-col {
+        padding: 16px 20px;
+        border-right: 1px solid var(--line);
+      }
+
+      .modal-col:last-child { border-right: 0; }
+
+      .modal-col-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 10px;
+      }
+
+      .modal-event-list { display: flex; flex-direction: column; gap: 6px; }
+
+      .modal-event {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        font-size: 12px;
+      }
+
+      .modal-event-icon {
+        font-size: 16px;
+        flex-shrink: 0;
+        width: 24px;
         text-align: center;
       }
 
-      .loading {
-        display: grid;
-        place-items: center;
-        min-height: 420px;
-        color: var(--muted);
+      .modal-event-info { flex: 1; min-width: 0; }
+      .modal-event-name { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .modal-event-team { font-size: 10px; color: var(--muted); }
+
+      .modal-event-qty {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 18px;
+        font-weight: 900;
+        flex-shrink: 0;
       }
 
-      @media (max-width: 1240px) {
-        .topbar,
-        .class-layout,
-        .split-layout,
-        .match-grid {
+      .modal-empty {
+        padding: 24px 0;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      /* ─── SCROLLBAR ─── */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      /* ─── RESPONSIVE ─── */
+      @media (max-width: 1280px) {
+        .top-statsbar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .class-layout {
           grid-template-columns: 1fr;
         }
-
-        .groups,
-        .cards-grid,
-        .team-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+        .matches-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .stats-kpi-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
       }
 
@@ -804,27 +1744,52 @@
         .app {
           grid-template-columns: 1fr;
         }
-
         .sidebar {
           position: static;
           height: auto;
-          border-right: 0;
-          border-bottom: 1px solid var(--line);
         }
-
-        .sidebar-actions {
-          margin-top: 18px;
+        .nav {
+          flex-direction: row;
+          flex-wrap: wrap;
+          padding: 10px;
         }
-
-        .groups,
-        .cards-grid,
-        .team-grid,
-        .hero-meta,
-        .match-grid {
+        .nav-btn {
+          width: auto;
+        }
+        .groups {
           grid-template-columns: 1fr;
         }
+        .stats-tables {
+          grid-template-columns: 1fr;
+        }
+        .matches-grid {
+          grid-template-columns: 1fr;
+        }
+        .team-panel-header {
+          grid-template-columns: auto 1fr;
+        }
+        .team-panel-body {
+          grid-template-columns: 1fr;
+        }
+        .subpanel {
+          border-right: 0;
+        }
+        .disc-layout {
+          grid-template-columns: 1fr;
+        }
+        .top-statsbar {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
 
-        .team-header {
+      @media (max-width: 640px) {
+        .top-statsbar {
+          grid-template-columns: 1fr;
+        }
+        .stats-kpi-grid {
+          grid-template-columns: 1fr;
+        }
+        .team-panel-header {
           grid-template-columns: 1fr;
         }
       }
@@ -832,430 +1797,567 @@
   </head>
   <body>
     <div class="app">
+      <!-- ═══ SIDEBAR ═══ -->
       <aside class="sidebar">
         <div class="brand">
-          <div class="brand-kicker">Central oficial da competicao</div>
+          <img
+            class="brand-logo"
+            src="projeto-apecad/assets/logo-apecad.png"
+            alt="APECAD 2026"
+            onerror="
+              this.style.display = 'none';
+              this.nextElementSibling.style.display = 'flex';
+            "
+          />
+          <div class="brand-logo-fallback" style="display: none">AP26</div>
           <h1>APECAD 2026</h1>
-          <p>
-            Painel de classificacao, disciplina, artilharia, jogos e elencos,
-            conectado na mesma base online da sumula e do admin.
-          </p>
+          <div class="brand-sub">Central Oficial da Competição</div>
         </div>
 
-        <div class="side-status">
-          <div id="systemStatus" class="pill ok">Base online sincronizada</div>
-          <div id="updatedInfo" class="pill">Ultima atualizacao: --:--</div>
+        <div class="status-row">
+          <div id="systemStatus" class="status-pill live">
+            <div class="pulse"></div>
+            <span>Base online sincronizada</span>
+          </div>
+          <div id="updatedInfo" class="status-pill time">
+            <span>⏱</span>
+            <span>Última atualização: --:--</span>
+          </div>
         </div>
 
         <nav class="nav">
           <button class="nav-btn active" data-tab="classificacao" type="button">
-            <span>Classificacao</span>
-            <span>01</span>
+            <div class="nav-icon">🏆</div>
+            <span>Classificação</span>
+            <span class="nav-num">01</span>
           </button>
           <button class="nav-btn" data-tab="estatisticas" type="button">
-            <span>Estatisticas</span>
-            <span>02</span>
+            <div class="nav-icon">📊</div>
+            <span>Estatísticas</span>
+            <span class="nav-num">02</span>
           </button>
           <button class="nav-btn" data-tab="disciplina" type="button">
+            <div class="nav-icon">🟨</div>
             <span>Disciplina</span>
-            <span>03</span>
+            <span class="nav-num">03</span>
           </button>
           <button class="nav-btn" data-tab="artilharia" type="button">
+            <div class="nav-icon">⚽</div>
             <span>Artilharia</span>
-            <span>04</span>
+            <span class="nav-num">04</span>
           </button>
           <button class="nav-btn" data-tab="times" type="button">
+            <div class="nav-icon">🛡️</div>
             <span>Times</span>
-            <span>05</span>
+            <span class="nav-num">05</span>
           </button>
           <button class="nav-btn" data-tab="jogos" type="button">
+            <div class="nav-icon">📅</div>
             <span>Jogos</span>
-            <span>06</span>
+            <span class="nav-num">06</span>
           </button>
         </nav>
 
-        <div class="sidebar-actions">
+        <div class="sidebar-footer">
           <button id="refreshBtn" class="refresh-btn" type="button">
-            Atualizar painel
+            <span>↻</span> Atualizar Painel
           </button>
         </div>
       </aside>
 
+      <!-- ═══ MAIN ═══ -->
       <main class="main">
-        <header class="topbar">
-          <section class="hero">
-            <h2>Central da Competicao</h2>
-            <p>
-              Classificacao oficial por grupos, com criterio de desempate
-              competitivo, mais desempenho coletivo, disciplina, artilharia e
-              painel completo por clube.
-            </p>
+        <!-- TOP STATS BAR -->
+        <div class="top-statsbar">
+          <div class="stat-cell">
+            <div class="stat-cell-icon blue">⚽</div>
+            <div class="stat-cell-info">
+              <div class="stat-cell-label">Jogos Finalizados</div>
+              <div id="heroMatches" class="stat-cell-value">0</div>
+              <div id="heroMatchesSub" class="stat-cell-sub">0 cadastrados</div>
+            </div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-icon gold">🥅</div>
+            <div class="stat-cell-info">
+              <div class="stat-cell-label">Gols no Campeonato</div>
+              <div id="heroGoals" class="stat-cell-value">0</div>
+              <div id="heroGoalsSub" class="stat-cell-sub">0 por partida</div>
+            </div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-icon green">🥇</div>
+            <div class="stat-cell-info">
+              <div class="stat-cell-label">Líder Geral</div>
+              <div id="heroLeader" class="stat-cell-value">-</div>
+              <div id="heroLeaderSub" class="stat-cell-sub">
+                Aguardando jogos
+              </div>
+            </div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-cell-icon red">🛡</div>
+            <div class="stat-cell-info">
+              <div class="stat-cell-label">Melhor Defesa</div>
+              <div id="heroDefense" class="stat-cell-value">-</div>
+              <div id="heroDefenseSub" class="stat-cell-sub">
+                Aguardando jogos
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <div class="hero-meta">
-              <div class="tile">
-                <div class="tile-label">Jogos finalizados</div>
-                <div id="heroMatches" class="tile-value">0</div>
-                <div id="heroMatchesSub" class="tile-sub">0 cadastrados</div>
+        <!-- LOADING -->
+        <div id="loadingState" class="loading-state">
+          <div class="loader"></div>
+          <div>Carregando painel da competição...</div>
+        </div>
+
+        <div class="content" id="mainContent" style="display: none">
+          <!-- ═══ CLASSIFICAÇÃO ═══ -->
+          <section id="classificacao" class="section active">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Classificação Oficial</div>
+                <div class="section-sub">
+                  Grupo A e Grupo B · Ordem de desempate competitiva
+                </div>
               </div>
-              <div class="tile">
-                <div class="tile-label">Gols no campeonato</div>
-                <div id="heroGoals" class="tile-value">0</div>
-                <div id="heroGoalsSub" class="tile-sub">0 por partida</div>
+              <span class="badge blue"
+                >PTS · V · E · D · SG · GP · GC · CV · CA</span
+              >
+            </div>
+
+            <div class="class-layout">
+              <!-- GRUPOS -->
+              <div class="groups">
+                <article class="card blue-accent">
+                  <div class="card-head">
+                    <h3>Grupo A</h3>
+                    <span id="groupACount" class="badge gold">0 times</span>
+                  </div>
+                  <div class="card-body">
+                    <table class="group-table">
+                      <thead>
+                        <tr>
+                          <th style="width: 32px">#</th>
+                          <th class="left">Time</th>
+                          <th>PTS</th>
+                          <th>J</th>
+                          <th>V</th>
+                          <th>E</th>
+                          <th>D</th>
+                          <th>SG</th>
+                          <th>GP</th>
+                          <th>GC</th>
+                          <th>CV</th>
+                          <th>CA</th>
+                        </tr>
+                      </thead>
+                      <tbody id="groupATable"></tbody>
+                    </table>
+                  </div>
+                </article>
+
+                <article class="card blue-accent">
+                  <div class="card-head">
+                    <h3>Grupo B</h3>
+                    <span id="groupBCount" class="badge gold">0 times</span>
+                  </div>
+                  <div class="card-body">
+                    <table class="group-table">
+                      <thead>
+                        <tr>
+                          <th style="width: 32px">#</th>
+                          <th class="left">Time</th>
+                          <th>PTS</th>
+                          <th>J</th>
+                          <th>V</th>
+                          <th>E</th>
+                          <th>D</th>
+                          <th>SG</th>
+                          <th>GP</th>
+                          <th>GC</th>
+                          <th>CV</th>
+                          <th>CA</th>
+                        </tr>
+                      </thead>
+                      <tbody id="groupBTable"></tbody>
+                    </table>
+                  </div>
+                </article>
               </div>
-              <div class="tile">
-                <div class="tile-label">Lider geral</div>
-                <div id="heroLeader" class="tile-value">-</div>
-                <div id="heroLeaderSub" class="tile-sub">Aguardando jogos</div>
+
+              <!-- PAINEL DIREITO -->
+              <div class="class-side">
+                <article class="card gold-accent">
+                  <div class="card-head">
+                    <h3>Líderes</h3>
+                    <span class="badge gold">Destaques</span>
+                  </div>
+                  <div id="leadersBoard" class="leader-list"></div>
+                </article>
+
+                <article class="card">
+                  <div class="card-head">
+                    <h3>Critério de Desempate</h3>
+                    <span class="badge blue">Oficial</span>
+                  </div>
+                  <div class="rules-list">
+                    <div class="rule-item">
+                      <div class="rule-num">1</div>
+                      <div>
+                        <div class="rule-text">Pontos</div>
+                        <div class="rule-sub">Base da classificação</div>
+                      </div>
+                    </div>
+                    <div class="rule-item">
+                      <div class="rule-num">2</div>
+                      <div>
+                        <div class="rule-text">Vitórias</div>
+                        <div class="rule-sub">1º critério de desempate</div>
+                      </div>
+                    </div>
+                    <div class="rule-item">
+                      <div class="rule-num">3</div>
+                      <div>
+                        <div class="rule-text">Saldo e Gols Marcados</div>
+                        <div class="rule-sub">
+                          Desempenho ofensivo e defensivo
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rule-item">
+                      <div class="rule-num">4</div>
+                      <div>
+                        <div class="rule-text">Menos Vermelhos e Amarelos</div>
+                        <div class="rule-sub">
+                          Disciplina decide antes do sorteio
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rule-item">
+                      <div class="rule-num">5</div>
+                      <div>
+                        <div class="rule-text">Sorteio</div>
+                        <div class="rule-sub">Último recurso de desempate</div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="card">
+                  <div class="card-head">
+                    <h3>Leitura Rápida</h3>
+                    <span class="badge green">Ao vivo</span>
+                  </div>
+                  <div id="summaryBoard" class="leader-list"></div>
+                </article>
               </div>
-              <div class="tile">
-                <div class="tile-label">Melhor defesa</div>
-                <div id="heroDefense" class="tile-value">-</div>
-                <div id="heroDefenseSub" class="tile-sub">Aguardando jogos</div>
+              <!-- TABELA DE JOGOS (dentro do class-layout, abrange as 2 colunas) -->
+              <div class="schedule-table-wrap">
+                <article class="card">
+                  <div class="card-head">
+                    <h3>Tabela de Jogos</h3>
+                    <span class="badge blue">Calendário oficial</span>
+                  </div>
+                  <div class="table-scroll">
+                    <table class="schedule-table">
+                      <thead>
+                        <tr>
+                          <th>Data</th>
+                          <th>Hora</th>
+                          <th>Time da Casa</th>
+                          <th class="center">Placar</th>
+                          <th>Time Visitante</th>
+                        </tr>
+                      </thead>
+                      <tbody id="scheduleTableBody"></tbody>
+                    </table>
+                  </div>
+                </article>
               </div>
             </div>
           </section>
 
-          <section class="ranking-grid">
-            <article class="ranking-card">
-              <div class="ranking-head">
-                <h3>Regras da Tabela</h3>
-                <span class="badge gold">Oficial</span>
-              </div>
-              <div class="ranking-body">
-                <div class="ranking-list">
-                  <div class="ranking-item">
-                    <div class="ranking-number">1</div>
-                    <div>
-                      <strong>Pontos</strong>
-                      <div class="section-subtitle">Base da classificacao</div>
-                    </div>
-                  </div>
-                  <div class="ranking-item">
-                    <div class="ranking-number">2</div>
-                    <div>
-                      <strong>Vitorias</strong>
-                      <div class="section-subtitle">1 criterio de desempate</div>
-                    </div>
-                  </div>
-                  <div class="ranking-item">
-                    <div class="ranking-number">3</div>
-                    <div>
-                      <strong>Saldo e gols marcados</strong>
-                      <div class="section-subtitle">Desempenho ofensivo e defensivo</div>
-                    </div>
-                  </div>
-                  <div class="ranking-item">
-                    <div class="ranking-number">4</div>
-                    <div>
-                      <strong>Menos vermelhos e amarelos</strong>
-                      <div class="section-subtitle">Disciplina decide antes do sorteio</div>
-                    </div>
-                  </div>
+          <!-- ═══ ESTATÍSTICAS ═══ -->
+          <section id="estatisticas" class="section">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Estatísticas</div>
+                <div class="section-sub">
+                  Indicadores gerais de desempenho por equipe
                 </div>
               </div>
-            </article>
+            </div>
+
+            <div id="statsKpiGrid" class="stats-kpi-grid"></div>
+
+            <div class="stats-tables">
+              <div class="table-box">
+                <div class="table-head">
+                  <h3>Ranking Ofensivo</h3>
+                  <span class="badge gold">Gols marcados</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Time</th>
+                        <th class="center">GP</th>
+                        <th class="center">Média</th>
+                        <th class="center">V</th>
+                      </tr>
+                    </thead>
+                    <tbody id="attackTable"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="table-box">
+                <div class="table-head">
+                  <h3>Ranking Defensivo</h3>
+                  <span class="badge blue">Menos gols sofridos</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Time</th>
+                        <th class="center">GC</th>
+                        <th class="center">SG</th>
+                        <th class="center">Clean Sheets</th>
+                      </tr>
+                    </thead>
+                    <tbody id="defenseTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </section>
-        </header>
 
-        <div id="loadingState" class="loading">Carregando painel...</div>
-
-        <section id="classificacao" class="section active" hidden>
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Classificacao Oficial</h2>
-              <div class="section-subtitle">
-                Grupo A e Grupo B com ordem de desempate competitiva
-              </div>
-            </div>
-            <span class="badge cyan">Pontos | V | SG | GP | -CV | -CA</span>
-          </div>
-
-          <div class="class-layout">
-            <div class="groups">
-              <article class="group-card">
-                <div class="group-head">
-                  <h3>Grupo A</h3>
-                  <span id="groupACount" class="badge gold">0 times</span>
+          <!-- ═══ DISCIPLINA ═══ -->
+          <section id="disciplina" class="section">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Disciplina e Suspensões</div>
+                <div class="section-sub">
+                  Regra: 3 amarelos ou 1 vermelho = suspensão
                 </div>
-                <div class="group-body">
-                  <table class="mini-table">
+              </div>
+              <span class="badge red">Controle disciplinar</span>
+            </div>
+
+            <div class="disc-layout">
+              <div class="table-box">
+                <div class="table-head">
+                  <h3>Suspensos</h3>
+                  <span class="badge red">Afastados</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="data-table">
                     <thead>
                       <tr>
-                        <th>Pos</th>
-                        <th class="team-col">Time</th>
-                        <th>PTS</th>
-                        <th>V</th>
-                        <th>SG</th>
-                        <th>GP</th>
-                        <th>CV</th>
-                        <th>CA</th>
+                        <th>Jogador</th>
+                        <th>Time</th>
+                        <th class="center">CA</th>
+                        <th class="center">CV</th>
+                        <th>Status</th>
                       </tr>
                     </thead>
-                    <tbody id="groupATable"></tbody>
+                    <tbody id="suspendedTable"></tbody>
                   </table>
                 </div>
-              </article>
+              </div>
 
-              <article class="group-card">
-                <div class="group-head">
-                  <h3>Grupo B</h3>
-                  <span id="groupBCount" class="badge gold">0 times</span>
+              <div class="table-box">
+                <div class="table-head">
+                  <h3>Pendurados</h3>
+                  <span class="badge gold">Atenção</span>
                 </div>
-                <div class="group-body">
-                  <table class="mini-table">
+                <div class="table-scroll">
+                  <table class="data-table">
                     <thead>
                       <tr>
-                        <th>Pos</th>
-                        <th class="team-col">Time</th>
-                        <th>PTS</th>
-                        <th>V</th>
-                        <th>SG</th>
-                        <th>GP</th>
-                        <th>CV</th>
-                        <th>CA</th>
+                        <th>Jogador</th>
+                        <th>Time</th>
+                        <th class="center">CA</th>
+                        <th>Situação</th>
                       </tr>
                     </thead>
-                    <tbody id="groupBTable"></tbody>
+                    <tbody id="warningTable"></tbody>
                   </table>
                 </div>
-              </article>
-            </div>
-
-            <div class="ranking-grid">
-              <article class="ranking-card">
-                <div class="ranking-head">
-                  <h3>Lideres</h3>
-                  <span class="badge gold">Destaques</span>
-                </div>
-                <div id="leadersBoard" class="ranking-body"></div>
-              </article>
-
-              <article class="ranking-card">
-                <div class="ranking-head">
-                  <h3>Leitura rapida</h3>
-                  <span class="badge cyan">Ao vivo</span>
-                </div>
-                <div id="summaryBoard" class="ranking-body"></div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section id="estatisticas" class="section" hidden>
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Estatisticas da Competicao</h2>
-              <div class="section-subtitle">
-                Indicadores gerais de desempenho por equipe
               </div>
             </div>
-          </div>
 
-          <div id="statsCards" class="cards-grid"></div>
-
-          <div class="split-layout">
-            <article class="table-box">
+            <div class="table-box">
               <div class="table-head">
-                <h3>Ranking ofensivo</h3>
-                <span class="badge gold">Gols marcados</span>
+                <h3>Fair Play — Ranking por Time</h3>
+                <span class="badge green">Menor índice disciplinar</span>
               </div>
               <div class="table-scroll">
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>Pos</th>
+                      <th>#</th>
                       <th>Time</th>
-                      <th>GP</th>
-                      <th>Media</th>
-                      <th>V</th>
-                    </tr>
-                  </thead>
-                  <tbody id="attackTable"></tbody>
-                </table>
-              </div>
-            </article>
-
-            <article class="table-box">
-              <div class="table-head">
-                <h3>Ranking defensivo</h3>
-                <span class="badge cyan">Menos gols sofridos</span>
-              </div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Pos</th>
-                      <th>Time</th>
-                      <th>GC</th>
-                      <th>SG</th>
-                      <th>Clean sheets</th>
-                    </tr>
-                  </thead>
-                  <tbody id="defenseTable"></tbody>
-                </table>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="disciplina" class="section" hidden>
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Disciplina e Suspensoes</h2>
-              <div class="section-subtitle">
-                Regra do painel: 3 amarelos ou 1 vermelho
-              </div>
-            </div>
-            <span class="badge danger">Controle disciplinar</span>
-          </div>
-
-          <div class="split-layout">
-            <article class="table-box">
-              <div class="table-head">
-                <h3>Suspensos</h3>
-                <span class="badge danger">Afastados</span>
-              </div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Jogador</th>
-                      <th>Time</th>
-                      <th>CA</th>
-                      <th>CV</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody id="suspendedTable"></tbody>
-                </table>
-              </div>
-            </article>
-
-            <article class="table-box">
-              <div class="table-head">
-                <h3>Pendurados</h3>
-                <span class="badge gold">Atencao</span>
-              </div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Jogador</th>
-                      <th>Time</th>
-                      <th>CA</th>
-                      <th>Tipo</th>
-                    </tr>
-                  </thead>
-                  <tbody id="warningTable"></tbody>
-                </table>
-              </div>
-            </article>
-          </div>
-
-          <div class="split-layout">
-            <article class="table-box">
-              <div class="table-head">
-                <h3>Fair Play</h3>
-                <span class="badge cyan">Menor indice</span>
-              </div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Pos</th>
-                      <th>Time</th>
-                      <th>CA</th>
-                      <th>CV</th>
-                      <th>Indice</th>
+                      <th class="center">CA</th>
+                      <th class="center">CV</th>
+                      <th class="center">Índice</th>
                     </tr>
                   </thead>
                   <tbody id="fairPlayTable"></tbody>
                 </table>
               </div>
-            </article>
-          </div>
-        </section>
+            </div>
+          </section>
 
-        <section id="artilharia" class="section" hidden>
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Artilharia</h2>
-              <div class="section-subtitle">
-                Gols registrados oficialmente na sumula
+          <!-- ═══ ARTILHARIA ═══ -->
+          <section id="artilharia" class="section">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Artilharia</div>
+                <div class="section-sub">
+                  Gols registrados oficialmente na súmula
+                </div>
+              </div>
+              <span class="badge gold">Top Scorers</span>
+            </div>
+
+            <div class="stats-tables">
+              <div class="table-box">
+                <div class="table-head">
+                  <h3>Ranking Geral</h3>
+                  <span class="badge gold">Top Scorers</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Jogador</th>
+                        <th>Time</th>
+                        <th>Tipo</th>
+                        <th class="right">Gols</th>
+                      </tr>
+                    </thead>
+                    <tbody id="scorersTable"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="table-box">
+                <div class="table-head">
+                  <h3>Gols por Equipe</h3>
+                  <span class="badge blue">Produção coletiva</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Time</th>
+                        <th class="right">Gols</th>
+                      </tr>
+                    </thead>
+                    <tbody id="teamGoalsTable"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div class="split-layout">
-            <article class="table-box">
-              <div class="table-head">
-                <h3>Ranking geral</h3>
-                <span class="badge gold">Top scorers</span>
-              </div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Pos</th>
-                      <th>Jogador</th>
-                      <th>Time</th>
-                      <th>Tipo</th>
-                      <th>Gols</th>
-                    </tr>
-                  </thead>
-                  <tbody id="scorersTable"></tbody>
-                </table>
-              </div>
-            </article>
-
-            <article class="table-box">
-              <div class="table-head">
-                <h3>Gols por equipe</h3>
-                <span class="badge cyan">Coletivo</span>
-              </div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Pos</th>
-                      <th>Time</th>
-                      <th>Gols</th>
-                    </tr>
-                  </thead>
-                  <tbody id="teamGoalsTable"></tbody>
-                </table>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section id="times" class="section" hidden>
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Times e Elencos</h2>
-              <div class="section-subtitle">
-                Campanha, escudo, representantes e elenco completo
+          <!-- ═══ TIMES ═══ -->
+          <section id="times" class="section">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Times e Elencos</div>
+                <div class="section-sub">
+                  Campanha, escudo, representantes e elenco completo
+                </div>
               </div>
             </div>
-          </div>
+            <div id="teamTabs" class="team-tabs"></div>
+            <div id="teamDetail"></div>
+          </section>
 
-          <div id="teamTabs" class="team-tabs"></div>
-          <div id="teamDetail" class="team-shell"></div>
-        </section>
-
-        <section id="jogos" class="section" hidden>
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Central de Jogos</h2>
-              <div class="section-subtitle">
-                Confrontos e placares oficiais refletidos pela sumula
+          <!-- ═══ JOGOS ═══ -->
+          <section id="jogos" class="section">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Central de Jogos</div>
+                <div class="section-sub">Confrontos e placares oficiais</div>
               </div>
             </div>
-          </div>
-
-          <div id="matchesGrid" class="match-grid"></div>
-        </section>
+            <div class="matches-filters">
+              <button
+                class="filter-btn active"
+                data-filter="todos"
+                type="button"
+              >
+                Todos
+              </button>
+              <button
+                class="filter-btn"
+                data-filter="finalizados"
+                type="button"
+              >
+                Finalizados
+              </button>
+              <button class="filter-btn" data-filter="agendados" type="button">
+                Agendados
+              </button>
+            </div>
+            <div id="matchesGrid" class="matches-grid"></div>
+          </section>
+        </div>
+        <!-- /mainContent -->
       </main>
+    </div>
+
+    <!-- MODAL -->
+    <div id="matchModal" class="modal-overlay" role="dialog" aria-modal="true">
+      <div class="modal" style="position:relative">
+        <button class="modal-close" id="modalClose" aria-label="Fechar">✕</button>
+        <div class="modal-header">
+          <div class="modal-match-row">
+            <div class="modal-team">
+              <img id="modalHomeCrest" class="crest lg" src="" alt="" />
+              <div>
+                <div id="modalHomeName" class="modal-team-name"></div>
+                <div id="modalHomeGroup" style="font-size:11px;color:var(--muted)"></div>
+              </div>
+            </div>
+            <div id="modalScore" class="modal-score">- × -</div>
+            <div class="modal-team away">
+              <img id="modalAwayCrest" class="crest lg" src="" alt="" />
+              <div>
+                <div id="modalAwayName" class="modal-team-name"></div>
+                <div id="modalAwayGroup" style="font-size:11px;color:var(--muted)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-meta">
+            <span>📅 <span id="modalDate"></span></span>
+            <span>⏰ <span id="modalTime"></span></span>
+            <span>📍 Campo APECAD</span>
+            <span class="modal-status-badge"><span id="modalStatusBadge" class="badge"></span></span>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="modal-col">
+            <div class="modal-col-title">⚽ Gols</div>
+            <div id="modalGoals" class="modal-event-list"></div>
+          </div>
+          <div class="modal-col">
+            <div class="modal-col-title">🟨 Cartões</div>
+            <div id="modalCards" class="modal-event-list"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -1288,37 +2390,71 @@
         teamGoals: [],
         selectedTeamId: null,
         refreshedAt: null,
+        matchFilter: "todos",
       };
 
       async function getApi(params = {}) {
         const url = new URL(SCRIPT_URL);
-        Object.keys(params).forEach((key) => {
-          url.searchParams.append(key, params[key]);
-        });
-
-        const response = await fetch(url.toString(), { method: "GET" });
-        return await response.json();
+        Object.keys(params).forEach((k) =>
+          url.searchParams.append(k, params[k]),
+        );
+        const r = await fetch(url.toString(), { method: "GET" });
+        return r.json();
       }
 
-      function safeNumber(value) {
-        const number = Number(value || 0);
-        return Number.isFinite(number) ? number : 0;
-      }
-
-      function normalizeText(value) {
-        return String(value || "").trim();
-      }
-
-      function normalizeNameFile(name) {
-        return normalizeText(name)
+      const safeNum = (v) => {
+        const n = Number(v || 0);
+        return isFinite(n) ? n : 0;
+      };
+      const norm = (v) => String(v || "").trim();
+      const normFile = (n) =>
+        norm(n)
           .toLowerCase()
           .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[̀-ͯ]/g, "")
           .replace(/\s+/g, "-");
+
+      function esc(v) {
+        return String(v ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
       }
 
-      function getTeamCrest(teamName) {
-        const name = normalizeNameFile(teamName);
+      function fmtDate(v) {
+        if (!v) return "-";
+        const s = String(v).trim();
+        // Google Sheets fractional time stored as 1899-12-30 — just a time, no real date
+        if (s.startsWith("1899-12-30")) return "-";
+        const d = new Date(s.replace(" ", "T"));
+        return isNaN(d) ? s : d.toLocaleDateString("pt-BR");
+      }
+
+      function fmtTime(v) {
+        if (!v) return "-";
+        const s = String(v).trim();
+        // Already HH:MM or HH:MM:SS
+        if (/^\d{1,2}:\d{2}/.test(s)) return s.slice(0, 5);
+        // Google Sheets stores time as 1899-12-30THH:MM:SS.000Z (UTC)
+        // The sheet is in Brazil (UTC-3), so apps script stored e.g. 19:45 local as 22:45 UTC.
+        // Use browser local time (also Brazil) to get back the original value.
+        if (s.includes("T") || s.includes("1899")) {
+          const d = new Date(s);
+          if (!isNaN(d)) {
+            return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" });
+          }
+        }
+        return s.slice(0, 5) || "-";
+      }
+
+      function pct(pts, j) {
+        return j ? `${((pts / (j * 3)) * 100).toFixed(0)}%` : "0%";
+      }
+
+      function getTeamCrest(name) {
+        const n = normFile(name);
         const map = {
           argentina: "projeto-apecad/assets/escudos/argentina.png",
           belgica: "projeto-apecad/assets/escudos/belgica.png",
@@ -1330,177 +2466,129 @@
           senegal: "projeto-apecad/assets/escudos/senegal.png",
           uruguai: "projeto-apecad/assets/escudos/uruguai.png",
         };
-
-        return map[name] || "projeto-apecad/assets/escudos/escudo-padrao.png";
+        return map[n] || "projeto-apecad/assets/escudos/escudo-padrao.png";
       }
 
-      function escapeHtml(value) {
-        return String(value ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
+      function crestImg(name, cls = "crest") {
+        const src = getTeamCrest(name);
+        return `<img class="${cls}" src="${src}" alt="${esc(name)}" onerror="this.src='projeto-apecad/assets/escudos/escudo-padrao.png'" />`;
       }
 
-      function formatDate(value) {
-        if (!value) return "-";
-        const normalized = String(value).replace(" ", "T");
-        const date = new Date(normalized);
-        if (Number.isNaN(date.getTime())) return String(value);
-        return date.toLocaleDateString("pt-BR");
-      }
-
-      function formatUpdatedTime(date) {
-        if (!date) return "--:--";
-        return date.toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      }
-
-      function percentage(points, matches) {
-        if (!matches) return "0%";
-        return `${((points / (matches * 3)) * 100).toFixed(0)}%`;
-      }
-
-      function technicalDrawSeed(value) {
-        return normalizeText(value)
+      function seedDraw(v) {
+        return norm(v)
           .split("")
-          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+          .reduce((a, c) => a + c.charCodeAt(0), 0);
       }
 
-      function getTeamGroup(team, index, total) {
-        const normalizedName = normalizeNameFile(team.nome_time);
-        if (GROUP_OVERRIDES[normalizedName]) {
-          return GROUP_OVERRIDES[normalizedName].charAt(0);
-        }
-
-        return index < Math.ceil(total / 2) ? "A" : "B";
+      function getTeamGroup(team, idx, total) {
+        const n = normFile(team.nome_time);
+        if (GROUP_OVERRIDES[n]) return GROUP_OVERRIDES[n].charAt(0);
+        return idx < Math.ceil(total / 2) ? "A" : "B";
       }
 
-      function isFinishedMatch(match) {
-        const status = normalizeText(match.status_confronto).toUpperCase();
-        const closed = normalizeText(match.encerrado).toUpperCase() === "SIM";
-        return status === "FINALIZADO" || closed;
+      function isFinished(m) {
+        return (
+          norm(m.status_confronto).toUpperCase() === "FINALIZADO" ||
+          norm(m.encerrado).toUpperCase() === "SIM"
+        );
       }
 
       function computeCards(sumulas) {
-        const playerMap = new Map();
-        const teamMap = new Map();
-
-        sumulas.forEach((item) => {
-          (item.cartoes || []).forEach((card) => {
-            const teamId = normalizeText(card.time_id);
-            const teamName = card.nome_time || "-";
-            const type = normalizeText(card.tipo_cartao).toUpperCase();
-            const qty = safeNumber(card.quantidade || 1);
-            const playerKey =
-              normalizeText(card.jogador_id) || normalizeText(card.nome_jogador);
-
-            if (playerKey) {
-              const current = playerMap.get(playerKey) || {
-                jogador_id: card.jogador_id || "",
-                nome_jogador: card.nome_jogador || "-",
-                nome_time: teamName,
-                time_id: teamId,
-                tipo_jogador: card.tipo_jogador || "-",
+        const pMap = new Map(),
+          tMap = new Map();
+        sumulas.forEach((s) => {
+          (s.cartoes || []).forEach((c) => {
+            const tid = norm(c.time_id),
+              tname = c.nome_time || "-";
+            const type = norm(c.tipo_cartao).toUpperCase(),
+              qty = safeNum(c.quantidade || 1);
+            const pk = norm(c.jogador_id) || norm(c.nome_jogador);
+            if (pk) {
+              const cur = pMap.get(pk) || {
+                jogador_id: c.jogador_id || "",
+                nome_jogador: c.nome_jogador || "-",
+                nome_time: tname,
+                time_id: tid,
+                tipo_jogador: c.tipo_jogador || "-",
                 amarelos: 0,
                 vermelhos: 0,
               };
-
-              if (type === "VERMELHO") {
-                current.vermelhos += qty;
-              } else {
-                current.amarelos += qty;
-              }
-
-              playerMap.set(playerKey, current);
+              type === "VERMELHO"
+                ? (cur.vermelhos += qty)
+                : (cur.amarelos += qty);
+              pMap.set(pk, cur);
             }
-
-            if (teamId) {
-              const team = teamMap.get(teamId) || {
-                time_id: teamId,
-                nome_time: teamName,
+            if (tid) {
+              const t = tMap.get(tid) || {
+                time_id: tid,
+                nome_time: tname,
                 amarelos: 0,
                 vermelhos: 0,
                 indice: 0,
               };
-
-              if (type === "VERMELHO") {
-                team.vermelhos += qty;
-              } else {
-                team.amarelos += qty;
-              }
-
-              team.indice = team.vermelhos * 3 + team.amarelos;
-              teamMap.set(teamId, team);
+              type === "VERMELHO" ? (t.vermelhos += qty) : (t.amarelos += qty);
+              t.indice = t.vermelhos * 3 + t.amarelos;
+              tMap.set(tid, t);
             }
           });
         });
-
         return {
-          players: [...playerMap.values()].sort((a, b) => {
-            if (b.vermelhos !== a.vermelhos) return b.vermelhos - a.vermelhos;
-            if (b.amarelos !== a.amarelos) return b.amarelos - a.amarelos;
-            return a.nome_jogador.localeCompare(b.nome_jogador, "pt-BR");
-          }),
-          teams: [...teamMap.values()].sort((a, b) => {
-            if (a.indice !== b.indice) return a.indice - b.indice;
-            if (a.vermelhos !== b.vermelhos) return a.vermelhos - b.vermelhos;
-            if (a.amarelos !== b.amarelos) return a.amarelos - b.amarelos;
-            return a.nome_time.localeCompare(b.nome_time, "pt-BR");
-          }),
+          players: [...pMap.values()].sort(
+            (a, b) =>
+              b.vermelhos - a.vermelhos ||
+              b.amarelos - a.amarelos ||
+              a.nome_jogador.localeCompare(b.nome_jogador, "pt-BR"),
+          ),
+          teams: [...tMap.values()].sort(
+            (a, b) =>
+              a.indice - b.indice ||
+              a.vermelhos - b.vermelhos ||
+              a.amarelos - b.amarelos ||
+              a.nome_time.localeCompare(b.nome_time, "pt-BR"),
+          ),
         };
       }
 
       function computeScorers(sumulas) {
         const map = new Map();
-
-        sumulas.forEach((item) => {
-          (item.gols || []).forEach((goal) => {
-            const key =
-              normalizeText(goal.jogador_id) || normalizeText(goal.nome_jogador);
-
-            if (!key) return;
-
-            const current = map.get(key) || {
-              jogador_id: goal.jogador_id || "",
-              nome_jogador: goal.nome_jogador || "-",
-              nome_time: goal.nome_time || "-",
-              tipo_jogador: goal.tipo_jogador || "-",
+        sumulas.forEach((s) => {
+          (s.gols || []).forEach((g) => {
+            const k = norm(g.jogador_id) || norm(g.nome_jogador);
+            if (!k) return;
+            const cur = map.get(k) || {
+              jogador_id: g.jogador_id || "",
+              nome_jogador: g.nome_jogador || "-",
+              nome_time: g.nome_time || "-",
+              tipo_jogador: g.tipo_jogador || "-",
               gols: 0,
             };
-
-            current.gols += safeNumber(goal.quantidade_gols || 1);
-            map.set(key, current);
+            cur.gols += safeNum(g.quantidade_gols || 1);
+            map.set(k, cur);
           });
         });
-
-        return [...map.values()].sort((a, b) => {
-          if (b.gols !== a.gols) return b.gols - a.gols;
-          return a.nome_jogador.localeCompare(b.nome_jogador, "pt-BR");
-        });
+        return [...map.values()].sort(
+          (a, b) =>
+            b.gols - a.gols ||
+            a.nome_jogador.localeCompare(b.nome_jogador, "pt-BR"),
+        );
       }
 
-      function buildStandings(times, confrontos, disciplineByTeam) {
-        const orderedTeams = [...times].sort((a, b) =>
-          String(a.time_id || "").localeCompare(String(b.time_id || ""), "pt-BR"),
+      function buildStandings(times, confrontos, discByTeam) {
+        const ordered = [...times].sort((a, b) =>
+          String(a.time_id || "").localeCompare(
+            String(b.time_id || ""),
+            "pt-BR",
+          ),
         );
-
-        const base = orderedTeams.map((team, index) => {
-          const discipline = disciplineByTeam[team.time_id] || {
-            amarelos: 0,
-            vermelhos: 0,
-          };
-
+        const base = ordered.map((t, i) => {
+          const disc = discByTeam[t.time_id] || { amarelos: 0, vermelhos: 0 };
           return {
-            time_id: team.time_id,
-            nome: team.nome_time,
-            status_time: team.status_time || "ATIVO",
-            representante_1: team.representante_1 || "",
-            representante_2: team.representante_2 || "",
-            grupo: getTeamGroup(team, index, orderedTeams.length),
+            time_id: t.time_id,
+            nome: t.nome_time,
+            status_time: t.status_time || "ATIVO",
+            representante_1: t.representante_1 || "",
+            representante_2: t.representante_2 || "",
+            grupo: getTeamGroup(t, i, ordered.length),
             pts: 0,
             j: 0,
             v: 0,
@@ -1510,97 +2598,150 @@
             gc: 0,
             sg: 0,
             cleanSheets: 0,
-            amarelos: discipline.amarelos,
-            vermelhos: discipline.vermelhos,
-            sorteio: technicalDrawSeed(team.time_id || team.nome_time || index),
+            amarelos: disc.amarelos,
+            vermelhos: disc.vermelhos,
+            sorteio: seedDraw(t.time_id || t.nome_time || i),
           };
         });
-
-        const byId = Object.fromEntries(base.map((team) => [team.time_id, team]));
-
-        confrontos.filter(isFinishedMatch).forEach((match) => {
-          const home = byId[match.time_casa_id];
-          const away = byId[match.time_fora_id];
-          if (!home || !away) return;
-          if (home.grupo !== away.grupo) return;
-
-          const homeGoals = safeNumber(match.gols_casa);
-          const awayGoals = safeNumber(match.gols_fora);
-
-          home.j += 1;
-          away.j += 1;
-          home.gp += homeGoals;
-          home.gc += awayGoals;
-          away.gp += awayGoals;
-          away.gc += homeGoals;
-          home.sg = home.gp - home.gc;
-          away.sg = away.gp - away.gc;
-
-          if (awayGoals === 0) home.cleanSheets += 1;
-          if (homeGoals === 0) away.cleanSheets += 1;
-
-          if (homeGoals > awayGoals) {
-            home.v += 1;
-            home.pts += 3;
-            away.d += 1;
-          } else if (homeGoals < awayGoals) {
-            away.v += 1;
-            away.pts += 3;
-            home.d += 1;
+        const byId = Object.fromEntries(base.map((t) => [t.time_id, t]));
+        confrontos.filter(isFinished).forEach((m) => {
+          const h = byId[m.time_casa_id],
+            a = byId[m.time_fora_id];
+          if (!h || !a || h.grupo !== a.grupo) return;
+          const hg = safeNum(m.gols_casa),
+            ag = safeNum(m.gols_fora);
+          h.j++;
+          a.j++;
+          h.gp += hg;
+          h.gc += ag;
+          a.gp += ag;
+          a.gc += hg;
+          h.sg = h.gp - h.gc;
+          a.sg = a.gp - a.gc;
+          if (ag === 0) h.cleanSheets++;
+          if (hg === 0) a.cleanSheets++;
+          if (hg > ag) {
+            h.v++;
+            h.pts += 3;
+            a.d++;
+          } else if (hg < ag) {
+            a.v++;
+            a.pts += 3;
+            h.d++;
           } else {
-            home.e += 1;
-            away.e += 1;
-            home.pts += 1;
-            away.pts += 1;
+            h.e++;
+            a.e++;
+            h.pts++;
+            a.pts++;
           }
         });
-
         return base;
       }
 
-      function standingsSorter(a, b) {
-        if (b.pts !== a.pts) return b.pts - a.pts;
-        if (b.v !== a.v) return b.v - a.v;
-        if (b.sg !== a.sg) return b.sg - a.sg;
-        if (b.gp !== a.gp) return b.gp - a.gp;
-        if (a.vermelhos !== b.vermelhos) return a.vermelhos - b.vermelhos;
-        if (a.amarelos !== b.amarelos) return a.amarelos - b.amarelos;
-        return a.sorteio - b.sorteio;
+      function sorter(a, b) {
+        return (
+          b.pts - a.pts ||
+          b.v - a.v ||
+          b.sg - a.sg ||
+          b.gp - a.gp ||
+          a.vermelhos - b.vermelhos ||
+          a.amarelos - b.amarelos ||
+          a.sorteio - b.sorteio
+        );
       }
 
-      function renderGroupTable(group, rows) {
-        const container = document.getElementById(`group${group}Table`);
-        document.getElementById(`group${group}Count`).textContent = `${rows.length} times`;
+      function posBadge(i) {
+        const cls = i === 0 ? "p1" : i === 1 ? "p2" : i === 2 ? "p3" : "pn";
+        return `<span class="pos-badge ${cls}">${i + 1}</span>`;
+      }
 
-        if (!rows.length) {
-          container.innerHTML =
-            '<tr><td colspan="8" class="empty">Sem times no grupo.</td></tr>';
+      function getGroupCode(timeId) {
+        const name = normFile(state.standings.find(x => x.time_id === timeId)?.nome || "");
+        return GROUP_OVERRIDES[name] || (state.standings.find(x => x.time_id === timeId)?.grupo || "-");
+      }
+
+      function renderScheduleTable() {
+        const sorted = [...state.confrontos].sort((a, b) => {
+          const ak = `${norm(a.data_jogo)} ${norm(a.hora_jogo)}`;
+          const bk = `${norm(b.data_jogo)} ${norm(b.hora_jogo)}`;
+          return ak.localeCompare(bk, "pt-BR");
+        });
+
+        const tbody = document.getElementById("scheduleTableBody");
+        if (!sorted.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty">Nenhum confronto cadastrado.</td></tr>';
           return;
         }
 
-        container.innerHTML = rows
-          .map(
-            (team, index) => `
-              <tr>
-                <td><span class="pos">${index + 1}</span></td>
-                <td class="team-col">
-                  <div class="team-chip">
-                    <img class="crest" src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
-                    <div>
-                      <strong>${escapeHtml(team.nome)}</strong>
-                      <span>${escapeHtml(team.status_time)}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>${team.pts}</td>
-                <td>${team.v}</td>
-                <td>${team.sg >= 0 ? `+${team.sg}` : team.sg}</td>
-                <td>${team.gp}</td>
-                <td>${team.vermelhos}</td>
-                <td>${team.amarelos}</td>
-              </tr>
-            `,
-          )
+        tbody.innerHTML = sorted.map(m => {
+          const fin = isFinished(m);
+          const hCode = getGroupCode(m.time_casa_id);
+          const aCode = getGroupCode(m.time_fora_id);
+          const hIsB = hCode.startsWith("B");
+          const aIsB = aCode.startsWith("B");
+          const placar = fin
+            ? `<span class="vs-badge score">${safeNum(m.gols_casa)} × ${safeNum(m.gols_fora)}</span>`
+            : `<span class="vs-badge">VS</span>`;
+          return `<tr class="${fin ? "row-finished" : ""} row-clickable" data-confronto-id="${esc(m.confronto_id)}" style="cursor:pointer" title="Clique para ver detalhes">
+            <td><span class="sched-date">${fmtDate(m.data_jogo)}</span></td>
+            <td><span class="sched-time">${fmtTime(m.hora_jogo)}</span></td>
+            <td>
+              <div class="sched-team">
+                <span class="group-tag${hIsB ? " b" : ""}">${esc(hCode)}</span>
+                ${crestImg(m.nome_time_casa)}
+                ${esc(m.nome_time_casa || "-")}
+              </div>
+            </td>
+            <td class="center">${placar}</td>
+            <td>
+              <div class="sched-team">
+                <span class="group-tag${aIsB ? " b" : ""}">${esc(aCode)}</span>
+                ${crestImg(m.nome_time_fora)}
+                ${esc(m.nome_time_fora || "-")}
+              </div>
+            </td>
+          </tr>`;
+        }).join("");
+
+        tbody.querySelectorAll(".row-clickable").forEach(tr => {
+          tr.addEventListener("click", () => openMatchModal(tr.dataset.confrontoId));
+        });
+      }
+
+      function renderGroupTable(group, rows) {
+        document.getElementById(`group${group}Count`).textContent =
+          `${rows.length} times`;
+        const tbody = document.getElementById(`group${group}Table`);
+        if (!rows.length) {
+          tbody.innerHTML = `<tr><td colspan="12" class="empty">Sem times no grupo.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = rows
+          .map((t, i) => {
+            const sg =
+              t.sg >= 0
+                ? `<span class="sg-pos">+${t.sg}</span>`
+                : `<span class="sg-neg">${t.sg}</span>`;
+            return `<tr class="${i === 0 ? "leader" : ""}">
+            <td>${posBadge(i)}</td>
+            <td class="left">
+              <div class="team-chip">
+                ${crestImg(t.nome)}
+                <div><div class="team-name">${esc(t.nome)}</div><div class="team-status">${esc(t.status_time)}</div></div>
+              </div>
+            </td>
+            <td><span class="pts-highlight">${t.pts}</span></td>
+            <td>${t.j}</td>
+            <td>${t.v}</td>
+            <td>${t.e}</td>
+            <td>${t.d}</td>
+            <td>${sg}</td>
+            <td>${t.gp}</td>
+            <td>${t.gc}</td>
+            <td><span class="card-cv">${t.vermelhos}</span></td>
+            <td><span class="card-ca">${t.amarelos}</span></td>
+          </tr>`;
+          })
           .join("");
       }
 
@@ -1608,11 +2749,11 @@
         renderGroupTable("A", state.groups.A);
         renderGroupTable("B", state.groups.B);
 
-        const all = [...state.standings].sort(standingsSorter);
+        const all = [...state.standings].sort(sorter);
         const leader = all[0];
-        const bestAttack = [...all].sort((a, b) => b.gp - a.gp || standingsSorter(a, b))[0];
-        const bestDefense = [...all].sort((a, b) => a.gc - b.gc || standingsSorter(a, b))[0];
-        const disciplined = [...all].sort(
+        const bestAtk = [...all].sort((a, b) => b.gp - a.gp || sorter(a, b))[0];
+        const bestDef = [...all].sort((a, b) => a.gc - b.gc || sorter(a, b))[0];
+        const fp = [...all].sort(
           (a, b) =>
             a.vermelhos - b.vermelhos ||
             a.amarelos - b.amarelos ||
@@ -1620,336 +2761,274 @@
         )[0];
 
         document.getElementById("leadersBoard").innerHTML = `
-          <div class="ranking-list">
-            <div class="ranking-item">
-              <div class="ranking-number">L</div>
-              <div>
-                <strong>${leader ? escapeHtml(leader.nome) : "-"}</strong>
-                <div class="section-subtitle">${leader ? `${leader.pts} pts | Grupo ${leader.grupo}` : "Sem jogos finalizados"}</div>
-              </div>
-              <div class="ranking-value">${leader ? leader.pts : 0}</div>
+          <div class="leader-item">
+            ${crestImg(leader ? leader.nome : "-")}
+            <div class="leader-info">
+              <div class="leader-name">${leader ? esc(leader.nome) : "—"}</div>
+              <div class="leader-desc">Líder — ${leader ? `${leader.pts} pts | Grupo ${leader.grupo}` : "Sem jogos"}</div>
             </div>
-            <div class="ranking-item">
-              <div class="ranking-number">A</div>
-              <div>
-                <strong>${bestAttack ? escapeHtml(bestAttack.nome) : "-"}</strong>
-                <div class="section-subtitle">Melhor ataque</div>
-              </div>
-              <div class="ranking-value">${bestAttack ? bestAttack.gp : 0}</div>
+            <div class="leader-value" style="color:var(--gold-2)">${leader ? leader.pts : 0}</div>
+          </div>
+          <div class="leader-item">
+            ${crestImg(bestAtk ? bestAtk.nome : "-")}
+            <div class="leader-info">
+              <div class="leader-name">${bestAtk ? esc(bestAtk.nome) : "—"}</div>
+              <div class="leader-desc">Melhor ataque</div>
             </div>
-            <div class="ranking-item">
-              <div class="ranking-number">D</div>
-              <div>
-                <strong>${bestDefense ? escapeHtml(bestDefense.nome) : "-"}</strong>
-                <div class="section-subtitle">Melhor defesa</div>
-              </div>
-              <div class="ranking-value">${bestDefense ? bestDefense.gc : 0}</div>
+            <div class="leader-value" style="color:#9BBAFF">${bestAtk ? bestAtk.gp : 0}</div>
+          </div>
+          <div class="leader-item">
+            ${crestImg(bestDef ? bestDef.nome : "-")}
+            <div class="leader-info">
+              <div class="leader-name">${bestDef ? esc(bestDef.nome) : "—"}</div>
+              <div class="leader-desc">Melhor defesa</div>
             </div>
+            <div class="leader-value" style="color:var(--green)">${bestDef ? bestDef.gc : 0}</div>
+          </div>
+          <div class="leader-item">
+            ${crestImg(fp ? fp.nome : "-")}
+            <div class="leader-info">
+              <div class="leader-name">${fp ? esc(fp.nome) : "—"}</div>
+              <div class="leader-desc">Melhor fair play</div>
+            </div>
+            <div class="leader-value" style="color:#FF8C96">${fp ? fp.vermelhos * 3 + fp.amarelos : 0}</div>
           </div>
         `;
 
         document.getElementById("summaryBoard").innerHTML = `
-          <div class="ranking-list">
-            <div class="ranking-item">
-              <div class="ranking-number">A</div>
-              <div>
-                <strong>Grupo A</strong>
-                <div class="section-subtitle">${state.groups.A[0] ? escapeHtml(state.groups.A[0].nome) : "Sem lider"}</div>
-              </div>
+          <div class="leader-item">
+            ${crestImg(state.groups.A[0] ? state.groups.A[0].nome : "-")}
+            <div class="leader-info">
+              <div class="leader-name">Grupo A</div>
+              <div class="leader-desc">${state.groups.A[0] ? esc(state.groups.A[0].nome) : "Sem líder definido"}</div>
             </div>
-            <div class="ranking-item">
-              <div class="ranking-number">B</div>
-              <div>
-                <strong>Grupo B</strong>
-                <div class="section-subtitle">${state.groups.B[0] ? escapeHtml(state.groups.B[0].nome) : "Sem lider"}</div>
-              </div>
+            <div class="leader-value" style="color:var(--gold-2)">${state.groups.A[0] ? state.groups.A[0].pts : 0}</div>
+          </div>
+          <div class="leader-item">
+            ${crestImg(state.groups.B[0] ? state.groups.B[0].nome : "-")}
+            <div class="leader-info">
+              <div class="leader-name">Grupo B</div>
+              <div class="leader-desc">${state.groups.B[0] ? esc(state.groups.B[0].nome) : "Sem líder definido"}</div>
             </div>
-            <div class="ranking-item">
-              <div class="ranking-number">FP</div>
-              <div>
-                <strong>${disciplined ? escapeHtml(disciplined.nome) : "-"}</strong>
-                <div class="section-subtitle">Melhor disciplina</div>
-              </div>
-              <div class="ranking-value">${disciplined ? disciplined.vermelhos * 3 + disciplined.amarelos : 0}</div>
-            </div>
+            <div class="leader-value" style="color:var(--gold-2)">${state.groups.B[0] ? state.groups.B[0].pts : 0}</div>
           </div>
         `;
       }
 
       function renderHero() {
-        const finishedMatches = state.confrontos.filter(isFinishedMatch);
-        const totalGoals = state.scorers.reduce((sum, item) => sum + item.gols, 0);
-        const leader = [...state.standings].sort(standingsSorter)[0];
-        const bestDefense = [...state.standings].sort(
-          (a, b) => a.gc - b.gc || standingsSorter(a, b),
+        const fin = state.confrontos.filter(isFinished);
+        const totalGoals = state.scorers.reduce((s, x) => s + x.gols, 0);
+        const leader = [...state.standings].sort(sorter)[0];
+        const bestDef = [...state.standings].sort(
+          (a, b) => a.gc - b.gc || sorter(a, b),
         )[0];
 
-        document.getElementById("heroMatches").textContent = finishedMatches.length;
+        document.getElementById("heroMatches").textContent = fin.length;
         document.getElementById("heroMatchesSub").textContent =
-          `${state.confrontos.length} confrontos cadastrados`;
+          `${state.confrontos.length} cadastrados`;
         document.getElementById("heroGoals").textContent = totalGoals;
-        document.getElementById("heroGoalsSub").textContent = finishedMatches.length
-          ? `${(totalGoals / finishedMatches.length).toFixed(2)} por partida`
+        document.getElementById("heroGoalsSub").textContent = fin.length
+          ? `${(totalGoals / fin.length).toFixed(2)} por partida`
           : "0 por partida";
-        document.getElementById("heroLeader").textContent = leader ? leader.nome : "-";
+        document.getElementById("heroLeader").textContent = leader
+          ? leader.nome
+          : "-";
         document.getElementById("heroLeaderSub").textContent = leader
           ? `${leader.pts} pts | Grupo ${leader.grupo}`
           : "Aguardando jogos";
-        document.getElementById("heroDefense").textContent = bestDefense
-          ? bestDefense.nome
+        document.getElementById("heroDefense").textContent = bestDef
+          ? bestDef.nome
           : "-";
-        document.getElementById("heroDefenseSub").textContent = bestDefense
-          ? `${bestDefense.gc} gols sofridos`
+        document.getElementById("heroDefenseSub").textContent = bestDef
+          ? `${bestDef.gc} gols sofridos`
           : "Aguardando jogos";
-
-        document.getElementById("updatedInfo").textContent =
-          `Ultima atualizacao: ${formatUpdatedTime(state.refreshedAt)}`;
+        document.getElementById("updatedInfo").innerHTML =
+          `<span>⏱</span><span>Atualizado: ${state.refreshedAt ? state.refreshedAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "--:--"}</span>`;
       }
 
       function renderStats() {
-        const finishedMatches = state.confrontos.filter(isFinishedMatch);
-        const totalGoals = state.scorers.reduce((sum, item) => sum + item.gols, 0);
-        const yellowCards = state.cards.reduce((sum, item) => sum + item.amarelos, 0);
-        const redCards = state.cards.reduce((sum, item) => sum + item.vermelhos, 0);
-        const mostWins = [...state.standings].sort((a, b) => b.v - a.v || standingsSorter(a, b))[0];
-        const cleanSheets = Math.max(...state.standings.map((item) => item.cleanSheets), 0);
+        const fin = state.confrontos.filter(isFinished);
+        const totalGoals = state.scorers.reduce((s, x) => s + x.gols, 0);
+        const yellows = state.cards.reduce((s, x) => s + x.amarelos, 0);
+        const reds = state.cards.reduce((s, x) => s + x.vermelhos, 0);
+        const mostWins = [...state.standings].sort(
+          (a, b) => b.v - a.v || sorter(a, b),
+        )[0];
+        const cleanMax = Math.max(
+          ...state.standings.map((x) => x.cleanSheets),
+          0,
+        );
 
-        document.getElementById("statsCards").innerHTML = `
-          <article class="stat-card">
-            <h4>Partidas finalizadas</h4>
-            <strong>${finishedMatches.length}</strong>
-            <span>${state.confrontos.length} jogos cadastrados</span>
-          </article>
-          <article class="stat-card">
-            <h4>Gols totais</h4>
-            <strong>${totalGoals}</strong>
-            <span>${finishedMatches.length ? (totalGoals / finishedMatches.length).toFixed(2) : "0.00"} por jogo</span>
-          </article>
-          <article class="stat-card">
-            <h4>Mais vitorias</h4>
-            <strong>${mostWins ? escapeHtml(mostWins.nome) : "-"}</strong>
-            <span>${mostWins ? `${mostWins.v} vitorias` : "Sem jogos"}</span>
-          </article>
-          <article class="stat-card">
-            <h4>Clean sheets</h4>
-            <strong>${cleanSheets}</strong>
-            <span>Maior numero entre os times</span>
-          </article>
-          <article class="stat-card">
-            <h4>Cartoes amarelos</h4>
-            <strong>${yellowCards}</strong>
-            <span>Indice disciplinar geral</span>
-          </article>
-          <article class="stat-card">
-            <h4>Cartoes vermelhos</h4>
-            <strong>${redCards}</strong>
-            <span>Expulsoes oficiais</span>
-          </article>
-          <article class="stat-card">
-            <h4>Grupo A lider</h4>
-            <strong>${state.groups.A[0] ? escapeHtml(state.groups.A[0].nome) : "-"}</strong>
-            <span>${state.groups.A[0] ? `${state.groups.A[0].pts} pts` : "Sem tabela"}</span>
-          </article>
-          <article class="stat-card">
-            <h4>Grupo B lider</h4>
-            <strong>${state.groups.B[0] ? escapeHtml(state.groups.B[0].nome) : "-"}</strong>
-            <span>${state.groups.B[0] ? `${state.groups.B[0].pts} pts` : "Sem tabela"}</span>
-          </article>
+        document.getElementById("statsKpiGrid").innerHTML = `
+          <div class="kpi-card blue">
+            <div class="kpi-label">Partidas finalizadas</div>
+            <div class="kpi-value">${fin.length}</div>
+            <div class="kpi-sub">${state.confrontos.length} jogos cadastrados</div>
+          </div>
+          <div class="kpi-card gold">
+            <div class="kpi-label">Gols totais</div>
+            <div class="kpi-value">${totalGoals}</div>
+            <div class="kpi-sub">${fin.length ? (totalGoals / fin.length).toFixed(2) : "0.00"} por jogo</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-label">Mais vitórias</div>
+            <div class="kpi-value" style="font-size:24px">${mostWins ? esc(mostWins.nome) : "-"}</div>
+            <div class="kpi-sub">${mostWins ? `${mostWins.v} vitórias` : "Sem jogos"}</div>
+          </div>
+          <div class="kpi-card blue">
+            <div class="kpi-label">Clean Sheets (max)</div>
+            <div class="kpi-value">${cleanMax}</div>
+            <div class="kpi-sub">Maior número entre os times</div>
+          </div>
+          <div class="kpi-card gold">
+            <div class="kpi-label">Cartões Amarelos</div>
+            <div class="kpi-value">${yellows}</div>
+            <div class="kpi-sub">Índice disciplinar geral</div>
+          </div>
+          <div class="kpi-card red">
+            <div class="kpi-label">Cartões Vermelhos</div>
+            <div class="kpi-value">${reds}</div>
+            <div class="kpi-sub">Expulsões oficiais</div>
+          </div>
+          <div class="kpi-card blue">
+            <div class="kpi-label">Líder Grupo A</div>
+            <div class="kpi-value" style="font-size:24px">${state.groups.A[0] ? esc(state.groups.A[0].nome) : "-"}</div>
+            <div class="kpi-sub">${state.groups.A[0] ? `${state.groups.A[0].pts} pts` : "Sem tabela"}</div>
+          </div>
+          <div class="kpi-card gold">
+            <div class="kpi-label">Líder Grupo B</div>
+            <div class="kpi-value" style="font-size:24px">${state.groups.B[0] ? esc(state.groups.B[0].nome) : "-"}</div>
+            <div class="kpi-sub">${state.groups.B[0] ? `${state.groups.B[0].pts} pts` : "Sem tabela"}</div>
+          </div>
         `;
 
         document.getElementById("attackTable").innerHTML = [...state.standings]
-          .sort((a, b) => b.gp - a.gp || standingsSorter(a, b))
+          .sort((a, b) => b.gp - a.gp || sorter(a, b))
           .map(
-            (team, index) => `
-              <tr>
-                <td>${index + 1}</td>
-                <td>
-                  <div class="team-chip">
-                    <img class="crest" src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
-                    <div>
-                      <strong>${escapeHtml(team.nome)}</strong>
-                      <span>Grupo ${team.grupo}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>${team.gp}</td>
-                <td>${team.j ? (team.gp / team.j).toFixed(2) : "0.00"}</td>
-                <td>${team.v}</td>
-              </tr>
-            `,
+            (t, i) => `<tr>
+            <td><span class="scorer-rank${i < 3 ? " gold" : ""}">${i + 1}</span></td>
+            <td><div class="team-chip">${crestImg(t.nome)}<div><div class="team-name">${esc(t.nome)}</div><div class="team-status">Grupo ${t.grupo}</div></div></div></td>
+            <td class="center"><span class="goals-big">${t.gp}</span></td>
+            <td class="center">${t.j ? (t.gp / t.j).toFixed(2) : "0.00"}</td>
+            <td class="center">${t.v}</td>
+          </tr>`,
           )
           .join("");
 
         document.getElementById("defenseTable").innerHTML = [...state.standings]
-          .sort((a, b) => a.gc - b.gc || standingsSorter(a, b))
-          .map(
-            (team, index) => `
-              <tr>
-                <td>${index + 1}</td>
-                <td>
-                  <div class="team-chip">
-                    <img class="crest" src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
-                    <div>
-                      <strong>${escapeHtml(team.nome)}</strong>
-                      <span>Grupo ${team.grupo}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>${team.gc}</td>
-                <td>${team.sg >= 0 ? `+${team.sg}` : team.sg}</td>
-                <td>${team.cleanSheets}</td>
-              </tr>
-            `,
-          )
+          .sort((a, b) => a.gc - b.gc || sorter(a, b))
+          .map((t, i) => {
+            const sg =
+              t.sg >= 0
+                ? `<span class="sg-pos">+${t.sg}</span>`
+                : `<span class="sg-neg">${t.sg}</span>`;
+            return `<tr>
+              <td><span class="scorer-rank${i < 3 ? " gold" : ""}">${i + 1}</span></td>
+              <td><div class="team-chip">${crestImg(t.nome)}<div><div class="team-name">${esc(t.nome)}</div><div class="team-status">Grupo ${t.grupo}</div></div></div></td>
+              <td class="center">${t.gc}</td>
+              <td class="center">${sg}</td>
+              <td class="center">${t.cleanSheets}</td>
+            </tr>`;
+          })
           .join("");
       }
 
       function renderDiscipline() {
-        const suspended = state.cards.filter(
-          (item) => item.vermelhos >= 1 || item.amarelos >= SUSPENSION_YELLOWS,
+        const susp = state.cards.filter(
+          (x) => x.vermelhos >= 1 || x.amarelos >= SUSPENSION_YELLOWS,
         );
-        const warning = state.cards.filter(
-          (item) => item.vermelhos === 0 && item.amarelos === WARNING_YELLOWS,
+        const warn = state.cards.filter(
+          (x) => x.vermelhos === 0 && x.amarelos === WARNING_YELLOWS,
         );
 
-        document.getElementById("suspendedTable").innerHTML = suspended.length
-          ? suspended
+        document.getElementById("suspendedTable").innerHTML = susp.length
+          ? susp
               .map(
-                (item) => `
-                  <tr>
-                    <td>
-                      <div class="player-chip">
-                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
-                        <div>
-                          <strong>${escapeHtml(item.nome_jogador)}</strong>
-                          <span>${escapeHtml(item.tipo_jogador)}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>${escapeHtml(item.nome_time)}</td>
-                    <td>${item.amarelos}</td>
-                    <td>${item.vermelhos}</td>
-                    <td>${item.vermelhos >= 1 ? '<span class="badge danger">Vermelho</span>' : '<span class="badge danger">3 amarelos</span>'}</td>
-                  </tr>
-                `,
+                (x) => `<tr>
+              <td><div class="team-chip">${crestImg(x.nome_time)}<div><div class="team-name">${esc(x.nome_jogador)}</div><div class="team-status">${esc(x.tipo_jogador)}</div></div></div></td>
+              <td>${esc(x.nome_time)}</td>
+              <td class="center"><span class="card-ca">${x.amarelos}</span></td>
+              <td class="center"><span class="card-cv">${x.vermelhos}</span></td>
+              <td>${x.vermelhos >= 1 ? '<span class="badge red">Vermelho</span>' : '<span class="badge red">3 amarelos</span>'}</td>
+            </tr>`,
               )
               .join("")
           : '<tr><td colspan="5" class="empty">Nenhum suspenso no momento.</td></tr>';
 
-        document.getElementById("warningTable").innerHTML = warning.length
-          ? warning
+        document.getElementById("warningTable").innerHTML = warn.length
+          ? warn
               .map(
-                (item) => `
-                  <tr>
-                    <td>
-                      <div class="player-chip">
-                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
-                        <div>
-                          <strong>${escapeHtml(item.nome_jogador)}</strong>
-                          <span>${escapeHtml(item.tipo_jogador)}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>${escapeHtml(item.nome_time)}</td>
-                    <td>${item.amarelos}</td>
-                    <td><span class="badge gold">Pendurado</span></td>
-                  </tr>
-                `,
+                (x) => `<tr>
+              <td><div class="team-chip">${crestImg(x.nome_time)}<div><div class="team-name">${esc(x.nome_jogador)}</div><div class="team-status">${esc(x.tipo_jogador)}</div></div></div></td>
+              <td>${esc(x.nome_time)}</td>
+              <td class="center"><span class="card-ca">${x.amarelos}</span></td>
+              <td><span class="badge gold">Pendurado</span></td>
+            </tr>`,
               )
               .join("")
           : '<tr><td colspan="4" class="empty">Nenhum pendurado identificado.</td></tr>';
 
-        document.getElementById("fairPlayTable").innerHTML = state.fairPlay.length
+        document.getElementById("fairPlayTable").innerHTML = state.fairPlay
+          .length
           ? state.fairPlay
               .map(
-                (item, index) => `
-                  <tr>
-                    <td>${index + 1}</td>
-                    <td>
-                      <div class="team-chip">
-                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
-                        <div>
-                          <strong>${escapeHtml(item.nome_time)}</strong>
-                          <span>Disciplina</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>${item.amarelos}</td>
-                    <td>${item.vermelhos}</td>
-                    <td>${item.indice}</td>
-                  </tr>
-                `,
+                (x, i) => `<tr>
+              <td><span class="scorer-rank${i < 3 ? " gold" : ""}">${i + 1}</span></td>
+              <td><div class="team-chip">${crestImg(x.nome_time)}<div><div class="team-name">${esc(x.nome_time)}</div><div class="team-status">Disciplina</div></div></div></td>
+              <td class="center"><span class="card-ca">${x.amarelos}</span></td>
+              <td class="center"><span class="card-cv">${x.vermelhos}</span></td>
+              <td class="center">${x.indice}</td>
+            </tr>`,
               )
               .join("")
-          : '<tr><td colspan="5" class="empty">Sem cartoes registrados.</td></tr>';
+          : '<tr><td colspan="5" class="empty">Sem cartões registrados.</td></tr>';
       }
 
       function renderScorers() {
         document.getElementById("scorersTable").innerHTML = state.scorers.length
           ? state.scorers
               .map(
-                (item, index) => `
-                  <tr>
-                    <td>${index + 1}</td>
-                    <td>
-                      <div class="player-chip">
-                        <img class="crest" src="${getTeamCrest(item.nome_time)}" alt="Escudo ${escapeHtml(item.nome_time)}" />
-                        <div>
-                          <strong>${escapeHtml(item.nome_jogador)}</strong>
-                          <span>${escapeHtml(item.nome_time)}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>${escapeHtml(item.nome_time)}</td>
-                    <td>${escapeHtml(item.tipo_jogador)}</td>
-                    <td>${item.gols}</td>
-                  </tr>
-                `,
+                (x, i) => `<tr>
+              <td><span class="scorer-rank${i < 3 ? " gold" : ""}">${i + 1}</span></td>
+              <td><div class="team-chip">${crestImg(x.nome_time)}<div><div class="team-name">${esc(x.nome_jogador)}</div><div class="team-status">${esc(x.nome_time)}</div></div></div></td>
+              <td>${esc(x.nome_time)}</td>
+              <td>${esc(x.tipo_jogador)}</td>
+              <td class="right"><span class="goals-big">${x.gols}</span></td>
+            </tr>`,
               )
               .join("")
           : '<tr><td colspan="5" class="empty">Nenhum gol registrado ainda.</td></tr>';
 
-        document.getElementById("teamGoalsTable").innerHTML = state.teamGoals.length
+        document.getElementById("teamGoalsTable").innerHTML = state.teamGoals
+          .length
           ? state.teamGoals
               .map(
-                (item, index) => `
-                  <tr>
-                    <td>${index + 1}</td>
-                    <td>
-                      <div class="team-chip">
-                        <img class="crest" src="${getTeamCrest(item.nome)}" alt="Escudo ${escapeHtml(item.nome)}" />
-                        <div>
-                          <strong>${escapeHtml(item.nome)}</strong>
-                          <span>Producao coletiva</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>${item.gols}</td>
-                  </tr>
-                `,
+                (x, i) => `<tr>
+              <td><span class="scorer-rank${i < 3 ? " gold" : ""}">${i + 1}</span></td>
+              <td><div class="team-chip">${crestImg(x.nome)}<div><div class="team-name">${esc(x.nome)}</div><div class="team-status">Produção coletiva</div></div></div></td>
+              <td class="right"><span class="goals-big">${x.gols}</span></td>
+            </tr>`,
               )
               .join("")
           : '<tr><td colspan="3" class="empty">Sem gols por equipe.</td></tr>';
       }
 
       function renderTeamTabs() {
-        const container = document.getElementById("teamTabs");
-        container.innerHTML = [...state.standings]
+        const tabs = document.getElementById("teamTabs");
+        tabs.innerHTML = [...state.standings]
           .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
-          .map((team) => {
-            const active = state.selectedTeamId === team.time_id ? "active" : "";
-            return `
-              <button class="team-tab ${active}" type="button" data-team-id="${team.time_id}">
-                <img src="${getTeamCrest(team.nome)}" alt="Escudo ${escapeHtml(team.nome)}" />
-                <span>${escapeHtml(team.nome)}</span>
-              </button>
-            `;
-          })
+          .map(
+            (
+              t,
+            ) => `<button class="team-tab ${state.selectedTeamId === t.time_id ? "active" : ""}" type="button" data-team-id="${t.time_id}">
+            <img src="${getTeamCrest(t.nome)}" alt="${esc(t.nome)}" onerror="this.src='projeto-apecad/assets/escudos/escudo-padrao.png'" />
+            <span>${esc(t.nome)}</span>
+          </button>`,
+          )
           .join("");
-
-        container.querySelectorAll(".team-tab").forEach((button) => {
-          button.addEventListener("click", () => {
-            state.selectedTeamId = button.dataset.teamId;
+        tabs.querySelectorAll(".team-tab").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.selectedTeamId = btn.dataset.teamId;
             renderTeamTabs();
             renderSelectedTeam();
           });
@@ -1958,258 +3037,321 @@
 
       function renderSelectedTeam() {
         const detail = document.getElementById("teamDetail");
-        const standing = state.standings.find((item) => item.time_id === state.selectedTeamId);
-        const rawTeam = state.times.find((item) => item.time_id === state.selectedTeamId);
+        const s = state.standings.find(
+          (x) => x.time_id === state.selectedTeamId,
+        );
+        const raw = state.times.find((x) => x.time_id === state.selectedTeamId);
         const roster = state.elencos[state.selectedTeamId] || [];
-
-        if (!standing || !rawTeam) {
+        if (!s || !raw) {
           detail.innerHTML = '<div class="empty">Selecione um time.</div>';
           return;
         }
-
-        const players = roster.filter((item) => item.tipo === "PRINCIPAL");
-        const support = roster.filter((item) => item.tipo !== "PRINCIPAL");
-        const topScorer = [...roster].sort((a, b) => safeNumber(b.gols) - safeNumber(a.gols))[0];
+        const players = roster.filter((x) => x.tipo === "PRINCIPAL");
+        const support = roster.filter((x) => x.tipo !== "PRINCIPAL");
+        const topScorer = [...roster].sort(
+          (a, b) => safeNum(b.gols) - safeNum(a.gols),
+        )[0];
         const mostBooked = [...roster].sort(
           (a, b) =>
-            safeNumber(b.vermelhos) * 3 +
-            safeNumber(b.amarelos) -
-            (safeNumber(a.vermelhos) * 3 + safeNumber(a.amarelos)),
+            safeNum(b.vermelhos) * 3 +
+            safeNum(b.amarelos) -
+            (safeNum(a.vermelhos) * 3 + safeNum(a.amarelos)),
         )[0];
 
         detail.innerHTML = `
-          <div class="team-header">
-            <img class="crest big" src="${getTeamCrest(standing.nome)}" alt="Escudo ${escapeHtml(standing.nome)}" />
-            <div>
-              <h3>${escapeHtml(standing.nome)}</h3>
-              <p>
-                Grupo ${standing.grupo} | ${escapeHtml(rawTeam.representante_1 || "-")}
-                ${rawTeam.representante_2 ? ` | ${escapeHtml(rawTeam.representante_2)}` : ""}
-              </p>
+        <div class="team-panel">
+          <div class="team-panel-header">
+            ${crestImg(s.nome, "crest xl")}
+            <div class="team-panel-info">
+              <h2>${esc(s.nome)}</h2>
+              <p>Grupo ${s.grupo} &nbsp;·&nbsp; ${esc(raw.representante_1 || "-")}${raw.representante_2 ? ` &nbsp;·&nbsp; ${esc(raw.representante_2)}` : ""}</p>
+              <p style="margin-top:4px">${pct(s.pts, s.j)} de aproveitamento &nbsp;·&nbsp; ${s.j} jogos disputados</p>
             </div>
-            <div class="team-pills">
-              <span>${standing.pts} pts</span>
-              <span>${standing.v} V</span>
-              <span>${standing.gp} GP</span>
-              <span>${standing.gc} GC</span>
-              <span>${percentage(standing.pts, standing.j)}</span>
+            <div class="team-stats-pills">
+              <div class="team-stat-pill"><div class="val" style="color:var(--gold-2)">${s.pts}</div><div class="lbl">Pontos</div></div>
+              <div class="team-stat-pill"><div class="val" style="color:var(--green)">${s.v}</div><div class="lbl">Vitórias</div></div>
+              <div class="team-stat-pill"><div class="val" style="color:#9BBAFF">${s.gp}</div><div class="lbl">Gols Pró</div></div>
+              <div class="team-stat-pill"><div class="val" style="color:var(--muted)">${s.gc}</div><div class="lbl">Gols Contra</div></div>
+              <div class="team-stat-pill"><div class="val" style="color:${s.sg >= 0 ? "var(--green)" : "var(--red)"}">${s.sg >= 0 ? "+" : ""}${s.sg}</div><div class="lbl">Saldo</div></div>
+              <div class="team-stat-pill"><div class="val" style="color:var(--gold-2)">${s.cleanSheets}</div><div class="lbl">Clean Sheets</div></div>
             </div>
           </div>
-          <div class="team-grid">
+          <div class="team-panel-body">
             <section class="subpanel">
-              <header>
-                <h4>Jogadores</h4>
-                <span class="badge gold">${players.length} atletas</span>
-              </header>
-              <ul class="list">
+              <div class="subpanel-head"><h4>Jogadores</h4><span class="badge gold">${players.length} atletas</span></div>
+              <ul class="subpanel-list">
                 ${
                   players.length
                     ? players
                         .map(
-                          (item) => `
-                            <li>
-                              <div>
-                                <strong>${escapeHtml(item.nome)}</strong>
-                                <small>${escapeHtml(item.posicao || "-")}</small>
-                              </div>
-                              <small>${safeNumber(item.gols)} G | ${safeNumber(item.amarelos)} A | ${safeNumber(item.vermelhos)} V</small>
-                            </li>
-                          `,
+                          (p) => `<li>
+                  <div><strong>${esc(p.nome)}</strong><small>${esc(p.posicao || "-")}</small></div>
+                  <div class="right-val">${safeNum(p.gols)}⚽ ${safeNum(p.amarelos)}🟨 ${safeNum(p.vermelhos)}🟥</div>
+                </li>`,
                         )
                         .join("")
-                    : '<li><div class="empty" style="width:100%">Sem jogadores cadastrados.</div></li>'
+                    : '<li><div class="empty" style="width:100%;text-align:left">Sem jogadores.</div></li>'
                 }
               </ul>
             </section>
             <section class="subpanel">
-              <header>
-                <h4>Apoio e comissao</h4>
-                <span class="badge cyan">${support.length} registros</span>
-              </header>
-              <ul class="list">
+              <div class="subpanel-head"><h4>Apoio e Comissão</h4><span class="badge blue">${support.length} registros</span></div>
+              <ul class="subpanel-list">
                 ${
                   support.length
                     ? support
                         .map(
-                          (item) => `
-                            <li>
-                              <div>
-                                <strong>${escapeHtml(item.nome)}</strong>
-                                <small>${escapeHtml(item.tipo)} | ${escapeHtml(item.posicao || "-")}</small>
-                              </div>
-                              <small>${safeNumber(item.gols)} G | ${safeNumber(item.amarelos)} A | ${safeNumber(item.vermelhos)} V</small>
-                            </li>
-                          `,
+                          (p) => `<li>
+                  <div><strong>${esc(p.nome)}</strong><small>${esc(p.tipo)} · ${esc(p.posicao || "-")}</small></div>
+                  <div class="right-val">${safeNum(p.gols)}⚽ ${safeNum(p.amarelos)}🟨 ${safeNum(p.vermelhos)}🟥</div>
+                </li>`,
                         )
                         .join("")
-                    : '<li><div class="empty" style="width:100%">Sem apoio cadastrado.</div></li>'
+                    : '<li><div class="empty" style="width:100%;text-align:left">Sem apoio.</div></li>'
                 }
               </ul>
             </section>
             <section class="subpanel">
-              <header>
-                <h4>Destaques</h4>
-                <span class="badge gold">Interno</span>
-              </header>
-              <ul class="list">
-                <li>
-                  <div>
-                    <strong>Artilheiro</strong>
-                    <small>${topScorer ? escapeHtml(topScorer.nome) : "Sem dados"}</small>
-                  </div>
-                  <small>${topScorer ? `${safeNumber(topScorer.gols)} gols` : "-"}</small>
-                </li>
-                <li>
-                  <div>
-                    <strong>Mais advertido</strong>
-                    <small>${mostBooked ? escapeHtml(mostBooked.nome) : "Sem dados"}</small>
-                  </div>
-                  <small>${mostBooked ? `${safeNumber(mostBooked.amarelos)} A | ${safeNumber(mostBooked.vermelhos)} V` : "-"}</small>
-                </li>
-                <li>
-                  <div>
-                    <strong>Trocas do time</strong>
-                    <small>Controle cadastral</small>
-                  </div>
-                  <small>${safeNumber(rawTeam.trocas_realizadas)} realizadas | saldo ${safeNumber(rawTeam.saldo_trocas)}</small>
-                </li>
+              <div class="subpanel-head"><h4>Destaques</h4><span class="badge gold">Interno</span></div>
+              <ul class="subpanel-list">
+                <li><div><strong>Artilheiro</strong><small>${topScorer ? esc(topScorer.nome) : "Sem dados"}</small></div><div class="right-val">${topScorer ? `${safeNum(topScorer.gols)} gols` : "-"}</div></li>
+                <li><div><strong>Mais advertido</strong><small>${mostBooked ? esc(mostBooked.nome) : "Sem dados"}</small></div><div class="right-val">${mostBooked ? `${safeNum(mostBooked.amarelos)}A ${safeNum(mostBooked.vermelhos)}V` : "-"}</div></li>
+                <li><div><strong>Trocas realizadas</strong><small>Saldo: ${safeNum(raw.saldo_trocas)}</small></div><div class="right-val">${safeNum(raw.trocas_realizadas)}</div></li>
               </ul>
             </section>
             <section class="subpanel">
-              <header>
-                <h4>Ficha rapida</h4>
-                <span class="badge cyan">${escapeHtml(rawTeam.status_time || "ATIVO")}</span>
-              </header>
-              <ul class="list">
-                <li><div><strong>Representante 1</strong><small>${escapeHtml(rawTeam.representante_1 || "-")}</small></div></li>
-                <li><div><strong>Representante 2</strong><small>${escapeHtml(rawTeam.representante_2 || "-")}</small></div></li>
-                <li><div><strong>Login</strong><small>${escapeHtml(rawTeam.login || "-")}</small></div></li>
-                <li><div><strong>Grupo</strong><small>${standing.grupo}</small></div></li>
+              <div class="subpanel-head"><h4>Ficha Rápida</h4><span class="badge ${norm(raw.status_time).toUpperCase() === "ATIVO" ? "green" : "red"}">${esc(raw.status_time || "ATIVO")}</span></div>
+              <ul class="subpanel-list">
+                <li><div><strong>Representante 1</strong><small>${esc(raw.representante_1 || "-")}</small></div></li>
+                <li><div><strong>Representante 2</strong><small>${esc(raw.representante_2 || "-")}</small></div></li>
+                <li><div><strong>Login</strong><small>${esc(raw.login || "-")}</small></div></li>
+                <li><div><strong>Grupo</strong><small>${s.grupo}</small></div></li>
               </ul>
             </section>
           </div>
-        `;
+        </div>`;
       }
 
       function renderMatches() {
         const sorted = [...state.confrontos].sort((a, b) => {
-          const aKey = `${normalizeText(a.data_jogo)} ${normalizeText(a.hora_jogo)}`;
-          const bKey = `${normalizeText(b.data_jogo)} ${normalizeText(b.hora_jogo)}`;
-          return aKey.localeCompare(bKey, "pt-BR");
+          const ak = `${norm(a.data_jogo)} ${norm(a.hora_jogo)}`;
+          const bk = `${norm(b.data_jogo)} ${norm(b.hora_jogo)}`;
+          return ak.localeCompare(bk, "pt-BR");
         });
-
-        document.getElementById("matchesGrid").innerHTML = sorted.length
-          ? sorted
-              .map((match) => {
-                const finished = isFinishedMatch(match);
-                const homeGoals = finished ? safeNumber(match.gols_casa) : "-";
-                const awayGoals = finished ? safeNumber(match.gols_fora) : "-";
-                const homeGroup =
-                  state.standings.find((item) => item.time_id === match.time_casa_id)?.grupo ||
-                  "-";
-                const awayGroup =
-                  state.standings.find((item) => item.time_id === match.time_fora_id)?.grupo ||
-                  "-";
-
-                return `
-                  <article class="match-card">
-                    <div class="match-top">
-                      <span class="badge ${finished ? "cyan" : "gold"}">${finished ? "Finalizado" : "Agendado"}</span>
-                      <span class="section-subtitle">Rodada ${escapeHtml(match.rodada || "-")}</span>
-                    </div>
-                    <div class="match-row">
-                      <div class="match-team">
-                        <img class="crest" src="${getTeamCrest(match.nome_time_casa)}" alt="Escudo ${escapeHtml(match.nome_time_casa)}" />
-                        <div>
-                          <strong>${escapeHtml(match.nome_time_casa || "-")}</strong>
-                          <span>Grupo ${homeGroup}</span>
-                        </div>
-                      </div>
-                      <div class="score">${homeGoals} x ${awayGoals}</div>
-                      <div class="match-team away">
-                        <img class="crest" src="${getTeamCrest(match.nome_time_fora)}" alt="Escudo ${escapeHtml(match.nome_time_fora)}" />
-                        <div>
-                          <strong>${escapeHtml(match.nome_time_fora || "-")}</strong>
-                          <span>Grupo ${awayGroup}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="match-info">
-                      ${formatDate(match.data_jogo)} | ${escapeHtml(match.hora_jogo || "-")} | ${escapeHtml(match.local || "Local a definir")}
-                    </div>
-                  </article>
-                `;
+        const filtered = sorted.filter((m) => {
+          if (state.matchFilter === "finalizados") return isFinished(m);
+          if (state.matchFilter === "agendados") return !isFinished(m);
+          return true;
+        });
+        document.getElementById("matchesGrid").innerHTML = filtered.length
+          ? filtered
+              .map((m) => {
+                const fin = isFinished(m);
+                const hg = fin ? safeNum(m.gols_casa) : "-";
+                const ag = fin ? safeNum(m.gols_fora) : "-";
+                const hGrp =
+                  state.standings.find((x) => x.time_id === m.time_casa_id)
+                    ?.grupo || "-";
+                const aGrp =
+                  state.standings.find((x) => x.time_id === m.time_fora_id)
+                    ?.grupo || "-";
+                return `<article class="match-card ${fin ? "finished" : ""}">
+              <div class="match-badge-row">
+                <span class="badge ${fin ? "green" : "gold"}">${fin ? "⚽ Finalizado" : "📅 Agendado"}</span>
+                <span style="font-size:11px;color:var(--muted)">Rodada ${esc(m.rodada || "-")}</span>
+              </div>
+              <div class="match-body">
+                <div class="match-row">
+                  <div class="match-team">
+                    ${crestImg(m.nome_time_casa)}
+                    <div><div class="match-team-name">${esc(m.nome_time_casa || "-")}</div><div class="match-team-group">Grupo ${hGrp}</div></div>
+                  </div>
+                  <div class="score-box">
+                    <span class="score-num" style="${fin ? "color:#fff" : "color:var(--muted)"}">${hg}</span>
+                    <span class="score-sep">×</span>
+                    <span class="score-num" style="${fin ? "color:#fff" : "color:var(--muted)"}">${ag}</span>
+                  </div>
+                  <div class="match-team away">
+                    ${crestImg(m.nome_time_fora)}
+                    <div><div class="match-team-name">${esc(m.nome_time_fora || "-")}</div><div class="match-team-group">Grupo ${aGrp}</div></div>
+                  </div>
+                </div>
+                <div class="match-meta">
+                  <span>📅 ${fmtDate(m.data_jogo)}</span>
+                  <span>⏰ ${fmtTime(m.hora_jogo)}</span>
+                  <span>📍 Campo APECAD</span>
+                </div>
+              </div>
+            </article>`;
               })
               .join("")
-          : '<div class="empty">Nenhum confronto cadastrado.</div>';
+          : '<div class="empty" style="grid-column:1/-1">Nenhum confronto encontrado.</div>';
       }
 
-      function activateTab(tabId) {
-        document.querySelectorAll(".nav-btn").forEach((button) => {
-          button.classList.toggle("active", button.dataset.tab === tabId);
-        });
+      function openMatchModal(confrontoId) {
+        const m = state.confrontos.find(x => String(x.confronto_id) === String(confrontoId));
+        if (!m) return;
+        const sumula = state.sumulas.find(x => String(x.confronto_id) === String(confrontoId));
+        const fin = isFinished(m);
 
-        document.querySelectorAll(".section").forEach((section) => {
-          const active = section.id === tabId;
-          section.classList.toggle("active", active);
-          section.hidden = !active;
+        // Header
+        document.getElementById("modalHomeCrest").src = getTeamCrest(m.nome_time_casa || "");
+        document.getElementById("modalHomeCrest").alt = m.nome_time_casa || "";
+        document.getElementById("modalAwayCrest").src = getTeamCrest(m.nome_time_fora || "");
+        document.getElementById("modalAwayCrest").alt = m.nome_time_fora || "";
+        document.getElementById("modalHomeName").textContent = m.nome_time_casa || "-";
+        document.getElementById("modalAwayName").textContent = m.nome_time_fora || "-";
+        document.getElementById("modalHomeGroup").textContent = "Grupo " + (getGroupCode(m.time_casa_id) || "-");
+        document.getElementById("modalAwayGroup").textContent = "Grupo " + (getGroupCode(m.time_fora_id) || "-");
+        document.getElementById("modalScore").textContent = fin
+          ? `${safeNum(m.gols_casa)} × ${safeNum(m.gols_fora)}`
+          : "- × -";
+        document.getElementById("modalDate").textContent = fmtDate(m.data_jogo);
+        document.getElementById("modalTime").textContent = fmtTime(m.hora_jogo);
+        const sb = document.getElementById("modalStatusBadge");
+        sb.textContent = fin ? "Finalizado" : "Agendado";
+        sb.className = "badge " + (fin ? "green" : "gold");
+
+        // Gols
+        const goals = sumula?.gols || [];
+        const goalsEl = document.getElementById("modalGoals");
+        if (!goals.length) {
+          goalsEl.innerHTML = '<div class="modal-empty">Nenhum gol registrado</div>';
+        } else {
+          const goalMap = new Map();
+          goals.forEach(g => {
+            const k = norm(g.jogador_id) || norm(g.nome_jogador);
+            if (!k) return;
+            const cur = goalMap.get(k) || { nome: g.nome_jogador || "-", time: g.nome_time || "-", gols: 0 };
+            cur.gols += safeNum(g.quantidade_gols || 1);
+            goalMap.set(k, cur);
+          });
+          goalsEl.innerHTML = [...goalMap.values()]
+            .sort((a, b) => b.gols - a.gols)
+            .map(g => `
+              <div class="modal-event">
+                <div class="modal-event-icon">⚽</div>
+                <div class="modal-event-info">
+                  <div class="modal-event-name">${esc(g.nome)}</div>
+                  <div class="modal-event-team">${esc(g.time)}</div>
+                </div>
+                <div class="modal-event-qty" style="color:var(--gold-2)">${g.gols}</div>
+              </div>
+            `).join("");
+        }
+
+        // Cartões
+        const cards = sumula?.cartoes || [];
+        const cardsEl = document.getElementById("modalCards");
+        if (!cards.length) {
+          cardsEl.innerHTML = '<div class="modal-empty">Nenhum cartão registrado</div>';
+        } else {
+          const cardMap = new Map();
+          cards.forEach(c => {
+            const k = (norm(c.jogador_id) || norm(c.nome_jogador)) + "_" + norm(c.tipo_cartao);
+            const cur = cardMap.get(k) || { nome: c.nome_jogador || "-", time: c.nome_time || "-", tipo: norm(c.tipo_cartao).toUpperCase(), qty: 0 };
+            cur.qty += safeNum(c.quantidade || 1);
+            cardMap.set(k, cur);
+          });
+          cardsEl.innerHTML = [...cardMap.values()]
+            .sort((a, b) => (b.tipo === "VERMELHO" ? 1 : 0) - (a.tipo === "VERMELHO" ? 1 : 0))
+            .map(c => {
+              const isRed = c.tipo === "VERMELHO";
+              return `
+                <div class="modal-event">
+                  <div class="modal-event-icon">${isRed ? "🟥" : "🟨"}</div>
+                  <div class="modal-event-info">
+                    <div class="modal-event-name">${esc(c.nome)}</div>
+                    <div class="modal-event-team">${esc(c.time)}</div>
+                  </div>
+                  <div class="modal-event-qty" style="color:${isRed ? "var(--red)" : "var(--gold-2)"}">${c.qty > 1 ? "×" + c.qty : ""}</div>
+                </div>
+              `;
+            }).join("");
+        }
+
+        document.getElementById("matchModal").classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        document.getElementById("matchModal").classList.remove("open");
+        document.body.style.overflow = "";
+      }
+
+      function activateTab(id) {
+        document
+          .querySelectorAll(".nav-btn")
+          .forEach((b) => b.classList.toggle("active", b.dataset.tab === id));
+        document.querySelectorAll(".section").forEach((s) => {
+          const a = s.id === id;
+          s.classList.toggle("active", a);
         });
       }
 
-      function bindTabs() {
-        document.querySelectorAll(".nav-btn").forEach((button) => {
-          button.addEventListener("click", () => activateTab(button.dataset.tab));
+      function bindUI() {
+        document.querySelectorAll(".nav-btn").forEach((b) => {
+          b.addEventListener("click", () => activateTab(b.dataset.tab));
+        });
+        document.querySelectorAll(".filter-btn").forEach((b) => {
+          b.addEventListener("click", () => {
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach((x) => x.classList.remove("active"));
+            b.classList.add("active");
+            state.matchFilter = b.dataset.filter;
+            renderMatches();
+          });
+        });
+        document
+          .getElementById("refreshBtn")
+          .addEventListener("click", refreshDashboard);
+        document.getElementById("modalClose").addEventListener("click", closeModal);
+        document.getElementById("matchModal").addEventListener("click", e => {
+          if (e.target === e.currentTarget) closeModal();
+        });
+        document.addEventListener("keydown", e => {
+          if (e.key === "Escape") closeModal();
         });
       }
 
       async function loadData() {
-        const [timesResult, confrontosResult] = await Promise.all([
+        const [timesRes, matchesRes] = await Promise.all([
           getApi({ route: "listarTimesAdmin" }),
           getApi({ route: "listarConfrontosAdmin" }),
         ]);
-
-        if (!timesResult.sucesso) {
-          throw new Error(timesResult.mensagem || "Erro ao carregar times.");
-        }
-
-        if (!confrontosResult.sucesso) {
+        if (!timesRes.sucesso)
+          throw new Error(timesRes.mensagem || "Erro ao carregar times.");
+        if (!matchesRes.sucesso)
           throw new Error(
-            confrontosResult.mensagem || "Erro ao carregar confrontos.",
+            matchesRes.mensagem || "Erro ao carregar confrontos.",
           );
-        }
-
-        state.times = timesResult.times || [];
-        state.confrontos = confrontosResult.confrontos || [];
+        state.times = timesRes.times || [];
+        state.confrontos = matchesRes.confrontos || [];
 
         const [sumulas, rosters] = await Promise.all([
           Promise.all(
-            state.confrontos.map(async (match) => {
-              const result = await getApi({
+            state.confrontos.map(async (m) => {
+              const r = await getApi({
                 route: "buscarDadosSumula",
-                confronto_id: match.confronto_id,
+                confronto_id: m.confronto_id,
               });
-
-              return result.sucesso
+              return r.sucesso
                 ? {
-                    confronto_id: match.confronto_id,
-                    gols: result.gols || [],
-                    cartoes: result.cartoes || [],
+                    confronto_id: m.confronto_id,
+                    gols: r.gols || [],
+                    cartoes: r.cartoes || [],
                   }
-                : {
-                    confronto_id: match.confronto_id,
-                    gols: [],
-                    cartoes: [],
-                  };
+                : { confronto_id: m.confronto_id, gols: [], cartoes: [] };
             }),
           ),
           Promise.all(
-            state.times.map(async (team) => {
-              const result = await getApi({
+            state.times.map(async (t) => {
+              const r = await getApi({
                 route: "listarElencoCompletoTime",
-                time_id: team.time_id,
+                time_id: t.time_id,
               });
-
-              return [team.time_id, result.sucesso ? result.elenco || [] : []];
+              return [t.time_id, r.sucesso ? r.elenco || [] : []];
             }),
           ),
         ]);
@@ -2217,37 +3359,27 @@
         state.sumulas = sumulas;
         state.elencos = Object.fromEntries(rosters);
         state.scorers = computeScorers(sumulas);
-
-        const discipline = computeCards(sumulas);
-        state.cards = discipline.players;
-        state.fairPlay = discipline.teams;
-
-        const disciplineByTeam = Object.fromEntries(
-          discipline.teams.map((item) => [
-            item.time_id,
-            { amarelos: item.amarelos, vermelhos: item.vermelhos },
+        const disc = computeCards(sumulas);
+        state.cards = disc.players;
+        state.fairPlay = disc.teams;
+        const discByTeam = Object.fromEntries(
+          disc.teams.map((x) => [
+            x.time_id,
+            { amarelos: x.amarelos, vermelhos: x.vermelhos },
           ]),
         );
-
         state.standings = buildStandings(
           state.times,
           state.confrontos,
-          disciplineByTeam,
+          discByTeam,
         );
         state.groups = {
-          A: state.standings
-            .filter((item) => item.grupo === "A")
-            .sort(standingsSorter),
-          B: state.standings
-            .filter((item) => item.grupo === "B")
-            .sort(standingsSorter),
+          A: state.standings.filter((x) => x.grupo === "A").sort(sorter),
+          B: state.standings.filter((x) => x.grupo === "B").sort(sorter),
         };
         state.teamGoals = [...state.standings]
-          .sort((a, b) => b.gp - a.gp || standingsSorter(a, b))
-          .map((item) => ({
-            nome: item.nome,
-            gols: item.gp,
-          }));
+          .sort((a, b) => b.gp - a.gp || sorter(a, b))
+          .map((x) => ({ nome: x.nome, gols: x.gp }));
         state.selectedTeamId =
           state.selectedTeamId || state.standings[0]?.time_id || null;
         state.refreshedAt = new Date();
@@ -2256,6 +3388,7 @@
       function renderAll() {
         renderHero();
         renderClassification();
+        renderScheduleTable();
         renderStats();
         renderDiscipline();
         renderScorers();
@@ -2266,36 +3399,33 @@
 
       async function refreshDashboard() {
         const loading = document.getElementById("loadingState");
-        const button = document.getElementById("refreshBtn");
-
+        const content = document.getElementById("mainContent");
+        const btn = document.getElementById("refreshBtn");
         try {
-          loading.hidden = false;
-          button.disabled = true;
-          button.textContent = "Atualizando...";
+          loading.style.display = "flex";
+          content.style.display = "none";
+          btn.disabled = true;
+          btn.innerHTML =
+            '<span class="loader" style="width:14px;height:14px;border-width:2px"></span> Atualizando...';
           await loadData();
           renderAll();
-          loading.hidden = true;
-        } catch (error) {
-          console.error(error);
-          loading.hidden = false;
-          loading.textContent = error.message || "Erro ao carregar painel.";
+          loading.style.display = "none";
+          content.style.display = "block";
+        } catch (err) {
+          console.error(err);
+          loading.innerHTML = `<div style="color:var(--red);font-weight:700">⚠ ${err.message || "Erro ao carregar painel."}</div>`;
+          loading.style.display = "flex";
         } finally {
-          button.disabled = false;
-          button.textContent = "Atualizar painel";
+          btn.disabled = false;
+          btn.innerHTML = "<span>↻</span> Atualizar Painel";
         }
       }
 
-      async function init() {
-        bindTabs();
-        document
-          .getElementById("refreshBtn")
-          .addEventListener("click", refreshDashboard);
-
-        await refreshDashboard();
-        window.setInterval(refreshDashboard, AUTO_REFRESH_MS);
-      }
-
-      document.addEventListener("DOMContentLoaded", init);
+      document.addEventListener("DOMContentLoaded", () => {
+        bindUI();
+        refreshDashboard();
+        setInterval(refreshDashboard, AUTO_REFRESH_MS);
+      });
     </script>
   </body>
 </html>
