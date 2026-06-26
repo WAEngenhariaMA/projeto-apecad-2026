@@ -253,6 +253,263 @@
       .btn-delete:active {
         transform: scale(0.97);
       }
+      .sumula-toolbar {
+        display: grid;
+        grid-template-columns: minmax(260px, 420px) auto auto;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 20px;
+      }
+      .sumula-secondary-btn {
+        height: 48px;
+        border: 1px solid #d0d9e5;
+        border-radius: 12px;
+        background: #fff;
+        color: #0f2747;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .sumula-preview-wrap {
+        margin-top: 20px;
+      }
+      .sumula-preview-empty {
+        padding: 22px;
+        border: 1px dashed #c9d5e4;
+        border-radius: 18px;
+        background: #f8fbff;
+        color: #667085;
+      }
+      .sumula-sheet {
+        background: #fff;
+        border: 1px solid #cfd8e3;
+        box-shadow: 0 18px 40px rgba(15, 39, 71, 0.08);
+        width: 100%;
+        overflow: hidden;
+      }
+      .sumula-sheet-header {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 12px;
+        align-items: center;
+        padding: 8px 14px;
+        background: linear-gradient(90deg, #d86d00, #ef8d1f);
+        color: #fff;
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .sumula-sheet-title {
+        text-align: center;
+        font-size: 18px;
+        color: #0f2747;
+        font-weight: 900;
+        margin: 8px 0 4px;
+        line-height: 1.1;
+      }
+      .sumula-sheet-subtitle {
+        text-align: center;
+        color: #4b5565;
+        margin-bottom: 8px;
+        font-size: 11px;
+        line-height: 1.15;
+      }
+      .sumula-sheet-meta {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        padding: 0 12px 10px;
+      }
+      .sumula-meta-card {
+        border: 1px solid #dce5ef;
+        border-radius: 10px;
+        background: #f8fbff;
+        padding: 7px 9px;
+      }
+      .sumula-meta-label {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #667085;
+        margin-bottom: 3px;
+      }
+      .sumula-meta-value {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f2747;
+        line-height: 1.15;
+      }
+      .sumula-teams {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 0 12px 10px;
+      }
+      .sumula-team-card {
+        border: 2px solid #1c2430;
+        background: #fff;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .sumula-team-head {
+        display: grid;
+        grid-template-columns: 42px 1fr auto;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 10px 5px;
+      }
+      .sumula-team-crest {
+        width: 38px;
+        height: 38px;
+        object-fit: contain;
+      }
+      .sumula-team-name {
+        font-size: 16px;
+        font-weight: 900;
+        color: #0f2747;
+        line-height: 1.05;
+      }
+      .sumula-team-score {
+        min-width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #0f2747;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 900;
+      }
+      .sumula-team-table {
+        width: calc(100% - 20px);
+        margin: 0 8px 6px;
+        border-collapse: collapse;
+      }
+      .sumula-team-table th,
+      .sumula-team-table td {
+        border-bottom: 1px solid #dbe3ed;
+        padding: 2px 4px;
+        font-size: 9px;
+        line-height: 1.05;
+      }
+      .sumula-team-table td:nth-child(3) {
+        font-size: 10px;
+      }
+      .sumula-team-table th {
+        background: #f4f7fb;
+        color: #0f2747;
+        font-size: 8px;
+      }
+      .sumula-team-table td:nth-child(1),
+      .sumula-team-table td:nth-child(2),
+      .sumula-team-table td:nth-child(4),
+      .sumula-team-table td:nth-child(5),
+      .sumula-team-table td:nth-child(6) {
+        text-align: center;
+      }
+      .sumula-sign-cell {
+        vertical-align: bottom;
+        padding-top: 7px !important;
+      }
+      .sumula-sign-slot {
+        display: flex;
+        align-items: flex-end;
+        min-height: 16px;
+      }
+      .sumula-sign-line {
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid #1c2430;
+        min-height: 14px;
+      }
+      .sumula-card-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 12px;
+        border: 1px solid #1c2430;
+        font-size: 8px;
+        font-weight: 800;
+      }
+      .sumula-card-box.yellow {
+        background: #fff43b;
+      }
+      .sumula-card-box.red {
+        background: #ff3b30;
+        color: #fff;
+      }
+      .sumula-team-footer {
+        border-top: 1px solid #dbe3ed;
+        padding: 6px 8px 8px;
+        font-size: 9px;
+        line-height: 1.25;
+      }
+      .sumula-team-footer strong {
+        color: #0f2747;
+      }
+      .sumula-fill-line {
+        display: inline-block;
+        min-width: 56px;
+        border-bottom: 1px solid #1c2430;
+        height: 10px;
+        vertical-align: middle;
+      }
+      .sumula-suspensos {
+        margin: 0 12px 10px;
+        padding: 6px 8px;
+        border-left: 4px solid #ff3b30;
+        background: #fff4f4;
+        color: #7a1f1f;
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #tab-sumula-pdf,
+        #tab-sumula-pdf * {
+          visibility: visible;
+        }
+        #tab-sumula-pdf {
+          position: absolute;
+          inset: 0;
+          background: #fff;
+          padding: 0;
+        }
+        #tab-sumula-pdf .content-block {
+          margin: 0;
+          padding: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+        .sumula-toolbar,
+        #sumulaPdfStatus {
+          display: none !important;
+        }
+        .sumula-preview-wrap {
+          margin-top: 0;
+        }
+        .sumula-sheet {
+          box-shadow: none;
+          border: none;
+          width: 100%;
+          zoom: 0.76;
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+        .sumula-teams,
+        .sumula-team-card {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+        @page {
+          size: A4 landscape;
+          margin: 4mm;
+        }
+      }
     </style>
   </head>
   <body>
@@ -294,6 +551,9 @@
         <button class="admin-menu-btn" data-tab="tecnicos">Técnicos</button>
         <button class="admin-menu-btn" data-tab="confrontos">Confrontos</button>
         <button class="admin-menu-btn" data-tab="sumula">Súmula</button>
+        <button class="admin-menu-btn" data-tab="sumula-pdf">
+          Gerar Súmula PDF
+        </button>
         <button class="admin-menu-btn" data-tab="trocas">Trocas</button>
         <button class="admin-menu-btn" data-tab="configuracoes">
           Configurações
@@ -611,6 +871,37 @@
             </div>
           </div>
         </div>
+        <div id="tab-sumula-pdf" class="admin-tab hidden">
+          <div class="content-block">
+            <div class="sumula-toolbar">
+              <div class="form-group" style="margin-bottom: 0">
+                <label class="form-label">Confronto</label>
+                <select
+                  id="sumulaPdfConfronto"
+                  class="form-input"
+                  onchange="gerarPreviewSumulaPdf()"
+                >
+                  <option value="">Selecione o confronto</option>
+                </select>
+              </div>
+              <button
+                class="sumula-secondary-btn"
+                onclick="gerarPreviewSumulaPdf()"
+              >
+                Atualizar prévia
+              </button>
+              <button class="btn" onclick="imprimirSumulaPdf()">
+                Gerar PDF / Imprimir
+              </button>
+            </div>
+            <div id="sumulaPdfStatus" class="message"></div>
+            <div class="sumula-preview-wrap">
+              <div id="sumulaPdfPreview" class="sumula-preview-empty">
+                Selecione um confronto para montar a súmula automaticamente.
+              </div>
+            </div>
+          </div>
+        </div>
         <div id="tab-configuracoes" class="admin-tab hidden">
           <div class="content-block">
             <h2>Configurações do sistema</h2>
@@ -648,6 +939,7 @@
       let elencoConfrontoCache = [];
       let confrontoSelecionadoCache = null;
       let configuracoesAdminCache = [];
+      let adminTimesCache = [];
 
       async function getApi(params = {}) {
         const url = new URL(SCRIPT_URL);
@@ -656,6 +948,118 @@
         );
         const resposta = await fetch(url.toString(), { method: "GET" });
         return await resposta.json();
+      }
+
+      function normalizarTexto(valor) {
+        return String(valor || "").trim();
+      }
+
+      function formatarDataAdmin(valor) {
+        if (!valor) return "-";
+        const texto = String(valor).trim();
+        if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+          const [ano, mes, dia] = texto.split("-");
+          return `${dia}/${mes}/${ano}`;
+        }
+        const data = new Date(texto);
+        if (!Number.isNaN(data.getTime())) {
+          return data.toLocaleDateString("pt-BR");
+        }
+        return texto;
+      }
+
+      function formatarHoraAdmin(valor) {
+        if (!valor) return "-";
+        const texto = String(valor).trim();
+        if (/^\d{2}:\d{2}(:\d{2})?$/.test(texto)) {
+          return texto.slice(0, 5);
+        }
+        const data = new Date(texto);
+        if (!Number.isNaN(data.getTime())) {
+          return data.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        }
+        return texto;
+      }
+
+      function formatarDataInputAdmin(valor) {
+        if (!valor) return "";
+        const texto = String(valor).trim();
+        if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+        const data = new Date(texto);
+        if (!Number.isNaN(data.getTime())) {
+          const ano = data.getFullYear();
+          const mes = String(data.getMonth() + 1).padStart(2, "0");
+          const dia = String(data.getDate()).padStart(2, "0");
+          return `${ano}-${mes}-${dia}`;
+        }
+        return texto.slice(0, 10);
+      }
+
+      function formatarHoraInputAdmin(valor) {
+        if (!valor) return "";
+        const texto = String(valor).trim();
+        if (/^\d{2}:\d{2}(:\d{2})?$/.test(texto)) return texto.slice(0, 5);
+        const data = new Date(texto);
+        if (!Number.isNaN(data.getTime())) {
+          const hora = String(data.getHours()).padStart(2, "0");
+          const minuto = String(data.getMinutes()).padStart(2, "0");
+          return `${hora}:${minuto}`;
+        }
+        return texto;
+      }
+
+      function formatarDataCabecalhoSumula(data) {
+        if (!data) return "-";
+        const texto = String(data).trim();
+        const dataObj = /^\d{4}-\d{2}-\d{2}$/.test(texto)
+          ? new Date(`${texto}T00:00:00`)
+          : new Date(texto);
+        if (Number.isNaN(dataObj.getTime())) return formatarDataAdmin(data);
+        const semana = dataObj
+          .toLocaleDateString("pt-BR", { weekday: "long" })
+          .replace("-feira", "")
+          .toUpperCase();
+        return `${dataObj.toLocaleDateString("pt-BR")} - ${semana}`;
+      }
+
+      function getEscudoAdmin(nomeTime) {
+        const mapa = {
+          argentina: "projeto-apecad/assets/escudos/argentina.png",
+          belgica: "projeto-apecad/assets/escudos/belgica.png",
+          brasil: "projeto-apecad/assets/escudos/brasil.png",
+          holanda: "projeto-apecad/assets/escudos/holanda.png",
+          inglaterra: "projeto-apecad/assets/escudos/inglaterra.png",
+          marrocos: "projeto-apecad/assets/escudos/marrocos.png",
+          portugal: "projeto-apecad/assets/escudos/portugal.png",
+          uruguai: "projeto-apecad/assets/escudos/uruguai.png",
+        };
+        const chave = normalizarTexto(nomeTime)
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        return mapa[chave] || "projeto-apecad/assets/escudos/escudo-padrao.png";
+      }
+
+      function preencherSelectConfrontos(ids, confrontos) {
+        const opcoes = `
+      <option value="">Selecione o confronto</option>
+      ${confrontos
+        .map(
+          (c) => `
+        <option value="${c.confronto_id}">
+          Rodada ${c.rodada || "-"} - ${c.nome_time_casa || "-"} x ${c.nome_time_fora || "-"} - ${formatarDataAdmin(c.data_jogo)} ${formatarHoraAdmin(c.hora_jogo)}
+        </option>
+      `,
+        )
+        .join("")}
+    `;
+        ids.forEach((id) => {
+          const select = document.getElementById(id);
+          if (select) select.innerHTML = opcoes;
+        });
       }
 
       function mostrarMsgAdmin(texto, tipo = "error") {
@@ -728,7 +1132,16 @@
           document.getElementById("admStatusSistema").textContent =
             r.sistema_ativo === "SIM" ? "Ativo" : "Desativado";
           document.getElementById("admPrazoGeral").textContent =
-            r.data_limite_geral || "-";
+            r.data_limite_geral
+              ? (() => {
+                  const texto = String(r.data_limite_geral).trim();
+                  if (texto.includes(" ")) {
+                    const [data, hora] = texto.split(" ");
+                    return `${formatarDataAdmin(data)} ${hora.slice(0, 5)}`;
+                  }
+                  return formatarDataAdmin(r.data_limite_geral);
+                })()
+              : "-";
         } catch (erro) {
           console.error(erro);
         }
@@ -792,6 +1205,11 @@
 
             if (tab === "sumula") {
               await carregarConfrontosSumula();
+            }
+
+            if (tab === "sumula-pdf") {
+              await carregarConfrontosSumula();
+              await gerarPreviewSumulaPdf();
             }
 
             if (tab === "configuracoes") {
@@ -868,6 +1286,8 @@
             selectFora.innerHTML = '<option value="">Erro ao carregar</option>';
             return;
           }
+
+          adminTimesCache = resultado.times;
 
           const opcoes = ['<option value="">Selecione</option>']
             .concat(
@@ -984,14 +1404,14 @@
               (c) => `
             <tr>
               <td>${c.rodada || "-"}</td>
-              <td>${c.data_jogo || "-"}</td>
-              <td>${c.hora_jogo || "-"}</td>
+              <td>${formatarDataAdmin(c.data_jogo)}</td>
+              <td>${formatarHoraAdmin(c.hora_jogo)}</td>
               <td>${c.nome_time_casa || "-"}</td>
               <td>${c.nome_time_fora || "-"}</td>
               <td>${c.local || "-"}</td>
               <td>${c.status_confronto || "-"}</td>
               <td>
-                <button onclick="editarConfrontoFront('${c.confronto_id}', '${escapeHtml(c.rodada)}', '${escapeHtml(c.data_jogo)}', '${escapeHtml(c.hora_jogo)}', '${escapeHtml(c.time_casa_id)}', '${escapeHtml(c.time_fora_id)}', '${escapeHtml(c.local)}', '${escapeHtml(c.observacoes)}')">Editar</button>
+                <button onclick="editarConfrontoFront('${c.confronto_id}', '${escapeHtml(c.rodada)}', '${escapeHtml(formatarDataInputAdmin(c.data_jogo))}', '${escapeHtml(formatarHoraInputAdmin(c.hora_jogo))}', '${escapeHtml(c.time_casa_id)}', '${escapeHtml(c.time_fora_id)}', '${escapeHtml(c.local)}', '${escapeHtml(c.observacoes)}')">Editar</button>
                 <button onclick="excluirConfrontoFront('${c.confronto_id}')">Excluir</button>
               </td>
             </tr>
@@ -1514,57 +1934,20 @@
       async function carregarConfrontosSumula() {
         try {
           const resultado = await getApi({ route: "listarConfrontosSumula" });
-          const select = document.getElementById("sumulaConfronto");
 
           if (!resultado.sucesso || !resultado.confrontos) {
-            select.innerHTML =
-              '<option value="">Erro ao carregar confrontos</option>';
+            preencherSelectConfrontos(
+              ["sumulaConfronto", "sumulaPdfConfronto"],
+              [],
+            );
             return;
           }
 
           confrontosSumulaCache = resultado.confrontos;
-
-          select.innerHTML = `
-      <option value="">Selecione o confronto</option>
-      ${resultado.confrontos
-        .map(
-          (c) => `
-        <option value="${c.confronto_id}">
-          Rodada ${c.rodada || "-"} - ${c.nome_time_casa || "-"} x ${c.nome_time_fora || "-"} - ${c.data_jogo || "-"} ${c.hora_jogo || ""}
-        </option>
-      `,
-        )
-        .join("")}
-    `;
-        } catch (erro) {
-          console.error("Erro ao carregar confrontos da súmula:", erro);
-        }
-      }
-      async function carregarConfrontosSumula() {
-        try {
-          const resultado = await getApi({ route: "listarConfrontosSumula" });
-          const select = document.getElementById("sumulaConfronto");
-
-          if (!resultado.sucesso || !resultado.confrontos) {
-            select.innerHTML =
-              '<option value="">Erro ao carregar confrontos</option>';
-            return;
-          }
-
-          confrontosSumulaCache = resultado.confrontos;
-
-          select.innerHTML = `
-      <option value="">Selecione o confronto</option>
-      ${resultado.confrontos
-        .map(
-          (c) => `
-        <option value="${c.confronto_id}">
-          Rodada ${c.rodada || "-"} - ${c.nome_time_casa || "-"} x ${c.nome_time_fora || "-"} - ${c.data_jogo || "-"} ${c.hora_jogo || ""}
-        </option>
-      `,
-        )
-        .join("")}
-    `;
+          preencherSelectConfrontos(
+            ["sumulaConfronto", "sumulaPdfConfronto"],
+            resultado.confrontos,
+          );
         } catch (erro) {
           console.error("Erro ao carregar confrontos da súmula:", erro);
         }
@@ -1613,7 +1996,7 @@
           infoBox.innerHTML = `
       <strong>Rodada:</strong> ${dadosConfronto.confronto.rodada || "-"}<br>
       <strong>Confronto:</strong> ${dadosConfronto.confronto.nome_time_casa || "-"} x ${dadosConfronto.confronto.nome_time_fora || "-"}<br>
-      <strong>Data/Hora:</strong> ${dadosConfronto.confronto.data_jogo || "-"} ${dadosConfronto.confronto.hora_jogo || ""}<br>
+      <strong>Data/Hora:</strong> ${formatarDataAdmin(dadosConfronto.confronto.data_jogo)} ${formatarHoraAdmin(dadosConfronto.confronto.hora_jogo)}<br>
       <strong>Local:</strong> ${dadosConfronto.confronto.local || "-"}
     `;
 
@@ -2071,6 +2454,235 @@
           msg.textContent = "Erro ao salvar configuraÃ§Ãµes.";
           console.error(erro);
         }
+      }
+      async function garantirTimesAdminCache() {
+        if (adminTimesCache.length) return adminTimesCache;
+
+        const resultado = await getApi({ route: "listarTimesAdmin" });
+        if (!resultado.sucesso || !resultado.times) {
+          throw new Error(resultado.mensagem || "Erro ao carregar times.");
+        }
+
+        adminTimesCache = resultado.times;
+        return adminTimesCache;
+      }
+      async function carregarTimeElencoSumulaPdf(timeId) {
+        const resultado = await getApi({
+          route: "listarElencoCompletoTime",
+          time_id: timeId,
+        });
+
+        if (!resultado.sucesso) {
+          throw new Error(
+            resultado.mensagem || "Erro ao carregar elenco completo do time.",
+          );
+        }
+
+        return resultado.elenco || [];
+      }
+      function montarBlocoTimeSumulaPdf(time, elenco, gols) {
+        const atletas = elenco
+          .filter((item) => item.tipo !== "COMISSAO")
+          .sort((a, b) =>
+            String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR"),
+          );
+        const comissao = elenco
+          .filter((item) => item.tipo === "COMISSAO")
+          .map((item) => item.nome)
+          .filter(Boolean);
+        const extras = elenco
+          .filter((item) => item.tipo === "EXTRA")
+          .map((item) => item.nome)
+          .filter(Boolean);
+        const reps = [time?.representante_1, time?.representante_2].filter(
+          Boolean,
+        );
+
+        const linhas = atletas.length
+          ? atletas
+              .map((atleta, index) => {
+                const marcador =
+                  atleta.tipo === "GOLEIRO"
+                    ? " (G)"
+                    : atleta.tipo === "EXTRA"
+                      ? " (E)"
+                      : "";
+                return `
+            <tr>
+              <td>${index + 1}</td>
+              <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
+              <td>${escapeHtml(`${atleta.nome || "-"}${marcador}`)}</td>
+              <td>&nbsp;</td>
+              <td><span class="sumula-card-box yellow"></span></td>
+              <td><span class="sumula-card-box red">V</span></td>
+            </tr>
+          `;
+              })
+              .join("")
+          : `
+            <tr>
+              <td colspan="6">Nenhum atleta cadastrado para este time.</td>
+            </tr>
+          `;
+
+        return `
+          <section class="sumula-team-card">
+            <div class="sumula-team-head">
+              <img class="sumula-team-crest" src="${getEscudoAdmin(time?.nome_time || "")}" alt="${escapeHtml(time?.nome_time || "-")}" onerror="this.src='projeto-apecad/assets/escudos/escudo-padrao.png'" />
+              <div>
+                <div class="sumula-team-name">${escapeHtml(time?.nome_time || "-")}</div>
+                <div style="font-size:12px;color:#667085;font-weight:700">Elenco oficial para conferência e assinatura</div>
+              </div>
+              <div class="sumula-team-score">&nbsp;</div>
+            </div>
+            <table class="sumula-team-table">
+              <thead>
+                <tr>
+                  <th>Nº</th>
+                  <th>Assinatura</th>
+                  <th>Atleta</th>
+                  <th>G</th>
+                  <th>A</th>
+                  <th>V</th>
+                </tr>
+              </thead>
+              <tbody>${linhas}</tbody>
+            </table>
+            <div class="sumula-team-footer">
+              <div><strong>Total atletas:</strong> ${atletas.length}</div>
+              <div><strong>Comissão técnica:</strong> ${comissao.join(" - ") || "-"}</div>
+              <div><strong>Extras:</strong> ${extras.join(" - ") || "-"}</div>
+              <div><strong>Representantes:</strong> ${reps.join(" - ") || "-"}</div>
+              <div><strong>Ass. Capitão:</strong> <span class="sumula-fill-line"></span></div>
+            </div>
+          </section>
+        `;
+      }
+      async function gerarPreviewSumulaPdf() {
+        const confrontoId =
+          document.getElementById("sumulaPdfConfronto")?.value || "";
+        const preview = document.getElementById("sumulaPdfPreview");
+        const status = document.getElementById("sumulaPdfStatus");
+
+        if (!preview || !status) return;
+
+        if (!confrontoId) {
+          status.className = "message";
+          status.textContent = "";
+          preview.className = "sumula-preview-empty";
+          preview.innerHTML =
+            "Selecione um confronto para montar a súmula automaticamente.";
+          return;
+        }
+
+        try {
+          status.className = "message";
+          status.textContent = "";
+          preview.className = "sumula-preview-empty";
+          preview.innerHTML = "Montando súmula...";
+
+          const times = await garantirTimesAdminCache();
+          const dadosConfronto = await getApi({
+            route: "listarJogadoresDoConfronto",
+            confronto_id: confrontoId,
+          });
+
+          if (!dadosConfronto.sucesso || !dadosConfronto.confronto) {
+            throw new Error(
+              dadosConfronto.mensagem || "Erro ao carregar confronto.",
+            );
+          }
+
+          const confronto = dadosConfronto.confronto;
+          const dadosSumula = await getApi({
+            route: "buscarDadosSumula",
+            confronto_id: confrontoId,
+          });
+
+          const [elencoCasa, elencoFora] = await Promise.all([
+            carregarTimeElencoSumulaPdf(confronto.time_casa_id),
+            carregarTimeElencoSumulaPdf(confronto.time_fora_id),
+          ]);
+
+          const timeCasa = times.find(
+            (time) =>
+              String(time.time_id || "").trim() ===
+              String(confronto.time_casa_id || "").trim(),
+          );
+          const timeFora = times.find(
+            (time) =>
+              String(time.time_id || "").trim() ===
+              String(confronto.time_fora_id || "").trim(),
+          );
+
+          const golsCasa = Number(dadosSumula?.resumo?.gols_casa || 0);
+          const golsFora = Number(dadosSumula?.resumo?.gols_fora || 0);
+          const suspensos = []
+            .concat(
+              elencoCasa.filter((item) => Number(item.vermelhos || 0) > 0),
+              elencoFora.filter((item) => Number(item.vermelhos || 0) > 0),
+            )
+            .map((item) => `${item.nome} (${item.nome_time || "-"})`);
+
+          preview.className = "sumula-sheet";
+          preview.innerHTML = `
+            <div class="sumula-sheet-header">
+              <div>Data: ${formatarDataCabecalhoSumula(confronto.data_jogo)}</div>
+              <div>Campeonato da APECAD 2026</div>
+              <div style="text-align:right">Assinatura Arbitragem: __________________</div>
+            </div>
+            <div class="sumula-sheet-title">${escapeHtml(confronto.nome_time_casa || "-")} x ${escapeHtml(confronto.nome_time_fora || "-")}</div>
+            <div class="sumula-sheet-subtitle">Súmula oficial da partida para impressão, conferência e geração de PDF</div>
+            <div class="sumula-sheet-meta">
+              <div class="sumula-meta-card">
+                <div class="sumula-meta-label">Rodada</div>
+                <div class="sumula-meta-value">${escapeHtml(confronto.rodada || "-")}</div>
+              </div>
+              <div class="sumula-meta-card">
+                <div class="sumula-meta-label">Hora</div>
+                <div class="sumula-meta-value">${formatarHoraAdmin(confronto.hora_jogo)}</div>
+              </div>
+              <div class="sumula-meta-card">
+                <div class="sumula-meta-label">Local</div>
+                <div class="sumula-meta-value">${escapeHtml(confronto.local || "-")}</div>
+              </div>
+              <div class="sumula-meta-card">
+                <div class="sumula-meta-label">WO / Status</div>
+                <div class="sumula-meta-value"><span class="sumula-fill-line" style="min-width:90px"></span></div>
+              </div>
+            </div>
+            <div class="sumula-teams">
+              ${montarBlocoTimeSumulaPdf(timeCasa, elencoCasa, golsCasa)}
+              ${montarBlocoTimeSumulaPdf(timeFora, elencoFora, golsFora)}
+            </div>
+            <div class="sumula-suspensos">
+              Atletas suspensos: ${suspensos.length ? escapeHtml(suspensos.join(" | ")) : "Nenhum atleta suspenso identificado no histórico atual."}
+            </div>
+          `;
+        } catch (erro) {
+          status.className = "message error";
+          status.textContent = erro.message || "Erro ao gerar a prévia da súmula.";
+          preview.className = "sumula-preview-empty";
+          preview.innerHTML =
+            "Não foi possível montar a súmula automática para este confronto.";
+          console.error(erro);
+        }
+      }
+      function imprimirSumulaPdf() {
+        const confrontoId =
+          document.getElementById("sumulaPdfConfronto")?.value || "";
+        const status = document.getElementById("sumulaPdfStatus");
+
+        if (!confrontoId) {
+          status.className = "message error";
+          status.textContent = "Selecione um confronto para gerar o PDF.";
+          return;
+        }
+
+        status.className = "message success";
+        status.textContent =
+          "Abrindo a impressão. No navegador, escolha 'Salvar como PDF'.";
+        window.print();
       }
       function formatarDataParaInputDatetime(valor) {
         if (!valor) return "";
