@@ -911,12 +911,52 @@
               inscrições, compras e despesas diversas.
             </p>
 
+            <div
+              style="
+                display: inline-flex;
+                gap: 10px;
+                padding: 8px;
+                border: 1px solid #d7e3f4;
+                border-radius: 18px;
+                background: #f8fbff;
+                margin-bottom: 22px;
+              "
+            >
+              <button
+                id="financeiroSubtabLancamentosBtn"
+                class="btn"
+                type="button"
+                style="max-width: 220px"
+                onclick="abrirSubabaFinanceiro('lancamentos')"
+              >
+                Lancamentos
+              </button>
+              <button
+                id="financeiroSubtabProjecaoBtn"
+                class="sumula-secondary-btn"
+                type="button"
+                style="max-width: 220px"
+                onclick="abrirSubabaFinanceiro('projecao')"
+              >
+                Projecao
+              </button>
+              <button
+                class="sumula-secondary-btn"
+                type="button"
+                style="max-width: 220px"
+                onclick="gerarRelatorioFinanceiroPdf()"
+              >
+                Relatorio PDF
+              </button>
+            </div>
+
+            <div id="financeiroSubabaLancamentos">
             <input type="hidden" id="financeiroId" />
 
             <div
               style="
                 display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(4, minmax(0, 1fr));
                 gap: 14px;
               "
             >
@@ -939,6 +979,13 @@
                   <option value="EXTRAS">Extras</option>
                   <option value="COMPRA">Compra</option>
                   <option value="DIVERSOS">Diversos</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Situacao</label>
+                <select id="financeiroSituacao" class="form-input">
+                  <option value="REALIZADO">Realizado</option>
+                  <option value="PREVISTO">Previsto</option>
                 </select>
               </div>
               <div class="form-group">
@@ -1028,6 +1075,58 @@
             <div style="margin-top: 24px">
               <h3 style="margin-bottom: 12px">Extrato financeiro</h3>
               <div id="listaFinanceiroAdmin">Carregando...</div>
+            </div>
+            </div>
+
+            <div id="financeiroSubabaProjecao" class="hidden">
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(4, minmax(0, 1fr));
+                  gap: 14px;
+                "
+              >
+                <div class="card">
+                  <div class="card-label">Saldo atual realizado</div>
+                  <div id="financeiroSaldoAtualProjetado" class="card-value">R$ 0,00</div>
+                </div>
+                <div class="card">
+                  <div class="card-label">Entradas previstas</div>
+                  <div id="financeiroEntradasPrevistas" class="card-value">R$ 0,00</div>
+                </div>
+                <div class="card">
+                  <div class="card-label">Saidas previstas</div>
+                  <div id="financeiroSaidasPrevistas" class="card-value">R$ 0,00</div>
+                </div>
+                <div class="card">
+                  <div class="card-label">Saldo futuro projetado</div>
+                  <div id="financeiroSaldoFuturo" class="card-value">R$ 0,00</div>
+                </div>
+              </div>
+
+              <div
+                style="
+                  margin-top: 20px;
+                  padding: 16px 18px;
+                  border: 1px solid #d7e3f4;
+                  border-radius: 18px;
+                  background: linear-gradient(180deg, #f9fbff 0%, #f3f8ff 100%);
+                "
+              >
+                <div style="font-weight: 700; color: #0f2747; margin-bottom: 6px">
+                  Leitura da projeção
+                </div>
+                <div style="color: #58708d; line-height: 1.55">
+                  Use lançamentos com situação <strong>Previsto</strong> para receitas ainda não
+                  recebidas e despesas que ainda serão pagas. O saldo futuro soma o saldo realizado
+                  às entradas previstas e desconta as saídas previstas.
+                </div>
+              </div>
+
+              <div style="margin-top: 24px">
+                <h3 style="margin-bottom: 12px">Agenda de projeção</h3>
+                <div id="listaProjecaoFinanceiraAdmin">Carregando...</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1349,8 +1448,10 @@
             }
 
             if (tab === "financeiro") {
+              abrirSubabaFinanceiro("lancamentos");
               await carregarFinanceiroAdmin();
               await carregarResumoFinanceiroAdmin();
+              await carregarProjecaoFinanceiraAdmin();
             }
 
             if (tab === "configuracoes") {
@@ -2880,12 +2981,51 @@
           })
           .join(" ");
       }
+      function abrirSubabaFinanceiro(subaba = "lancamentos") {
+        const lancamentos = document.getElementById("financeiroSubabaLancamentos");
+        const projecao = document.getElementById("financeiroSubabaProjecao");
+        const btnLancamentos = document.getElementById("financeiroSubtabLancamentosBtn");
+        const btnProjecao = document.getElementById("financeiroSubtabProjecaoBtn");
+        const mostrarLancamentos = subaba !== "projecao";
+
+        if (lancamentos) lancamentos.classList.toggle("hidden", !mostrarLancamentos);
+        if (projecao) projecao.classList.toggle("hidden", mostrarLancamentos);
+        if (btnLancamentos) {
+          btnLancamentos.className = mostrarLancamentos ? "btn" : "sumula-secondary-btn";
+        }
+        if (btnProjecao) {
+          btnProjecao.className = mostrarLancamentos ? "sumula-secondary-btn" : "btn";
+        }
+      }
+      function extrairSituacaoFinanceira(observacoes = "") {
+        const texto = String(observacoes || "");
+        const match = texto.match(/\[SITUACAO:(REALIZADO|PREVISTO)\]/i);
+        return match ? match[1].toUpperCase() : "REALIZADO";
+      }
+      function limparObservacoesFinanceiras(observacoes = "") {
+        return String(observacoes || "")
+          .replace(/\[SITUACAO:(REALIZADO|PREVISTO)\]\s*/gi, "")
+          .trim();
+      }
+      function montarObservacoesFinanceiras(situacao, observacoes = "") {
+        const limpo = limparObservacoesFinanceiras(observacoes);
+        return `[SITUACAO:${String(situacao || "REALIZADO").toUpperCase()}] ${limpo}`.trim();
+      }
+      function normalizarLancamentosFinanceiros(lancamentos = []) {
+        return lancamentos.map((item) => ({
+          ...item,
+          situacao_financeira: extrairSituacaoFinanceira(item.observacoes),
+          observacoes_limpo: limparObservacoesFinanceiras(item.observacoes),
+          valor_numerico: Number(item.valor || 0),
+        }));
+      }
       function limparFormularioFinanceiro() {
         const hoje = new Date().toISOString().slice(0, 10);
         document.getElementById("financeiroId").value = "";
         document.getElementById("financeiroData").value = hoje;
         document.getElementById("financeiroTipo").value = "ENTRADA";
         document.getElementById("financeiroCategoria").value = "INSCRICAO";
+        document.getElementById("financeiroSituacao").value = "REALIZADO";
         document.getElementById("financeiroTime").value = "";
         document.getElementById("financeiroValor").value = "";
         document.getElementById("financeiroForma").value = "";
@@ -2906,6 +3046,8 @@
           lancamento.tipo_movimento || "ENTRADA";
         document.getElementById("financeiroCategoria").value =
           lancamento.categoria || "DIVERSOS";
+        document.getElementById("financeiroSituacao").value =
+          lancamento.situacao_financeira || "REALIZADO";
         document.getElementById("financeiroTime").value =
           lancamento.time_id || "";
         document.getElementById("financeiroValor").value =
@@ -2915,7 +3057,7 @@
         document.getElementById("financeiroDescricao").value =
           lancamento.descricao || "";
         document.getElementById("financeiroObservacoes").value =
-          lancamento.observacoes || "";
+          lancamento.observacoes_limpo || "";
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
       async function salvarFinanceiroAdminFront() {
@@ -2924,6 +3066,7 @@
         const data = document.getElementById("financeiroData").value;
         const tipo = document.getElementById("financeiroTipo").value;
         const categoria = document.getElementById("financeiroCategoria").value;
+        const situacao = document.getElementById("financeiroSituacao").value;
         const timeId = document.getElementById("financeiroTime").value;
         const valor = document.getElementById("financeiroValor").value;
         const forma = document.getElementById("financeiroForma").value.trim();
@@ -2952,7 +3095,7 @@
             valor,
             forma_pagamento: forma,
             descricao,
-            observacoes,
+            observacoes: montarObservacoesFinanceiras(situacao, observacoes),
             usuario: adminSessao?.login || "ADMIN",
           });
 
@@ -2965,6 +3108,7 @@
             limparFormularioFinanceiro();
             await carregarFinanceiroAdmin();
             await carregarResumoFinanceiroAdmin();
+            await carregarProjecaoFinanceiraAdmin();
           }
         } catch (erro) {
           msg.className = "message error";
@@ -2993,6 +3137,7 @@
           if (resultado.sucesso) {
             await carregarFinanceiroAdmin();
             await carregarResumoFinanceiroAdmin();
+            await carregarProjecaoFinanceiraAdmin();
           }
         } catch (erro) {
           msg.className = "message error";
@@ -3002,17 +3147,662 @@
       }
       async function carregarResumoFinanceiroAdmin() {
         try {
-          const resultado = await getApi({ route: "resumoFinanceiroAdmin" });
-          if (!resultado.sucesso || !resultado.resumo) return;
+          const resultado = await getApi({ route: "listarFinanceiroAdmin" });
+          if (!resultado.sucesso) return;
+
+          const lancamentos = normalizarLancamentosFinanceiros(
+            resultado.lancamentos || [],
+          ).filter(
+            (item) => String(item.status || "ATIVO").trim().toUpperCase() !== "EXCLUIDO",
+          );
+          const realizados = lancamentos.filter(
+            (item) => item.situacao_financeira === "REALIZADO",
+          );
+          const entradas = realizados
+            .filter((item) => String(item.tipo_movimento || "").toUpperCase() === "ENTRADA")
+            .reduce((acc, item) => acc + item.valor_numerico, 0);
+          const saidas = realizados
+            .filter((item) => String(item.tipo_movimento || "").toUpperCase() === "SAIDA")
+            .reduce((acc, item) => acc + item.valor_numerico, 0);
 
           document.getElementById("financeiroEntradas").textContent =
-            formatarMoedaAdmin(resultado.resumo.total_entradas);
+            formatarMoedaAdmin(entradas);
           document.getElementById("financeiroSaidas").textContent =
-            formatarMoedaAdmin(resultado.resumo.total_saidas);
+            formatarMoedaAdmin(saidas);
           document.getElementById("financeiroSaldo").textContent =
-            formatarMoedaAdmin(resultado.resumo.saldo_atual);
+            formatarMoedaAdmin(entradas - saidas);
         } catch (erro) {
           console.error("Erro ao carregar resumo financeiro:", erro);
+        }
+      }
+      async function carregarProjecaoFinanceiraAdmin() {
+        const container = document.getElementById("listaProjecaoFinanceiraAdmin");
+
+        try {
+          const resultado = await getApi({ route: "listarFinanceiroAdmin" });
+          if (!resultado.sucesso) {
+            container.innerHTML = resultado.mensagem || "Erro ao carregar projeção.";
+            return;
+          }
+
+          const lancamentos = normalizarLancamentosFinanceiros(
+            resultado.lancamentos || [],
+          ).filter(
+            (item) => String(item.status || "ATIVO").trim().toUpperCase() !== "EXCLUIDO",
+          );
+          const realizados = lancamentos.filter(
+            (item) => item.situacao_financeira === "REALIZADO",
+          );
+          const previstos = lancamentos.filter(
+            (item) => item.situacao_financeira === "PREVISTO",
+          );
+
+          const saldoAtual = realizados.reduce(
+            (acc, item) =>
+              acc +
+              (String(item.tipo_movimento || "").toUpperCase() === "ENTRADA"
+                ? item.valor_numerico
+                : -item.valor_numerico),
+            0,
+          );
+          const entradasPrevistas = previstos
+            .filter((item) => String(item.tipo_movimento || "").toUpperCase() === "ENTRADA")
+            .reduce((acc, item) => acc + item.valor_numerico, 0);
+          const saidasPrevistas = previstos
+            .filter((item) => String(item.tipo_movimento || "").toUpperCase() === "SAIDA")
+            .reduce((acc, item) => acc + item.valor_numerico, 0);
+          const saldoFuturo = saldoAtual + entradasPrevistas - saidasPrevistas;
+
+          document.getElementById("financeiroSaldoAtualProjetado").textContent =
+            formatarMoedaAdmin(saldoAtual);
+          document.getElementById("financeiroEntradasPrevistas").textContent =
+            formatarMoedaAdmin(entradasPrevistas);
+          document.getElementById("financeiroSaidasPrevistas").textContent =
+            formatarMoedaAdmin(saidasPrevistas);
+          document.getElementById("financeiroSaldoFuturo").textContent =
+            formatarMoedaAdmin(saldoFuturo);
+
+          if (!previstos.length) {
+            container.innerHTML = "Nenhum lançamento previsto cadastrado.";
+            return;
+          }
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Tipo</th>
+              <th>Categoria</th>
+              <th>Situacao</th>
+              <th>Time</th>
+              <th>Descricao</th>
+              <th>Valor</th>
+              <th>Observacoes</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${previstos
+              .map(
+                (item) => `
+              <tr>
+                <td>${formatarDataAdmin(item.data_lancamento)}</td>
+                <td>${item.tipo_movimento || "-"}</td>
+                <td>${item.categoria || "-"}</td>
+                <td>${item.situacao_financeira || "PREVISTO"}</td>
+                <td>${item.nome_time || "-"}</td>
+                <td>${item.descricao || "-"}</td>
+                <td>${formatarMoedaAdmin(item.valor_numerico)}</td>
+                <td>${item.observacoes_limpo || "-"}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar projeção.";
+          console.error(erro);
+        }
+      }
+      function agruparLancamentosFinanceiros(lancamentos, chaveFn) {
+        const mapa = new Map();
+        lancamentos.forEach((item) => {
+          const chave = chaveFn(item);
+          const atual = mapa.get(chave) || { chave, entradas: 0, saidas: 0, saldo: 0, total: 0 };
+          if (String(item.tipo_movimento || "").toUpperCase() === "ENTRADA") {
+            atual.entradas += item.valor_numerico;
+            atual.saldo += item.valor_numerico;
+          } else {
+            atual.saidas += item.valor_numerico;
+            atual.saldo -= item.valor_numerico;
+          }
+          atual.total += item.valor_numerico;
+          mapa.set(chave, atual);
+        });
+        return Array.from(mapa.values()).sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
+      }
+      function montarTabelaResumoFinanceiro(titulo, grupos) {
+        return `
+          <section class="finance-report-section">
+            <h3>${escapeHtml(titulo)}</h3>
+            <table class="finance-report-table">
+              <thead>
+                <tr>
+                  <th>Chave</th>
+                  <th>Entradas</th>
+                  <th>Saidas</th>
+                  <th>Saldo</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${grupos.length
+                  ? grupos
+                      .map(
+                        (item) => `
+                    <tr>
+                      <td>${escapeHtml(item.chave || "-")}</td>
+                      <td>${formatarMoedaAdmin(item.entradas)}</td>
+                      <td>${formatarMoedaAdmin(item.saidas)}</td>
+                      <td>${formatarMoedaAdmin(item.saldo)}</td>
+                    </tr>
+                  `,
+                      )
+                      .join("")
+                  : '<tr><td colspan="4">Sem dados para este agrupamento.</td></tr>'}
+              </tbody>
+            </table>
+          </section>
+        `;
+      }
+      async function gerarRelatorioFinanceiroPdf() {
+        try {
+          const resultado = await getApi({ route: "listarFinanceiroAdmin" });
+          if (!resultado.sucesso) {
+            alert(resultado.mensagem || "Erro ao gerar relatório financeiro.");
+            return;
+          }
+
+          const todos = normalizarLancamentosFinanceiros(resultado.lancamentos || [])
+            .filter(item => String(item.status || "ATIVO").trim().toUpperCase() !== "EXCLUIDO");
+
+          const realizados = todos.filter(i => i.situacao_financeira === "REALIZADO");
+          const previstos  = todos.filter(i => i.situacao_financeira === "PREVISTO");
+
+          const isEntrada = i => (i.tipo_movimento || "").toUpperCase() === "ENTRADA";
+          const isSaida   = i => (i.tipo_movimento || "").toUpperCase() === "SAIDA";
+          const soma = arr => arr.reduce((s, i) => s + i.valor_numerico, 0);
+
+          const receitasRealizadas = realizados.filter(isEntrada);
+          const despesasRealizadas = realizados.filter(isSaida);
+          const receitasPrevistas  = previstos.filter(isEntrada);
+          const despesasPrevistas  = previstos.filter(isSaida);
+
+          const recAtual   = soma(receitasRealizadas);
+          const despAtual  = soma(despesasRealizadas);
+          const recPrev    = soma(receitasPrevistas);
+          const despPrev   = soma(despesasPrevistas);
+          const saldoAtual = recAtual - despAtual;
+          const saldoProj  = saldoAtual + recPrev - despPrev;
+          const totalRec   = recAtual + recPrev;
+          const totalDesp  = despAtual + despPrev;
+
+          const cobertura     = despAtual > 0 ? (recAtual / despAtual * 100).toFixed(1) : "∞";
+          const execOrcam     = (despAtual + despPrev) > 0 ? (despAtual / (despAtual + despPrev) * 100).toFixed(1) : "0";
+          const txRecebimento = (recAtual + recPrev) > 0 ? (recAtual / (recAtual + recPrev) * 100).toFixed(1) : "0";
+          const margemLiquida = totalRec > 0 ? ((totalRec - totalDesp) / totalRec * 100).toFixed(1) : "0";
+
+          function getLabelCategoria(item) {
+            const tipo = (item.tipo_movimento || "").toUpperCase();
+            const cat  = (item.categoria || "").toUpperCase();
+            if (tipo === "ENTRADA") {
+              if (cat === "INSCRICAO")  return "Inscrições de Times";
+              if (cat === "ARBITRAGEM") return "Taxa de Arbitragem (recebida dos times)";
+              if (cat === "EXTRAS")     return "Receitas Extras";
+              if (cat === "COMPRA")     return "Vendas / Receita de Compras";
+              return `Receita — ${item.categoria || "Outros"}`;
+            } else {
+              if (cat === "ARBITRAGEM") return "Honorários de Árbitros";
+              if (cat === "COMPRA")     return "Compras e Aquisições";
+              if (cat === "EXTRAS")     return "Despesas Extras";
+              if (cat === "DIVERSOS")   return "Despesas Diversas";
+              return `Despesa — ${item.categoria || "Outros"}`;
+            }
+          }
+
+          const agFase = {};
+          todos.forEach(item => {
+            const fase = item.descricao || "Sem descrição";
+            if (!agFase[fase]) agFase[fase] = { receita: 0, despesa: 0 };
+            if (isEntrada(item)) agFase[fase].receita += item.valor_numerico;
+            else                 agFase[fase].despesa += item.valor_numerico;
+          });
+
+          const agTime = {};
+          todos.forEach(item => {
+            const time = item.nome_time || "Sem time vinculado";
+            if (!agTime[time]) agTime[time] = { entrada: 0, saida: 0 };
+            if (isEntrada(item)) agTime[time].entrada += item.valor_numerico;
+            else                 agTime[time].saida   += item.valor_numerico;
+          });
+
+          const agRecCat = {};
+          [...receitasRealizadas, ...receitasPrevistas].forEach(item => {
+            const label = getLabelCategoria(item);
+            if (!agRecCat[label]) agRecCat[label] = { realizado: 0, previsto: 0 };
+            if (item.situacao_financeira === "REALIZADO") agRecCat[label].realizado += item.valor_numerico;
+            else agRecCat[label].previsto += item.valor_numerico;
+          });
+
+          const agDespCat = {};
+          [...despesasRealizadas, ...despesasPrevistas].forEach(item => {
+            const label = getLabelCategoria(item);
+            if (!agDespCat[label]) agDespCat[label] = { realizado: 0, previsto: 0 };
+            if (item.situacao_financeira === "REALIZADO") agDespCat[label].realizado += item.valor_numerico;
+            else agDespCat[label].previsto += item.valor_numerico;
+          });
+
+          const fmt     = formatarMoedaAdmin;
+          const logoUrl = location.protocol + '//' + location.host + '/projeto-apecad/assets/logo.png';
+          const emissao = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+
+          const mkRowsRec = (arr, cls) => arr.length
+            ? arr.sort((a,b) => String(b.data_lancamento||"").localeCompare(String(a.data_lancamento||""))).map(i => `
+              <tr>
+                <td>${formatarDataAdmin(i.data_lancamento)}</td>
+                <td>${escapeHtml(getLabelCategoria(i))}</td>
+                <td>${escapeHtml(i.nome_time || "-")}</td>
+                <td>${escapeHtml(i.descricao || "-")}</td>
+                <td>${escapeHtml(i.forma_pagamento || "-")}</td>
+                <td class="${cls}">${fmt(i.valor_numerico)}</td>
+              </tr>`).join("")
+            : `<tr><td colspan="6" class="empty-row">Nenhum lançamento nesta categoria.</td></tr>`;
+
+          const rowsRecReal  = mkRowsRec(receitasRealizadas,  "valor-pos");
+          const rowsRecPrev  = mkRowsRec(receitasPrevistas,   "valor-prev");
+          const rowsDespReal = mkRowsRec(despesasRealizadas,  "valor-neg");
+          const rowsDespPrev = mkRowsRec(despesasPrevistas,   "valor-prev");
+
+          const rowsRecCat = Object.entries(agRecCat).map(([label, v]) => `
+            <tr>
+              <td>${escapeHtml(label)}</td>
+              <td class="valor-pos">${fmt(v.realizado)}</td>
+              <td class="valor-prev">${fmt(v.previsto)}</td>
+              <td class="valor-pos"><strong>${fmt(v.realizado + v.previsto)}</strong></td>
+            </tr>`).join("") || `<tr><td colspan="4" class="empty-row">Sem dados.</td></tr>`;
+
+          const rowsDespCat = Object.entries(agDespCat).map(([label, v]) => `
+            <tr>
+              <td>${escapeHtml(label)}</td>
+              <td class="valor-neg">${fmt(v.realizado)}</td>
+              <td class="valor-prev">${fmt(v.previsto)}</td>
+              <td class="valor-neg"><strong>${fmt(v.realizado + v.previsto)}</strong></td>
+            </tr>`).join("") || `<tr><td colspan="4" class="empty-row">Sem dados.</td></tr>`;
+
+          const rowsFase = Object.entries(agFase)
+            .sort((a, b) => (b[1].receita + b[1].despesa) - (a[1].receita + a[1].despesa))
+            .map(([fase, v]) => {
+              const saldo = v.receita - v.despesa;
+              return `<tr>
+                <td><strong>${escapeHtml(fase)}</strong></td>
+                <td class="valor-pos">${fmt(v.receita)}</td>
+                <td class="valor-neg">${fmt(v.despesa)}</td>
+                <td class="${saldo >= 0 ? 'valor-pos' : 'valor-neg'}"><strong>${fmt(saldo)}</strong></td>
+              </tr>`;
+            }).join("") || `<tr><td colspan="4" class="empty-row">Sem dados.</td></tr>`;
+
+          const rowsTime = Object.entries(agTime)
+            .filter(([k]) => k !== "Sem time vinculado")
+            .sort((a, b) => b[1].entrada - a[1].entrada)
+            .map(([time, v]) => {
+              const saldo = v.entrada - v.saida;
+              return `<tr>
+                <td><strong>${escapeHtml(time)}</strong></td>
+                <td class="valor-pos">${fmt(v.entrada)}</td>
+                <td class="valor-neg">${fmt(v.saida)}</td>
+                <td class="${saldo >= 0 ? 'valor-pos' : 'valor-neg'}">${fmt(saldo)}</td>
+              </tr>`;
+            }).join("") || `<tr><td colspan="4" class="empty-row">Sem times com lançamentos.</td></tr>`;
+
+          const linhasCompletas = todos
+            .sort((a,b) => String(b.data_lancamento||"").localeCompare(String(a.data_lancamento||"")))
+            .map(i => `
+              <tr>
+                <td>${formatarDataAdmin(i.data_lancamento)}</td>
+                <td><span class="badge-${isEntrada(i) ? 'rec' : 'desp'}">${isEntrada(i) ? "RECEITA" : "DESPESA"}</span></td>
+                <td><span class="badge-${i.situacao_financeira === 'REALIZADO' ? 'real' : 'prev'}">${i.situacao_financeira}</span></td>
+                <td>${escapeHtml(getLabelCategoria(i))}</td>
+                <td>${escapeHtml(i.nome_time || "-")}</td>
+                <td>${escapeHtml(i.descricao || "-")}</td>
+                <td class="${isEntrada(i) ? 'valor-pos' : 'valor-neg'}">${fmt(i.valor_numerico)}</td>
+                <td>${escapeHtml(i.forma_pagamento || "-")}</td>
+              </tr>`).join("");
+
+          const coberturaTxt  = parseFloat(cobertura) >= 100
+            ? `O campeonato apresenta <strong>saúde financeira positiva</strong>, com receitas reais cobrindo ${cobertura}% das despesas realizadas.`
+            : `Atenção: as receitas realizadas cobrem apenas <strong>${cobertura}%</strong> das despesas. Monitorar recebimentos pendentes.`;
+          const saldoTxt      = saldoAtual >= 0
+            ? `O caixa atual é <strong>positivo em ${fmt(saldoAtual)}</strong>, indicando operação com superávit.`
+            : `O caixa atual é <strong>negativo em ${fmt(Math.abs(saldoAtual))}</strong>. Verificar recebimentos pendentes com urgência.`;
+          const projecaoTxt   = saldoProj >= 0
+            ? `Considerando todos os lançamentos previstos, a projeção final é de <strong>superávit de ${fmt(saldoProj)}</strong>.`
+            : `Com os previstos computados, há risco de <strong>déficit de ${fmt(Math.abs(saldoProj))}</strong>. Reavaliação orçamentária recomendada.`;
+
+          const popup = window.open("", "_blank", "width=1280,height=900");
+          if (!popup) {
+            alert("Libere pop-ups para gerar o relatório PDF.");
+            return;
+          }
+
+          popup.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Relatório Financeiro — APECAD 2026</title>
+<style>
+  @page { size: A4; margin: 18mm 20mm 18mm 20mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; color: #0F2747; background: #fff; font-size: 12px; line-height: 1.5; padding: 0 28px 28px; }
+  .report-header { margin: 0 -28px; }
+
+  .report-header { background: linear-gradient(135deg, #05080F 0%, #0F2747 60%, #0B3DB5 100%); color: #fff; padding: 26px 30px; display: flex; align-items: center; gap: 22px; border-bottom: 4px solid #F0C352; }
+  .report-header img { width: 68px; height: 68px; object-fit: contain; }
+  .rh-text h1 { font-size: 20px; font-weight: 900; letter-spacing: 0.5px; }
+  .rh-text h2 { font-size: 12px; color: #F0C352; font-weight: 700; margin-top: 3px; text-transform: uppercase; letter-spacing: 2px; }
+  .rh-text p  { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 6px; }
+  .rh-badge { margin-left: auto; text-align: right; white-space: nowrap; }
+  .rh-badge span { display: block; font-size: 10px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; }
+  .rh-badge strong { font-size: 12px; color: #F0C352; }
+
+  .section { margin: 22px 0; }
+  .sec-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: #0F2747; padding: 7px 14px; border-left: 4px solid #1565FF; background: #EEF4FF; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+  .sec-title.green { border-left-color: #16A34A; background: #EDFDF5; color: #14532D; }
+  .sec-title.red   { border-left-color: #DC2626; background: #FEF2F2; color: #7F1D1D; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
+  .kpi { border-radius: 10px; padding: 13px 16px; border: 1px solid #e2e8f0; }
+  .kpi.green  { background: #EDFDF5; border-color: #86EFAC; }
+  .kpi.red    { background: #FEF2F2; border-color: #FCA5A5; }
+  .kpi.blue   { background: #EEF4FF; border-color: #93C5FD; }
+  .kpi.gold   { background: #FFFBEB; border-color: #FDE68A; }
+  .kpi.neut   { background: #F8FAFF; border-color: #CBD5E1; }
+  .kpi-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: #64748B; font-weight: 700; margin-bottom: 5px; }
+  .kpi-val { font-size: 20px; font-weight: 900; }
+  .kpi-val.pos  { color: #16A34A; }
+  .kpi-val.neg  { color: #DC2626; }
+  .kpi-val.blue { color: #1565FF; }
+  .kpi-val.gold { color: #B45309; }
+  .kpi-sub { font-size: 10px; color: #64748B; margin-top: 2px; }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+  .metric { border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0; background: #F8FAFF; text-align: center; }
+  .metric-lbl { font-size: 10px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .metric-val { font-size: 21px; font-weight: 900; color: #1565FF; }
+  .metric-unit { font-size: 10px; color: #94A3B8; margin-top: 1px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 12px; }
+  th { background: #0F2747; color: #fff; padding: 7px 10px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+  th.r { text-align: right; }
+  td { padding: 6px 10px; border-bottom: 1px solid #E2E8F0; vertical-align: middle; }
+  tr:nth-child(even) td { background: #F8FAFF; }
+  tr:last-child td { border-bottom: none; }
+  .sub-row td { background: #EEF4FF !important; font-weight: 700; border-top: 2px solid #1565FF; }
+  .sub-row.g td { background: #EDFDF5 !important; border-top-color: #16A34A; }
+  .sub-row.r td { background: #FEF2F2 !important; border-top-color: #DC2626; }
+
+  .valor-pos  { color: #16A34A; font-weight: 700; text-align: right; }
+  .valor-neg  { color: #DC2626; font-weight: 700; text-align: right; }
+  .valor-prev { color: #B45309; font-weight: 700; text-align: right; }
+  .empty-row  { text-align: center; color: #94A3B8; font-style: italic; padding: 14px; }
+
+  .badge-rec  { background: #DCFCE7; color: #14532D; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; display: inline-block; }
+  .badge-desp { background: #FEE2E2; color: #7F1D1D; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; display: inline-block; }
+  .badge-real { background: #DBEAFE; color: #1e3a5f; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; display: inline-block; }
+  .badge-prev { background: #FEF3C7; color: #78350F; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; display: inline-block; }
+
+  .laudo { background: #F8FAFF; border: 1px solid #CBD5E1; border-radius: 10px; padding: 14px 18px; margin-bottom: 12px; }
+  .laudo h4 { font-size: 11px; font-weight: 700; color: #0F2747; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .laudo p  { font-size: 11px; color: #334155; line-height: 1.6; }
+
+  .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+  .proj-card { border-radius: 10px; padding: 14px; border: 1px solid #e2e8f0; }
+  .proj-card h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748B; margin-bottom: 10px; font-weight: 700; }
+  .proj-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #F1F5F9; font-size: 11px; }
+  .proj-row:last-child { border-bottom: none; font-weight: 700; padding-top: 8px; }
+
+  .sub-h4 { font-size: 12px; font-weight: 700; margin: 14px 0 8px; }
+
+  .page-break { page-break-before: always; padding-top: 2px; }
+
+  .report-footer { margin-top: 24px; border-top: 2px solid #E2E8F0; padding-top: 10px; text-align: center; font-size: 10px; color: #94A3B8; }
+
+  @media print {
+    .report-header, .sec-title, .kpi, .laudo { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr:nth-child(even) td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sub-row td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="report-header">
+  <img src="${logoUrl}" alt="APECAD" onerror="this.style.display='none'">
+  <div class="rh-text">
+    <h1>Relatório Financeiro Oficial</h1>
+    <h2>APECAD 2026 — Campeonato de Futebol Society</h2>
+    <p>Documento gerado automaticamente pelo Sistema APECAD • Uso interno e administrativo</p>
+  </div>
+  <div class="rh-badge">
+    <span>Emitido em</span>
+    <strong>${emissao}</strong>
+  </div>
+</div>
+
+<!-- 1. PANORAMA EXECUTIVO -->
+<div class="section">
+  <div class="sec-title">📊 1. Panorama Financeiro Executivo</div>
+  <div class="kpi-grid">
+    <div class="kpi green">
+      <div class="kpi-lbl">Receita Realizada</div>
+      <div class="kpi-val pos">${fmt(recAtual)}</div>
+      <div class="kpi-sub">${receitasRealizadas.length} lançamento(s) confirmado(s)</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-lbl">Despesas Realizadas</div>
+      <div class="kpi-val neg">${fmt(despAtual)}</div>
+      <div class="kpi-sub">${despesasRealizadas.length} lançamento(s) confirmado(s)</div>
+    </div>
+    <div class="kpi ${saldoAtual >= 0 ? 'blue' : 'red'}">
+      <div class="kpi-lbl">Saldo Atual (Caixa)</div>
+      <div class="kpi-val ${saldoAtual >= 0 ? 'blue' : 'neg'}">${fmt(saldoAtual)}</div>
+      <div class="kpi-sub">${saldoAtual >= 0 ? 'Superávit operacional' : 'Déficit — atenção'}</div>
+    </div>
+    <div class="kpi gold">
+      <div class="kpi-lbl">Receita Prevista (a receber)</div>
+      <div class="kpi-val gold">${fmt(recPrev)}</div>
+      <div class="kpi-sub">${receitasPrevistas.length} lançamento(s) pendente(s)</div>
+    </div>
+    <div class="kpi neut">
+      <div class="kpi-lbl">Despesas Previstas (a pagar)</div>
+      <div class="kpi-val neg">${fmt(despPrev)}</div>
+      <div class="kpi-sub">${despesasPrevistas.length} lançamento(s) pendente(s)</div>
+    </div>
+    <div class="kpi ${saldoProj >= 0 ? 'blue' : 'red'}">
+      <div class="kpi-lbl">Saldo Final Projetado</div>
+      <div class="kpi-val ${saldoProj >= 0 ? 'blue' : 'neg'}">${fmt(saldoProj)}</div>
+      <div class="kpi-sub">Realizado + Previsto</div>
+    </div>
+  </div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-lbl">Índice de Cobertura</div>
+      <div class="metric-val">${cobertura}<span style="font-size:13px">%</span></div>
+      <div class="metric-unit">Receita real / Despesa real</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Execução Orçamentária</div>
+      <div class="metric-val">${execOrcam}<span style="font-size:13px">%</span></div>
+      <div class="metric-unit">Despesas realizadas / Total previsto</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Taxa de Recebimento</div>
+      <div class="metric-val">${txRecebimento}<span style="font-size:13px">%</span></div>
+      <div class="metric-unit">Receitas realizadas / Total esperado</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Margem Líquida Geral</div>
+      <div class="metric-val">${margemLiquida}<span style="font-size:13px">%</span></div>
+      <div class="metric-unit">Sobre total de receitas previstas</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. RECEITAS -->
+<div class="section page-break">
+  <div class="sec-title green">💰 2. Receitas — O que o Campeonato Arrecada</div>
+  <p style="margin-bottom:10px;font-size:11px;color:#475569;"><strong>Receitas realizadas</strong> são valores já recebidos e confirmados. <strong>Receitas previstas</strong> estão aguardando pagamento.</p>
+
+  <div class="sub-h4" style="color:#14532D;">2.1 Receitas Realizadas — ${fmt(recAtual)}</div>
+  <table>
+    <thead><tr><th>Data</th><th>Tipo / Categoria</th><th>Time</th><th>Descrição</th><th>Forma Pgto.</th><th class="r">Valor</th></tr></thead>
+    <tbody>
+      ${rowsRecReal}
+      <tr class="sub-row g"><td colspan="5"><strong>Total Receitas Realizadas</strong></td><td class="valor-pos">${fmt(recAtual)}</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-h4" style="color:#B45309;margin-top:16px;">2.2 Receitas Previstas (A Receber) — ${fmt(recPrev)}</div>
+  <table>
+    <thead><tr><th>Data Prevista</th><th>Tipo / Categoria</th><th>Time</th><th>Descrição</th><th>Forma Pgto.</th><th class="r">Valor</th></tr></thead>
+    <tbody>
+      ${rowsRecPrev}
+      <tr class="sub-row"><td colspan="5"><strong>Total Receitas Previstas</strong></td><td class="valor-prev">${fmt(recPrev)}</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-h4" style="margin-top:16px;">2.3 Resumo por Categoria de Receita</div>
+  <table>
+    <thead><tr><th>Categoria</th><th class="r">Realizado</th><th class="r">Previsto</th><th class="r">Total</th></tr></thead>
+    <tbody>
+      ${rowsRecCat}
+      <tr class="sub-row g"><td><strong>TOTAL GERAL DE RECEITAS</strong></td><td class="valor-pos">${fmt(recAtual)}</td><td class="valor-prev">${fmt(recPrev)}</td><td class="valor-pos">${fmt(totalRec)}</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 3. DESPESAS -->
+<div class="section page-break">
+  <div class="sec-title red">📤 3. Despesas — O que o Campeonato Gasta</div>
+  <p style="margin-bottom:10px;font-size:11px;color:#475569;">
+    <strong>Nota:</strong> "Taxa de Arbitragem (recebida dos times)" = valor cobrado aos times para custeio dos árbitros. "Honorários de Árbitros" = pagamento realizado aos árbitros. São lançamentos distintos e complementares.
+  </p>
+
+  <div class="sub-h4" style="color:#7F1D1D;">3.1 Despesas Realizadas — ${fmt(despAtual)}</div>
+  <table>
+    <thead><tr><th>Data</th><th>Tipo / Categoria</th><th>Referência</th><th>Descrição</th><th>Forma Pgto.</th><th class="r">Valor</th></tr></thead>
+    <tbody>
+      ${rowsDespReal}
+      <tr class="sub-row r"><td colspan="5"><strong>Total Despesas Realizadas</strong></td><td class="valor-neg">${fmt(despAtual)}</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-h4" style="color:#B45309;margin-top:16px;">3.2 Despesas Previstas (A Pagar) — ${fmt(despPrev)}</div>
+  <table>
+    <thead><tr><th>Data Prevista</th><th>Tipo / Categoria</th><th>Referência</th><th>Descrição</th><th>Forma Pgto.</th><th class="r">Valor</th></tr></thead>
+    <tbody>
+      ${rowsDespPrev}
+      <tr class="sub-row"><td colspan="5"><strong>Total Despesas Previstas</strong></td><td class="valor-prev">${fmt(despPrev)}</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sub-h4" style="margin-top:16px;">3.3 Resumo por Categoria de Despesa</div>
+  <table>
+    <thead><tr><th>Categoria</th><th class="r">Realizado</th><th class="r">Previsto</th><th class="r">Total</th></tr></thead>
+    <tbody>
+      ${rowsDespCat}
+      <tr class="sub-row r"><td><strong>TOTAL GERAL DE DESPESAS</strong></td><td class="valor-neg">${fmt(despAtual)}</td><td class="valor-prev">${fmt(despPrev)}</td><td class="valor-neg">${fmt(totalDesp)}</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 4. ANÁLISE POR FASE + 5. POR TIME -->
+<div class="section page-break">
+  <div class="sec-title">⚽ 4. Análise por Fase / Evento</div>
+  <p style="margin-bottom:10px;font-size:11px;color:#475569;">Fluxo financeiro consolidado por fase: receitas geradas pelos times menos custos operacionais da etapa.</p>
+  <table>
+    <thead><tr><th>Fase / Evento</th><th class="r">Receita Gerada</th><th class="r">Custo / Despesa</th><th class="r">Resultado Líquido</th></tr></thead>
+    <tbody>${rowsFase}</tbody>
+  </table>
+
+  <div class="sec-title" style="margin-top:22px;">🛡️ 5. Análise por Time</div>
+  <p style="margin-bottom:10px;font-size:11px;color:#475569;">Lançamentos vinculados a cada equipe (inscrições, taxas de arbitragem, pendências etc.).</p>
+  <table>
+    <thead><tr><th>Equipe</th><th class="r">Total Pago</th><th class="r">Total como Saída</th><th class="r">Saldo Vinculado</th></tr></thead>
+    <tbody>${rowsTime}</tbody>
+  </table>
+</div>
+
+<!-- 6. LAUDO TÉCNICO + 7. PROJEÇÃO -->
+<div class="section page-break">
+  <div class="sec-title">📋 6. Laudo Técnico — Saúde Financeira</div>
+
+  <div class="laudo">
+    <h4>🏦 Situação do Caixa</h4>
+    <p>${saldoTxt}</p>
+  </div>
+  <div class="laudo">
+    <h4>📈 Cobertura e Eficiência</h4>
+    <p>${coberturaTxt} A execução orçamentária das despesas está em <strong>${execOrcam}%</strong> — ${parseFloat(execOrcam) > 80 ? 'a maior parte do orçamento de despesas já foi executado' : 'ainda há margem de despesas a executar'}. O nível de recebimento das receitas é de <strong>${txRecebimento}%</strong> do total esperado.</p>
+  </div>
+  <div class="laudo">
+    <h4>💡 Análise Técnica Geral</h4>
+    <p>O campeonato possui <strong>${todos.length} lançamentos</strong> registrados — <strong>${realizados.length} realizados</strong> e <strong>${previstos.length} previstos</strong>. ${recPrev > 0 ? `Há <strong>${fmt(recPrev)}</strong> em receitas a confirmar. Priorizar cobranças pendentes para melhorar o fluxo de caixa.` : 'Todas as receitas esperadas foram recebidas.'} ${despPrev > 0 ? ` Despesas previstas totalizam <strong>${fmt(despPrev)}</strong>, a executar nas próximas fases.` : ''}</p>
+  </div>
+
+  <div class="sec-title" style="margin-top:22px;">📐 7. Projeção Financeira Detalhada</div>
+  <p style="margin-bottom:10px;font-size:11px;color:#475569;">${projecaoTxt}</p>
+  <div class="proj-grid">
+    <div class="proj-card" style="border-color:#86EFAC;background:#EDFDF5;">
+      <h4 style="color:#14532D;">Cenário Atual (Realizados)</h4>
+      <div class="proj-row"><span style="color:#475569;">Receitas realizadas</span><span class="valor-pos">${fmt(recAtual)}</span></div>
+      <div class="proj-row"><span style="color:#475569;">Despesas realizadas</span><span class="valor-neg">– ${fmt(despAtual)}</span></div>
+      <div class="proj-row" style="border-top:2px solid #16A34A;margin-top:6px;"><span><strong>Saldo atual</strong></span><span class="${saldoAtual >= 0 ? 'valor-pos' : 'valor-neg'}">${fmt(saldoAtual)}</span></div>
+    </div>
+    <div class="proj-card" style="border-color:#93C5FD;background:#EEF4FF;">
+      <h4 style="color:#1E3A5F;">Cenário Final (Realizados + Previstos)</h4>
+      <div class="proj-row"><span style="color:#475569;">Receitas totais</span><span class="valor-pos">${fmt(totalRec)}</span></div>
+      <div class="proj-row"><span style="color:#475569;">Despesas totais</span><span class="valor-neg">– ${fmt(totalDesp)}</span></div>
+      <div class="proj-row" style="border-top:2px solid #1565FF;margin-top:6px;"><span><strong>Resultado projetado</strong></span><span class="${saldoProj >= 0 ? 'valor-pos' : 'valor-neg'}">${fmt(saldoProj)}</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. EXTRATO COMPLETO -->
+<div class="section page-break">
+  <div class="sec-title">📄 8. Extrato Completo de Lançamentos</div>
+  <table>
+    <thead><tr><th>Data</th><th>Tipo</th><th>Situação</th><th>Categoria</th><th>Time</th><th>Descrição</th><th class="r">Valor</th><th>Forma</th></tr></thead>
+    <tbody>${linhasCompletas || '<tr><td colspan="8" class="empty-row">Nenhum lançamento registrado.</td></tr>'}</tbody>
+  </table>
+</div>
+
+<div class="report-footer">
+  <strong>APECAD 2026 — Sistema de Gestão do Campeonato</strong><br>
+  Relatório gerado em ${emissao} • Documento confidencial de uso administrativo
+</div>
+
+</body>
+</html>`);
+          popup.document.close();
+          popup.focus();
+          popup.print();
+        } catch (erro) {
+          console.error(erro);
+          alert("Erro ao gerar relatório financeiro.");
         }
       }
       async function carregarFinanceiroAdmin() {
@@ -3027,7 +3817,9 @@
             return;
           }
 
-          const lancamentos = resultado.lancamentos || [];
+          const lancamentos = normalizarLancamentosFinanceiros(
+            resultado.lancamentos || [],
+          );
 
           if (!lancamentos.length) {
             container.innerHTML = "Nenhum lançamento financeiro cadastrado.";
@@ -3049,6 +3841,7 @@
               <th>Data</th>
               <th>Tipo</th>
               <th>Categoria</th>
+              <th>Situacao</th>
               <th>Time</th>
               <th>Descrição</th>
               <th>Valor</th>
@@ -3065,9 +3858,10 @@
                 <td>${formatarDataAdmin(item.data_lancamento)}</td>
                 <td>${item.tipo_movimento || "-"}</td>
                 <td>${item.categoria || "-"}</td>
+                <td>${item.situacao_financeira || "REALIZADO"}</td>
                 <td>${item.nome_time || "-"}</td>
                 <td>${item.descricao || "-"}</td>
-                <td>${formatarMoedaAdmin(item.valor)}</td>
+                <td>${formatarMoedaAdmin(item.valor_numerico)}</td>
                 <td>${item.forma_pagamento || "-"}</td>
                 <td>${item.status || "ATIVO"}</td>
                 <td>
@@ -3155,6 +3949,7 @@
         .addEventListener("click", sairAdmin);
 
       configurarTabsAdmin();
+      abrirSubabaFinanceiro("lancamentos");
       limparFormularioFinanceiro();
       restaurarSessaoAdmin();
     </script>
