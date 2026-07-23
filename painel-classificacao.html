@@ -1267,26 +1267,75 @@
         gap: 8px;
         flex-wrap: wrap;
       }
-      .team-filter-select {
-        padding: 7px 32px 7px 12px;
+      .team-dropdown {
+        position: relative;
+        min-width: 190px;
+      }
+      .team-dropdown-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+        padding: 7px 12px;
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7aaa' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+        background: var(--card);
         color: var(--fg);
         font-size: 12px;
         font-family: inherit;
         font-weight: 600;
         cursor: pointer;
-        appearance: none;
-        -webkit-appearance: none;
-        outline: none;
-        transition: border-color 0.15s, background-color 0.15s;
-        min-width: 180px;
+        transition: border-color 0.15s, background 0.15s, color 0.15s;
+        white-space: nowrap;
       }
-      .team-filter-select:hover,
-      .team-filter-select:focus {
+      .team-dropdown-trigger:hover,
+      .team-dropdown.open .team-dropdown-trigger {
         border-color: var(--blue-line);
-        background-color: var(--blue-soft);
+        background: var(--blue-soft);
+        color: #9bbaff;
+      }
+      .team-dropdown-trigger svg {
+        flex-shrink: 0;
+        transition: transform 0.2s;
+      }
+      .team-dropdown.open .team-dropdown-trigger svg {
+        transform: rotate(180deg);
+      }
+      .team-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: #111827;
+        border: 1px solid var(--blue-line);
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+        z-index: 200;
+        max-height: 260px;
+        overflow-y: auto;
+        padding: 4px;
+      }
+      .team-dropdown.open .team-dropdown-menu {
+        display: block;
+      }
+      .team-dropdown-item {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s;
+        white-space: nowrap;
+      }
+      .team-dropdown-item:hover {
+        background: var(--blue-soft);
+        color: #9bbaff;
+      }
+      .team-dropdown-item.selected {
+        background: var(--blue-soft);
         color: #9bbaff;
       }
 
@@ -2401,9 +2450,13 @@
                   Agendados
                 </button>
               </div>
-              <select id="teamFilterSelect" class="team-filter-select">
-                <option value="">🛡️ Todos os times</option>
-              </select>
+              <div class="team-dropdown" id="teamDropdown">
+                <button type="button" class="team-dropdown-trigger" id="teamDropdownTrigger">
+                  <span id="teamDropdownLabel">🛡️ Todos os times</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div class="team-dropdown-menu" id="teamDropdownMenu"></div>
+              </div>
             </div>
             <div id="matchesGrid" class="matches-grid"></div>
           </section>
@@ -3460,10 +3513,14 @@
             renderMatches();
           });
         });
-        document.getElementById("teamFilterSelect").addEventListener("change", (e) => {
-          state.matchTeamFilter = e.target.value;
-          renderMatches();
+        const dropdownEl  = document.getElementById("teamDropdown");
+        const triggerEl   = document.getElementById("teamDropdownTrigger");
+        const menuEl      = document.getElementById("teamDropdownMenu");
+        triggerEl.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dropdownEl.classList.toggle("open");
         });
+        document.addEventListener("click", () => dropdownEl.classList.remove("open"));
         document
           .getElementById("refreshBtn")
           .addEventListener("click", refreshDashboard);
@@ -3562,14 +3619,33 @@
       }
 
       function populateTeamFilter() {
-        const sel = document.getElementById("teamFilterSelect");
-        if (!sel) return;
-        const current = sel.value;
+        const menu  = document.getElementById("teamDropdownMenu");
+        const label = document.getElementById("teamDropdownLabel");
+        if (!menu) return;
         const teams = [...new Set(
           state.confrontos.flatMap(m => [m.nome_time_casa, m.nome_time_fora].filter(Boolean))
         )].sort((a, b) => a.localeCompare(b, "pt-BR"));
-        sel.innerHTML = `<option value="">🛡️ Todos os times</option>` +
-          teams.map(t => `<option value="${esc(t)}" ${current === t ? "selected" : ""}>${esc(t)}</option>`).join("");
+
+        function selectTeam(value, text) {
+          state.matchTeamFilter = value;
+          label.textContent = text;
+          document.getElementById("teamDropdown").classList.remove("open");
+          menu.querySelectorAll(".team-dropdown-item").forEach(el => {
+            el.classList.toggle("selected", el.dataset.value === value);
+          });
+          renderMatches();
+        }
+
+        menu.innerHTML = [`<div class="team-dropdown-item selected" data-value="">🛡️ Todos os times</div>`,
+          ...teams.map(t => `<div class="team-dropdown-item" data-value="${esc(t)}">${esc(t)}</div>`)
+        ].join("");
+
+        menu.querySelectorAll(".team-dropdown-item").forEach(el => {
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            selectTeam(el.dataset.value, el.dataset.value ? el.dataset.value : "🛡️ Todos os times");
+          });
+        });
       }
 
       async function refreshDashboard() {
