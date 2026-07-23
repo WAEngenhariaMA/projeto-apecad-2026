@@ -1256,9 +1256,38 @@
       /* ─── JOGOS ─── */
       .matches-filters {
         display: flex;
-        gap: 8px;
+        align-items: center;
+        gap: 12px;
         margin-bottom: 18px;
         flex-wrap: wrap;
+        justify-content: space-between;
+      }
+      .filter-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .team-filter-select {
+        padding: 7px 32px 7px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7aaa' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+        color: var(--fg);
+        font-size: 12px;
+        font-family: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        outline: none;
+        transition: border-color 0.15s, background-color 0.15s;
+        min-width: 180px;
+      }
+      .team-filter-select:hover,
+      .team-filter-select:focus {
+        border-color: var(--blue-line);
+        background-color: var(--blue-soft);
+        color: #9bbaff;
       }
 
       .filter-btn {
@@ -2353,23 +2382,28 @@
               </div>
             </div>
             <div class="matches-filters">
-              <button
-                class="filter-btn active"
-                data-filter="todos"
-                type="button"
-              >
-                Todos
-              </button>
-              <button
-                class="filter-btn"
-                data-filter="finalizados"
-                type="button"
-              >
-                Finalizados
-              </button>
-              <button class="filter-btn" data-filter="agendados" type="button">
-                Agendados
-              </button>
+              <div class="filter-group">
+                <button
+                  class="filter-btn active"
+                  data-filter="todos"
+                  type="button"
+                >
+                  Todos
+                </button>
+                <button
+                  class="filter-btn"
+                  data-filter="finalizados"
+                  type="button"
+                >
+                  Finalizados
+                </button>
+                <button class="filter-btn" data-filter="agendados" type="button">
+                  Agendados
+                </button>
+              </div>
+              <select id="teamFilterSelect" class="team-filter-select">
+                <option value="">🛡️ Todos os times</option>
+              </select>
             </div>
             <div id="matchesGrid" class="matches-grid"></div>
           </section>
@@ -2461,6 +2495,7 @@
         selectedTeamId: null,
         refreshedAt: null,
         matchFilter: "todos",
+        matchTeamFilter: "",
       };
 
       async function getApi(params = {}) {
@@ -3223,8 +3258,12 @@
           return ak.localeCompare(bk, "pt-BR");
         });
         const filtered = sorted.filter((m) => {
-          if (state.matchFilter === "finalizados") return isFinished(m);
-          if (state.matchFilter === "agendados") return !isFinished(m);
+          if (state.matchFilter === "finalizados" && !isFinished(m)) return false;
+          if (state.matchFilter === "agendados" && isFinished(m)) return false;
+          if (state.matchTeamFilter) {
+            const t = state.matchTeamFilter;
+            if ((m.nome_time_casa || "") !== t && (m.nome_time_fora || "") !== t) return false;
+          }
           return true;
         });
         document.getElementById("matchesGrid").innerHTML = filtered.length
@@ -3421,6 +3460,10 @@
             renderMatches();
           });
         });
+        document.getElementById("teamFilterSelect").addEventListener("change", (e) => {
+          state.matchTeamFilter = e.target.value;
+          renderMatches();
+        });
         document
           .getElementById("refreshBtn")
           .addEventListener("click", refreshDashboard);
@@ -3514,7 +3557,19 @@
         renderScorers();
         renderTeamTabs();
         renderSelectedTeam();
+        populateTeamFilter();
         renderMatches();
+      }
+
+      function populateTeamFilter() {
+        const sel = document.getElementById("teamFilterSelect");
+        if (!sel) return;
+        const current = sel.value;
+        const teams = [...new Set(
+          state.confrontos.flatMap(m => [m.nome_time_casa, m.nome_time_fora].filter(Boolean))
+        )].sort((a, b) => a.localeCompare(b, "pt-BR"));
+        sel.innerHTML = `<option value="">🛡️ Todos os times</option>` +
+          teams.map(t => `<option value="${esc(t)}" ${current === t ? "selected" : ""}>${esc(t)}</option>`).join("");
       }
 
       async function refreshDashboard() {
