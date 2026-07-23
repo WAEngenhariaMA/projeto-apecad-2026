@@ -555,6 +555,7 @@
           Gerar Súmula PDF
         </button>
         <button class="admin-menu-btn" data-tab="trocas">Trocas</button>
+        <button class="admin-menu-btn" data-tab="financeiro">Finanças</button>
         <button class="admin-menu-btn" data-tab="configuracoes">
           Configurações
         </button>
@@ -902,6 +903,134 @@
             </div>
           </div>
         </div>
+        <div id="tab-financeiro" class="admin-tab hidden">
+          <div class="content-block">
+            <h2>Finanças</h2>
+            <p style="margin: 8px 0 20px; color: #667085">
+              Cadastre entradas e saídas do campeonato, como arbitragem, extras,
+              inscrições, compras e despesas diversas.
+            </p>
+
+            <input type="hidden" id="financeiroId" />
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 14px;
+              "
+            >
+              <div class="form-group">
+                <label class="form-label">Data</label>
+                <input id="financeiroData" class="form-input" type="date" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tipo</label>
+                <select id="financeiroTipo" class="form-input">
+                  <option value="ENTRADA">Entrada</option>
+                  <option value="SAIDA">Saída</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select id="financeiroCategoria" class="form-input">
+                  <option value="INSCRICAO">Inscrição</option>
+                  <option value="ARBITRAGEM">Taxa de arbitragem</option>
+                  <option value="EXTRAS">Extras</option>
+                  <option value="COMPRA">Compra</option>
+                  <option value="DIVERSOS">Diversos</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Time vinculado</label>
+                <select id="financeiroTime" class="form-input">
+                  <option value="">Sem time vinculado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Valor</label>
+                <input
+                  id="financeiroValor"
+                  class="form-input"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0,00"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Forma de pagamento</label>
+                <input
+                  id="financeiroForma"
+                  class="form-input"
+                  type="text"
+                  placeholder="Pix, dinheiro, cartão..."
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Descrição</label>
+              <input
+                id="financeiroDescricao"
+                class="form-input"
+                type="text"
+                placeholder="Ex.: inscrição do time, compra de bolas, arbitragem rodada 1"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Observações</label>
+              <input
+                id="financeiroObservacoes"
+                class="form-input"
+                type="text"
+                placeholder="Detalhes adicionais"
+              />
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 16px">
+              <button class="btn" style="max-width: 280px" onclick="salvarFinanceiroAdminFront()">
+                Salvar lançamento
+              </button>
+              <button
+                class="sumula-secondary-btn"
+                style="max-width: 220px"
+                onclick="limparFormularioFinanceiro()"
+              >
+                Limpar formulário
+              </button>
+            </div>
+            <div id="msgFinanceiroAdmin" class="message"></div>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 14px;
+                margin-top: 24px;
+              "
+            >
+              <div class="card">
+                <div class="card-label">Total de entradas</div>
+                <div id="financeiroEntradas" class="card-value">R$ 0,00</div>
+              </div>
+              <div class="card">
+                <div class="card-label">Total de saídas</div>
+                <div id="financeiroSaidas" class="card-value">R$ 0,00</div>
+              </div>
+              <div class="card">
+                <div class="card-label">Saldo atual</div>
+                <div id="financeiroSaldo" class="card-value">R$ 0,00</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px">
+              <h3 style="margin-bottom: 12px">Extrato financeiro</h3>
+              <div id="listaFinanceiroAdmin">Carregando...</div>
+            </div>
+          </div>
+        </div>
         <div id="tab-configuracoes" class="admin-tab hidden">
           <div class="content-block">
             <h2>Configurações do sistema</h2>
@@ -1041,6 +1170,13 @@
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
         return mapa[chave] || "projeto-apecad/assets/escudos/escudo-padrao.png";
+      }
+
+      function formatarMoedaAdmin(valor) {
+        return new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(Number(valor || 0));
       }
 
       function preencherSelectConfrontos(ids, confrontos) {
@@ -1210,6 +1346,11 @@
             if (tab === "sumula-pdf") {
               await carregarConfrontosSumula();
               await gerarPreviewSumulaPdf();
+            }
+
+            if (tab === "financeiro") {
+              await carregarFinanceiroAdmin();
+              await carregarResumoFinanceiroAdmin();
             }
 
             if (tab === "configuracoes") {
@@ -1613,6 +1754,8 @@
           const resultado = await getApi({ route: "listarTimesAdmin" });
           if (!resultado.sucesso || !resultado.times) return;
 
+          adminTimesCache = resultado.times;
+
           const selectsIds = [
             "filtroJogadoresTime",
             "filtroGoleirosTime",
@@ -1632,6 +1775,17 @@
             const select = document.getElementById(id);
             if (select) select.innerHTML = opcoes;
           });
+
+          const financeiroSelect = document.getElementById("financeiroTime");
+          if (financeiroSelect) {
+            financeiroSelect.innerHTML = ['<option value="">Sem time vinculado</option>']
+              .concat(
+                resultado.times.map(
+                  (t) => `<option value="${t.time_id}">${t.nome_time}</option>`,
+                ),
+              )
+              .join("");
+          }
         } catch (erro) {
           console.error("Erro ao carregar filtros de times:", erro);
         }
@@ -2713,6 +2867,213 @@
           })
           .join(" ");
       }
+      function limparFormularioFinanceiro() {
+        const hoje = new Date().toISOString().slice(0, 10);
+        document.getElementById("financeiroId").value = "";
+        document.getElementById("financeiroData").value = hoje;
+        document.getElementById("financeiroTipo").value = "ENTRADA";
+        document.getElementById("financeiroCategoria").value = "INSCRICAO";
+        document.getElementById("financeiroTime").value = "";
+        document.getElementById("financeiroValor").value = "";
+        document.getElementById("financeiroForma").value = "";
+        document.getElementById("financeiroDescricao").value = "";
+        document.getElementById("financeiroObservacoes").value = "";
+
+        const msg = document.getElementById("msgFinanceiroAdmin");
+        msg.className = "message";
+        msg.textContent = "";
+      }
+      function editarFinanceiroFront(lancamento) {
+        document.getElementById("financeiroId").value =
+          lancamento.lancamento_id || "";
+        document.getElementById("financeiroData").value =
+          String(lancamento.data_lancamento || "").slice(0, 10) ||
+          new Date().toISOString().slice(0, 10);
+        document.getElementById("financeiroTipo").value =
+          lancamento.tipo_movimento || "ENTRADA";
+        document.getElementById("financeiroCategoria").value =
+          lancamento.categoria || "DIVERSOS";
+        document.getElementById("financeiroTime").value =
+          lancamento.time_id || "";
+        document.getElementById("financeiroValor").value =
+          lancamento.valor || "";
+        document.getElementById("financeiroForma").value =
+          lancamento.forma_pagamento || "";
+        document.getElementById("financeiroDescricao").value =
+          lancamento.descricao || "";
+        document.getElementById("financeiroObservacoes").value =
+          lancamento.observacoes || "";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      async function salvarFinanceiroAdminFront() {
+        const msg = document.getElementById("msgFinanceiroAdmin");
+        const lancamentoId = document.getElementById("financeiroId").value.trim();
+        const data = document.getElementById("financeiroData").value;
+        const tipo = document.getElementById("financeiroTipo").value;
+        const categoria = document.getElementById("financeiroCategoria").value;
+        const timeId = document.getElementById("financeiroTime").value;
+        const valor = document.getElementById("financeiroValor").value;
+        const forma = document.getElementById("financeiroForma").value.trim();
+        const descricao = document
+          .getElementById("financeiroDescricao")
+          .value.trim();
+        const observacoes = document
+          .getElementById("financeiroObservacoes")
+          .value.trim();
+
+        if (!data || !tipo || !categoria || !descricao || !valor) {
+          msg.className = "message error";
+          msg.textContent =
+            "Preencha data, tipo, categoria, descrição e valor.";
+          return;
+        }
+
+        try {
+          const resultado = await getApi({
+            route: "salvarFinanceiroAdmin",
+            lancamento_id: lancamentoId,
+            data_lancamento: data,
+            tipo_movimento: tipo,
+            categoria,
+            time_id: timeId,
+            valor,
+            forma_pagamento: forma,
+            descricao,
+            observacoes,
+            usuario: adminSessao?.login || "ADMIN",
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            limparFormularioFinanceiro();
+            await carregarFinanceiroAdmin();
+            await carregarResumoFinanceiroAdmin();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao salvar lançamento financeiro.";
+          console.error(erro);
+        }
+      }
+      async function excluirFinanceiroAdminFront(lancamentoId) {
+        if (!confirm("Deseja realmente excluir este lançamento financeiro?")) {
+          return;
+        }
+
+        const msg = document.getElementById("msgFinanceiroAdmin");
+
+        try {
+          const resultado = await getApi({
+            route: "excluirFinanceiroAdmin",
+            lancamento_id: lancamentoId,
+          });
+
+          msg.className = resultado.sucesso
+            ? "message success"
+            : "message error";
+          msg.textContent = resultado.mensagem;
+
+          if (resultado.sucesso) {
+            await carregarFinanceiroAdmin();
+            await carregarResumoFinanceiroAdmin();
+          }
+        } catch (erro) {
+          msg.className = "message error";
+          msg.textContent = "Erro ao excluir lançamento financeiro.";
+          console.error(erro);
+        }
+      }
+      async function carregarResumoFinanceiroAdmin() {
+        try {
+          const resultado = await getApi({ route: "resumoFinanceiroAdmin" });
+          if (!resultado.sucesso || !resultado.resumo) return;
+
+          document.getElementById("financeiroEntradas").textContent =
+            formatarMoedaAdmin(resultado.resumo.total_entradas);
+          document.getElementById("financeiroSaidas").textContent =
+            formatarMoedaAdmin(resultado.resumo.total_saidas);
+          document.getElementById("financeiroSaldo").textContent =
+            formatarMoedaAdmin(resultado.resumo.saldo_atual);
+        } catch (erro) {
+          console.error("Erro ao carregar resumo financeiro:", erro);
+        }
+      }
+      async function carregarFinanceiroAdmin() {
+        const container = document.getElementById("listaFinanceiroAdmin");
+
+        try {
+          const resultado = await getApi({ route: "listarFinanceiroAdmin" });
+
+          if (!resultado.sucesso) {
+            container.innerHTML =
+              resultado.mensagem || "Erro ao carregar financeiro.";
+            return;
+          }
+
+          const lancamentos = resultado.lancamentos || [];
+
+          if (!lancamentos.length) {
+            container.innerHTML = "Nenhum lançamento financeiro cadastrado.";
+            return;
+          }
+
+          const payloadMap = new Map(
+            lancamentos.map((item) => [
+              item.lancamento_id,
+              encodeURIComponent(JSON.stringify(item)).replace(/'/g, "%27"),
+            ]),
+          );
+
+          container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Tipo</th>
+              <th>Categoria</th>
+              <th>Time</th>
+              <th>Descrição</th>
+              <th>Valor</th>
+              <th>Forma</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lancamentos
+              .map(
+                (item) => `
+              <tr>
+                <td>${formatarDataAdmin(item.data_lancamento)}</td>
+                <td>${item.tipo_movimento || "-"}</td>
+                <td>${item.categoria || "-"}</td>
+                <td>${item.nome_time || "-"}</td>
+                <td>${item.descricao || "-"}</td>
+                <td>${formatarMoedaAdmin(item.valor)}</td>
+                <td>${item.forma_pagamento || "-"}</td>
+                <td>${item.status || "ATIVO"}</td>
+                <td>
+                  <button onclick="editarFinanceiroFront(JSON.parse(decodeURIComponent('${payloadMap.get(item.lancamento_id)}')))">Editar</button>
+                  <button onclick="excluirFinanceiroAdminFront('${item.lancamento_id}')">Excluir</button>
+                </td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+        } catch (erro) {
+          container.innerHTML = "Erro ao carregar financeiro.";
+          console.error(erro);
+        }
+      }
       async function carregarTrocasAdmin() {
         const container = document.getElementById("listaTrocasAdmin");
 
@@ -2781,6 +3142,7 @@
         .addEventListener("click", sairAdmin);
 
       configurarTabsAdmin();
+      limparFormularioFinanceiro();
       restaurarSessaoAdmin();
     </script>
   </body>
