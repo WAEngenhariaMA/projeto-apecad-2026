@@ -1421,16 +1421,24 @@
         background: rgba(0, 0, 0, 0.25);
       }
 
-      .schedule-table thead th.center { text-align: center; }
+      .schedule-table thead th.center {
+        text-align: center;
+      }
 
       .schedule-table tbody tr {
         border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         transition: background 0.15s;
       }
 
-      .schedule-table tbody tr:last-child { border-bottom: 0; }
-      .schedule-table tbody tr:hover { background: rgba(21, 101, 255, 0.05); }
-      .schedule-table tbody tr.row-finished { background: rgba(46, 213, 115, 0.03); }
+      .schedule-table tbody tr:last-child {
+        border-bottom: 0;
+      }
+      .schedule-table tbody tr:hover {
+        background: rgba(21, 101, 255, 0.05);
+      }
+      .schedule-table tbody tr.row-finished {
+        background: rgba(46, 213, 115, 0.03);
+      }
 
       .schedule-table td {
         padding: 7px 10px;
@@ -1440,7 +1448,9 @@
         text-align: center;
       }
 
-      .schedule-table td.center { text-align: center; }
+      .schedule-table td.center {
+        text-align: center;
+      }
 
       .sched-date {
         font-weight: 700;
@@ -1465,7 +1475,7 @@
         letter-spacing: 0.06em;
         background: var(--blue-soft);
         border: 1px solid var(--blue-line);
-        color: #9BBAFF;
+        color: #9bbaff;
         margin-right: 8px;
         flex-shrink: 0;
       }
@@ -1486,8 +1496,16 @@
         width: 100%;
       }
 
-      .sched-team .crest { width: 22px; height: 22px; border-radius: 5px; padding: 2px; }
-      .sched-team .group-tag { font-size: 9px; padding: 2px 6px; }
+      .sched-team .crest {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+      .sched-team .group-tag {
+        font-size: 9px;
+        padding: 2px 6px;
+      }
 
       .vs-badge {
         display: inline-flex;
@@ -1507,8 +1525,8 @@
         font-family: "Barlow Condensed", sans-serif;
         font-size: 16px;
         font-weight: 900;
-        background: rgba(46, 213, 115, 0.10);
-        border-color: rgba(46, 213, 115, 0.20);
+        background: rgba(46, 213, 115, 0.1);
+        border-color: rgba(46, 213, 115, 0.2);
         color: var(--text);
         padding: 3px 12px;
         letter-spacing: 0.04em;
@@ -1534,7 +1552,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.72);
+        background: rgba(0, 0, 0, 0.72);
         backdrop-filter: blur(6px);
         z-index: 100;
         align-items: center;
@@ -1542,7 +1560,9 @@
         padding: 20px;
       }
 
-      .modal-overlay.open { display: flex; }
+      .modal-overlay.open {
+        display: flex;
+      }
 
       .modal {
         width: 100%;
@@ -1550,8 +1570,10 @@
         max-height: 90vh;
         border: 1px solid var(--blue-line);
         border-radius: 24px;
-        background: linear-gradient(145deg, #0C1428, #080C18);
-        box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(21,101,255,0.15);
+        background: linear-gradient(145deg, #0c1428, #080c18);
+        box-shadow:
+          0 32px 80px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(21, 101, 255, 0.15);
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -1559,16 +1581,22 @@
       }
 
       @keyframes modalIn {
-        from { opacity: 0; transform: translateY(12px) scale(0.97); }
-        to   { opacity: 1; transform: translateY(0)   scale(1); }
+        from {
+          opacity: 0;
+          transform: translateY(12px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
 
       .modal-header {
         padding: 20px 24px 16px;
         border-bottom: 1px solid var(--line);
         background:
-          linear-gradient(135deg, rgba(21,101,255,0.10), transparent 50%),
-          rgba(0,0,0,0.15);
+          linear-gradient(135deg, rgba(21, 101, 255, 0.1), transparent 50%),
+          rgba(0, 0, 0, 0.15);
         flex-shrink: 0;
       }
 
@@ -1586,7 +1614,10 @@
         gap: 10px;
       }
 
-      .modal-team.away { flex-direction: row-reverse; text-align: right; }
+      .modal-team.away {
+        flex-direction: row-reverse;
+        text-align: right;
+      }
 
       .modal-team-name {
         font-family: "Barlow Condensed", sans-serif;
@@ -1604,7 +1635,7 @@
         text-align: center;
         line-height: 1;
         padding: 6px 18px;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0, 0, 0, 0.3);
         border-radius: 12px;
         border: 1px solid var(--line);
         letter-spacing: 0.04em;
@@ -1619,7 +1650,11 @@
         flex-wrap: wrap;
       }
 
-      .modal-meta span { display: flex; align-items: center; gap: 4px; }
+      .modal-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
 
       .modal-status-badge {
         margin-left: auto;
@@ -1629,18 +1664,25 @@
         position: absolute;
         top: 16px;
         right: 20px;
-        width: 32px; height: 32px;
+        width: 32px;
+        height: 32px;
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: rgba(255,255,255,0.05);
+        background: rgba(255, 255, 255, 0.05);
         color: var(--muted);
         cursor: pointer;
         font-size: 16px;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         transition: all 0.15s;
       }
 
-      .modal-close:hover { background: var(--red-soft); border-color: rgba(255,71,87,0.3); color: var(--red); }
+      .modal-close:hover {
+        background: var(--red-soft);
+        border-color: rgba(255, 71, 87, 0.3);
+        color: var(--red);
+      }
 
       .modal-body {
         flex: 1;
@@ -1654,7 +1696,9 @@
         border-right: 1px solid var(--line);
       }
 
-      .modal-col:last-child { border-right: 0; }
+      .modal-col:last-child {
+        border-right: 0;
+      }
 
       .modal-col-title {
         display: flex;
@@ -1670,7 +1714,11 @@
         margin-bottom: 10px;
       }
 
-      .modal-event-list { display: flex; flex-direction: column; gap: 6px; }
+      .modal-event-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
 
       .modal-event {
         display: flex;
@@ -1678,8 +1726,8 @@
         gap: 10px;
         padding: 8px 10px;
         border-radius: 10px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.05);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
         font-size: 12px;
       }
 
@@ -1690,9 +1738,21 @@
         text-align: center;
       }
 
-      .modal-event-info { flex: 1; min-width: 0; }
-      .modal-event-name { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .modal-event-team { font-size: 10px; color: var(--muted); }
+      .modal-event-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .modal-event-name {
+        font-weight: 700;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .modal-event-team {
+        font-size: 10px;
+        color: var(--muted);
+      }
 
       .modal-event-qty {
         font-family: "Barlow Condensed", sans-serif;
@@ -2320,15 +2380,20 @@
 
     <!-- MODAL -->
     <div id="matchModal" class="modal-overlay" role="dialog" aria-modal="true">
-      <div class="modal" style="position:relative">
-        <button class="modal-close" id="modalClose" aria-label="Fechar">✕</button>
+      <div class="modal" style="position: relative">
+        <button class="modal-close" id="modalClose" aria-label="Fechar">
+          ✕
+        </button>
         <div class="modal-header">
           <div class="modal-match-row">
             <div class="modal-team">
               <img id="modalHomeCrest" class="crest lg" src="" alt="" />
               <div>
                 <div id="modalHomeName" class="modal-team-name"></div>
-                <div id="modalHomeGroup" style="font-size:11px;color:var(--muted)"></div>
+                <div
+                  id="modalHomeGroup"
+                  style="font-size: 11px; color: var(--muted)"
+                ></div>
               </div>
             </div>
             <div id="modalScore" class="modal-score">- × -</div>
@@ -2336,7 +2401,10 @@
               <img id="modalAwayCrest" class="crest lg" src="" alt="" />
               <div>
                 <div id="modalAwayName" class="modal-team-name"></div>
-                <div id="modalAwayGroup" style="font-size:11px;color:var(--muted)"></div>
+                <div
+                  id="modalAwayGroup"
+                  style="font-size: 11px; color: var(--muted)"
+                ></div>
               </div>
             </div>
           </div>
@@ -2344,7 +2412,9 @@
             <span>📅 <span id="modalDate"></span></span>
             <span>⏰ <span id="modalTime"></span></span>
             <span>📍 Campo APECAD</span>
-            <span class="modal-status-badge"><span id="modalStatusBadge" class="badge"></span></span>
+            <span class="modal-status-badge"
+              ><span id="modalStatusBadge" class="badge"></span
+            ></span>
           </div>
         </div>
         <div class="modal-body">
@@ -2362,7 +2432,7 @@
 
     <script>
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbyi3PaAY77yYtNxc5OZrEx0GFOOgl8f42vNYznkFPgTfELoVHXPi2hszZ4XWH6JL_Mk/exec";
+        "https://script.google.com/macros/s/AKfycbyJQyFlQNvSgTEtJi5rqt66kHjn9SoimCJv8zjQSDy4oPhA0Do8TgHmEwAa0jre3kbb/exec";
       const AUTO_REFRESH_MS = 60000;
       const SUSPENSION_YELLOWS = 3;
       const WARNING_YELLOWS = 2;
@@ -2443,7 +2513,11 @@
         if (s.includes("T") || s.includes("1899")) {
           const d = new Date(s);
           if (!isNaN(d)) {
-            return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" });
+            return d.toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZone: "America/Sao_Paulo",
+            });
           }
         }
         return s.slice(0, 5) || "-";
@@ -2655,8 +2729,14 @@
       }
 
       function getGroupCode(timeId) {
-        const name = normFile(state.standings.find(x => x.time_id === timeId)?.nome || "");
-        return GROUP_OVERRIDES[name] || (state.standings.find(x => x.time_id === timeId)?.grupo || "-");
+        const name = normFile(
+          state.standings.find((x) => x.time_id === timeId)?.nome || "",
+        );
+        return (
+          GROUP_OVERRIDES[name] ||
+          state.standings.find((x) => x.time_id === timeId)?.grupo ||
+          "-"
+        );
       }
 
       function renderScheduleTable() {
@@ -2668,20 +2748,22 @@
 
         const tbody = document.getElementById("scheduleTableBody");
         if (!sorted.length) {
-          tbody.innerHTML = '<tr><td colspan="7" class="empty">Nenhum confronto cadastrado.</td></tr>';
+          tbody.innerHTML =
+            '<tr><td colspan="7" class="empty">Nenhum confronto cadastrado.</td></tr>';
           return;
         }
 
-        tbody.innerHTML = sorted.map(m => {
-          const fin = isFinished(m);
-          const hCode = getGroupCode(m.time_casa_id);
-          const aCode = getGroupCode(m.time_fora_id);
-          const hIsB = hCode.startsWith("B");
-          const aIsB = aCode.startsWith("B");
-          const placar = fin
-            ? `<span class="vs-badge score">${safeNum(m.gols_casa)} × ${safeNum(m.gols_fora)}</span>`
-            : `<span class="vs-badge">VS</span>`;
-          return `<tr class="${fin ? "row-finished" : ""} row-clickable" data-confronto-id="${esc(m.confronto_id)}" style="cursor:pointer" title="Clique para ver detalhes">
+        tbody.innerHTML = sorted
+          .map((m) => {
+            const fin = isFinished(m);
+            const hCode = getGroupCode(m.time_casa_id);
+            const aCode = getGroupCode(m.time_fora_id);
+            const hIsB = hCode.startsWith("B");
+            const aIsB = aCode.startsWith("B");
+            const placar = fin
+              ? `<span class="vs-badge score">${safeNum(m.gols_casa)} × ${safeNum(m.gols_fora)}</span>`
+              : `<span class="vs-badge">VS</span>`;
+            return `<tr class="${fin ? "row-finished" : ""} row-clickable" data-confronto-id="${esc(m.confronto_id)}" style="cursor:pointer" title="Clique para ver detalhes">
             <td><span class="sched-date">${fmtDate(m.data_jogo)}</span></td>
             <td><span class="sched-time">${fmtTime(m.hora_jogo)}</span></td>
             <td>
@@ -2700,10 +2782,13 @@
               </div>
             </td>
           </tr>`;
-        }).join("");
+          })
+          .join("");
 
-        tbody.querySelectorAll(".row-clickable").forEach(tr => {
-          tr.addEventListener("click", () => openMatchModal(tr.dataset.confrontoId));
+        tbody.querySelectorAll(".row-clickable").forEach((tr) => {
+          tr.addEventListener("click", () =>
+            openMatchModal(tr.dataset.confrontoId),
+          );
         });
       }
 
@@ -3188,20 +3273,32 @@
       }
 
       function openMatchModal(confrontoId) {
-        const m = state.confrontos.find(x => String(x.confronto_id) === String(confrontoId));
+        const m = state.confrontos.find(
+          (x) => String(x.confronto_id) === String(confrontoId),
+        );
         if (!m) return;
-        const sumula = state.sumulas.find(x => String(x.confronto_id) === String(confrontoId));
+        const sumula = state.sumulas.find(
+          (x) => String(x.confronto_id) === String(confrontoId),
+        );
         const fin = isFinished(m);
 
         // Header
-        document.getElementById("modalHomeCrest").src = getTeamCrest(m.nome_time_casa || "");
+        document.getElementById("modalHomeCrest").src = getTeamCrest(
+          m.nome_time_casa || "",
+        );
         document.getElementById("modalHomeCrest").alt = m.nome_time_casa || "";
-        document.getElementById("modalAwayCrest").src = getTeamCrest(m.nome_time_fora || "");
+        document.getElementById("modalAwayCrest").src = getTeamCrest(
+          m.nome_time_fora || "",
+        );
         document.getElementById("modalAwayCrest").alt = m.nome_time_fora || "";
-        document.getElementById("modalHomeName").textContent = m.nome_time_casa || "-";
-        document.getElementById("modalAwayName").textContent = m.nome_time_fora || "-";
-        document.getElementById("modalHomeGroup").textContent = "Grupo " + (getGroupCode(m.time_casa_id) || "-");
-        document.getElementById("modalAwayGroup").textContent = "Grupo " + (getGroupCode(m.time_fora_id) || "-");
+        document.getElementById("modalHomeName").textContent =
+          m.nome_time_casa || "-";
+        document.getElementById("modalAwayName").textContent =
+          m.nome_time_fora || "-";
+        document.getElementById("modalHomeGroup").textContent =
+          "Grupo " + (getGroupCode(m.time_casa_id) || "-");
+        document.getElementById("modalAwayGroup").textContent =
+          "Grupo " + (getGroupCode(m.time_fora_id) || "-");
         document.getElementById("modalScore").textContent = fin
           ? `${safeNum(m.gols_casa)} × ${safeNum(m.gols_fora)}`
           : "- × -";
@@ -3215,19 +3312,25 @@
         const goals = sumula?.gols || [];
         const goalsEl = document.getElementById("modalGoals");
         if (!goals.length) {
-          goalsEl.innerHTML = '<div class="modal-empty">Nenhum gol registrado</div>';
+          goalsEl.innerHTML =
+            '<div class="modal-empty">Nenhum gol registrado</div>';
         } else {
           const goalMap = new Map();
-          goals.forEach(g => {
+          goals.forEach((g) => {
             const k = norm(g.jogador_id) || norm(g.nome_jogador);
             if (!k) return;
-            const cur = goalMap.get(k) || { nome: g.nome_jogador || "-", time: g.nome_time || "-", gols: 0 };
+            const cur = goalMap.get(k) || {
+              nome: g.nome_jogador || "-",
+              time: g.nome_time || "-",
+              gols: 0,
+            };
             cur.gols += safeNum(g.quantidade_gols || 1);
             goalMap.set(k, cur);
           });
           goalsEl.innerHTML = [...goalMap.values()]
             .sort((a, b) => b.gols - a.gols)
-            .map(g => `
+            .map(
+              (g) => `
               <div class="modal-event">
                 <div class="modal-event-icon">⚽</div>
                 <div class="modal-event-info">
@@ -3236,25 +3339,40 @@
                 </div>
                 <div class="modal-event-qty" style="color:var(--gold-2)">${g.gols}</div>
               </div>
-            `).join("");
+            `,
+            )
+            .join("");
         }
 
         // Cartões
         const cards = sumula?.cartoes || [];
         const cardsEl = document.getElementById("modalCards");
         if (!cards.length) {
-          cardsEl.innerHTML = '<div class="modal-empty">Nenhum cartão registrado</div>';
+          cardsEl.innerHTML =
+            '<div class="modal-empty">Nenhum cartão registrado</div>';
         } else {
           const cardMap = new Map();
-          cards.forEach(c => {
-            const k = (norm(c.jogador_id) || norm(c.nome_jogador)) + "_" + norm(c.tipo_cartao);
-            const cur = cardMap.get(k) || { nome: c.nome_jogador || "-", time: c.nome_time || "-", tipo: norm(c.tipo_cartao).toUpperCase(), qty: 0 };
+          cards.forEach((c) => {
+            const k =
+              (norm(c.jogador_id) || norm(c.nome_jogador)) +
+              "_" +
+              norm(c.tipo_cartao);
+            const cur = cardMap.get(k) || {
+              nome: c.nome_jogador || "-",
+              time: c.nome_time || "-",
+              tipo: norm(c.tipo_cartao).toUpperCase(),
+              qty: 0,
+            };
             cur.qty += safeNum(c.quantidade || 1);
             cardMap.set(k, cur);
           });
           cardsEl.innerHTML = [...cardMap.values()]
-            .sort((a, b) => (b.tipo === "VERMELHO" ? 1 : 0) - (a.tipo === "VERMELHO" ? 1 : 0))
-            .map(c => {
+            .sort(
+              (a, b) =>
+                (b.tipo === "VERMELHO" ? 1 : 0) -
+                (a.tipo === "VERMELHO" ? 1 : 0),
+            )
+            .map((c) => {
               const isRed = c.tipo === "VERMELHO";
               return `
                 <div class="modal-event">
@@ -3266,7 +3384,8 @@
                   <div class="modal-event-qty" style="color:${isRed ? "var(--red)" : "var(--gold-2)"}">${c.qty > 1 ? "×" + c.qty : ""}</div>
                 </div>
               `;
-            }).join("");
+            })
+            .join("");
         }
 
         document.getElementById("matchModal").classList.add("open");
@@ -3305,11 +3424,13 @@
         document
           .getElementById("refreshBtn")
           .addEventListener("click", refreshDashboard);
-        document.getElementById("modalClose").addEventListener("click", closeModal);
-        document.getElementById("matchModal").addEventListener("click", e => {
+        document
+          .getElementById("modalClose")
+          .addEventListener("click", closeModal);
+        document.getElementById("matchModal").addEventListener("click", (e) => {
           if (e.target === e.currentTarget) closeModal();
         });
-        document.addEventListener("keydown", e => {
+        document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") closeModal();
         });
       }
