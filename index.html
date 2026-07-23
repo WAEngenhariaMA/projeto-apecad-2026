@@ -1303,6 +1303,7 @@
           abrirDashboard();
           carregarResumoTime(sessaoAtual.time_id);
           carregarGoleiros();
+          carregarExtras();
           carregarTecnicos();
         } catch (erro) {
           localStorage.removeItem("apecad_time_session");
@@ -1324,6 +1325,10 @@
 
             if (botao.dataset.tab === "jogadores") {
               carregarJogadoresTime();
+            }
+
+            if (botao.dataset.tab === "extras") {
+              carregarExtras();
             }
 
             if (botao.dataset.tab === "trocas") {
