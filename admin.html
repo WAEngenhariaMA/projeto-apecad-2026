@@ -1795,6 +1795,8 @@
           const resultado = await getApi({ route: "listarTimesAdmin" });
           if (!resultado.sucesso || !resultado.times) return;
 
+          adminTimesCache = resultado.times;
+
           const selectsIds = [
             "filtroJogadoresTime",
             "filtroGoleirosTime",
@@ -1814,6 +1816,17 @@
             const select = document.getElementById(id);
             if (select) select.innerHTML = opcoes;
           });
+
+          const financeiroSelect = document.getElementById("financeiroTime");
+          if (financeiroSelect) {
+            financeiroSelect.innerHTML = ['<option value="">Sem time vinculado</option>']
+              .concat(
+                resultado.times.map(
+                  (t) => `<option value="${t.time_id}">${t.nome_time}</option>`,
+                ),
+              )
+              .join("");
+          }
         } catch (erro) {
           console.error("Erro ao carregar filtros de times:", erro);
         }
