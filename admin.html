@@ -298,12 +298,32 @@
         font-size: 12px;
       }
       .sumula-sheet-title {
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         font-size: 18px;
         color: #0f2747;
         font-weight: 900;
         margin: 8px 0 4px;
         line-height: 1.1;
+      }
+      .sumula-score-team {
+        text-align: center;
+      }
+      .sumula-score-box {
+        display: inline-block;
+        width: 42px;
+        height: 38px;
+        border: 2px solid #0f2747;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+      .sumula-score-sep {
+        font-size: 16px;
+        font-weight: 700;
+        color: #667085;
+        flex-shrink: 0;
       }
       .sumula-sheet-subtitle {
         text-align: center;
@@ -384,6 +404,7 @@
         width: calc(100% - 20px);
         margin: 0 8px 6px;
         border-collapse: collapse;
+        table-layout: fixed;
       }
       .sumula-team-table th,
       .sumula-team-table td {
@@ -391,21 +412,41 @@
         padding: 2px 4px;
         font-size: 9px;
         line-height: 1.05;
+        overflow: hidden;
       }
-      .sumula-team-table td:nth-child(3) {
-        font-size: 10px;
+      /* Nº */
+      .sumula-team-table th:nth-child(1),
+      .sumula-team-table td:nth-child(1) { width: 36px; text-align: center; }
+      /* Assinatura */
+      .sumula-team-table th:nth-child(2),
+      .sumula-team-table td:nth-child(2) { width: 88px; text-align: center; }
+      /* Atleta — ocupa o restante */
+      .sumula-team-table th:nth-child(3),
+      .sumula-team-table td:nth-child(3) { font-size: 10px; }
+      /* G A V — largura fixa e separador */
+      .sumula-team-table th:nth-child(4),
+      .sumula-team-table td:nth-child(4),
+      .sumula-team-table th:nth-child(5),
+      .sumula-team-table td:nth-child(5),
+      .sumula-team-table th:nth-child(6),
+      .sumula-team-table td:nth-child(6) { width: 44px; text-align: center; }
+      /* Linha divisória entre Atleta e G */
+      .sumula-team-table th:nth-child(4),
+      .sumula-team-table td:nth-child(4) {
+        border-left: 1.5px solid #0f2747;
+      }
+      /* Linhas finas entre G-A e A-V */
+      .sumula-team-table th:nth-child(5),
+      .sumula-team-table td:nth-child(5),
+      .sumula-team-table th:nth-child(6),
+      .sumula-team-table td:nth-child(6) {
+        border-left: 0.5px solid #aab8cc;
       }
       .sumula-team-table th {
         background: #f4f7fb;
         color: #0f2747;
         font-size: 8px;
-      }
-      .sumula-team-table td:nth-child(1),
-      .sumula-team-table td:nth-child(2),
-      .sumula-team-table td:nth-child(4),
-      .sumula-team-table td:nth-child(5),
-      .sumula-team-table td:nth-child(6) {
-        text-align: center;
+        font-weight: 700;
       }
       .sumula-sign-cell {
         vertical-align: bottom;
@@ -1161,7 +1202,7 @@
 
     <script>
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbyJQyFlQNvSgTEtJi5rqt66kHjn9SoimCJv8zjQSDy4oPhA0Do8TgHmEwAa0jre3kbb/exec";
+        "https://script.google.com/macros/s/AKfycbzVgGCIfdOc3OqSDpqZ5BfPvYAHRXx45BSSxKHGGmAYkFkJm-9sEVW32uNKefu3Zm3A/exec";
       let adminSessao = null;
       let confrontosSumulaCache = [];
       let elencoConfrontoCache = [];
@@ -2749,8 +2790,20 @@
         return resultado.elenco || [];
       }
       function montarBlocoTimeSumulaPdf(time, elenco, gols) {
+const isPagoExtra = (item) => {
+          const st = String(item.status_pagamento || item.status_paga || item.statusPaga || "").toUpperCase();
+          return st === "PAGO";
+        };
+        const isExtra = (item) => {
+          const t = String(item.tipo || item.tipo_jogador || "").toUpperCase();
+          return t === "EXTRA" || t === "JOGADOR_EXTRA" || t === "EXTRA PAGO";
+        };
         const atletas = elenco
-          .filter((item) => item.tipo !== "COMISSAO")
+          .filter((item) => {
+            if (String(item.tipo || "").toUpperCase() === "COMISSAO") return false;
+            if (isExtra(item)) return isPagoExtra(item);
+            return true;
+          })
           .sort((a, b) =>
             String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR"),
           );
@@ -2759,39 +2812,39 @@
           .map((item) => item.nome)
           .filter(Boolean);
         const extras = elenco
-          .filter((item) => item.tipo === "EXTRA")
+          .filter((item) => isExtra(item) && isPagoExtra(item))
           .map((item) => item.nome)
           .filter(Boolean);
-        const reps = [time?.representante_1, time?.representante_2].filter(
-          Boolean,
-        );
+        const reps = [time?.representante_1, time?.representante_2].filter(Boolean);
 
-        const linhas = atletas.length
-          ? atletas
-              .map((atleta, index) => {
-                const marcador =
-                  atleta.tipo === "GOLEIRO"
-                    ? " (G)"
-                    : atleta.tipo === "EXTRA"
-                      ? " (E)"
-                      : "";
-                return `
+        const linhasAtletas = atletas.map((atleta, index) => {
+          const marcador =
+            atleta.tipo === "GOLEIRO" ? " (G)" :
+            atleta.tipo === "EXTRA"   ? " (E)" : "";
+          return `
             <tr>
-              <td>${index + 1}</td>
+              <td>&nbsp;</td>
               <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
               <td>${escapeHtml(`${atleta.nome || "-"}${marcador}`)}</td>
               <td>&nbsp;</td>
-              <td><span class="sumula-card-box yellow"></span></td>
-              <td><span class="sumula-card-box red">V</span></td>
-            </tr>
-          `;
-              })
-              .join("")
-          : `
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr>`;
+        });
+
+        const linhasReps = reps.map((nome, i) => `
             <tr>
-              <td colspan="6">Nenhum atleta cadastrado para este time.</td>
-            </tr>
-          `;
+              <td>&nbsp;</td>
+              <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
+              <td>${escapeHtml(nome)} <em style="font-size:10px;color:#667085">(Rep.)</em></td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr>`);
+
+        const linhas = (linhasAtletas.length + linhasReps.length)
+          ? [...linhasAtletas, ...linhasReps].join("")
+          : `<tr><td colspan="6">Nenhum atleta cadastrado para este time.</td></tr>`;
 
         return `
           <section class="sumula-team-card">
@@ -2899,7 +2952,13 @@
               <div>Campeonato da APECAD 2026</div>
               <div style="text-align:right">Assinatura Arbitragem: __________________</div>
             </div>
-            <div class="sumula-sheet-title">${escapeHtml(confronto.nome_time_casa || "-")} x ${escapeHtml(confronto.nome_time_fora || "-")}</div>
+            <div class="sumula-sheet-title">
+              <span class="sumula-score-box"></span>
+              <span class="sumula-score-team">${escapeHtml(confronto.nome_time_casa || "-")}</span>
+              <span class="sumula-score-sep">x</span>
+              <span class="sumula-score-team">${escapeHtml(confronto.nome_time_fora || "-")}</span>
+              <span class="sumula-score-box"></span>
+            </div>
             <div class="sumula-sheet-subtitle">Súmula oficial da partida para impressão, conferência e geração de PDF</div>
             <div class="sumula-sheet-meta">
               <div class="sumula-meta-card">
