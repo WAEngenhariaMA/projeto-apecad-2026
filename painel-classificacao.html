@@ -3648,13 +3648,15 @@
         });
       }
 
-      async function refreshDashboard() {
+      async function refreshDashboard(silent = false) {
         const loading = document.getElementById("loadingState");
         const content = document.getElementById("mainContent");
         const btn = document.getElementById("refreshBtn");
         try {
-          loading.style.display = "flex";
-          content.style.display = "none";
+          if (!silent) {
+            loading.style.display = "flex";
+            content.style.display = "none";
+          }
           btn.disabled = true;
           btn.innerHTML =
             '<span class="loader" style="width:14px;height:14px;border-width:2px"></span> Atualizando...';
@@ -3664,8 +3666,10 @@
           content.style.display = "block";
         } catch (err) {
           console.error(err);
-          loading.innerHTML = `<div style="color:var(--red);font-weight:700">⚠ ${err.message || "Erro ao carregar painel."}</div>`;
-          loading.style.display = "flex";
+          if (!silent) {
+            loading.innerHTML = `<div style="color:var(--red);font-weight:700">⚠ ${err.message || "Erro ao carregar painel."}</div>`;
+            loading.style.display = "flex";
+          }
         } finally {
           btn.disabled = false;
           btn.innerHTML = "<span>↻</span> Atualizar Painel";
@@ -3675,7 +3679,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         bindUI();
         refreshDashboard();
-        setInterval(refreshDashboard, AUTO_REFRESH_MS);
+        setInterval(() => refreshDashboard(true), AUTO_REFRESH_MS);
       });
     </script>
   </body>
