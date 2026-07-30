@@ -2734,6 +2734,44 @@
         );
       }
 
+      function hydrateConfrontosWithSumulas(confrontos, sumulas) {
+        const sumulaMap = new Map(
+          (sumulas || []).map((item) => [String(item.confronto_id || ""), item]),
+        );
+
+        return (confrontos || []).map((m) => {
+          const sumula = sumulaMap.get(String(m.confronto_id || ""));
+          if (!sumula) return m;
+
+          const gols = sumula.gols || [];
+          const cartoes = sumula.cartoes || [];
+          const hasDetalhes = gols.length > 0 || cartoes.length > 0;
+
+          const golsCasa = gols
+            .filter(
+              (g) => String(g.time_id || "").trim() === String(m.time_casa_id || "").trim(),
+            )
+            .reduce((acc, g) => acc + safeNum(g.quantidade_gols || 1), 0);
+          const golsFora = gols
+            .filter(
+              (g) => String(g.time_id || "").trim() === String(m.time_fora_id || "").trim(),
+            )
+            .reduce((acc, g) => acc + safeNum(g.quantidade_gols || 1), 0);
+
+          return {
+            ...m,
+            gols_casa: hasDetalhes ? golsCasa : m.gols_casa,
+            gols_fora: hasDetalhes ? golsFora : m.gols_fora,
+            status_confronto:
+              norm(m.status_confronto).toUpperCase() === "FINALIZADO" || hasDetalhes
+                ? "FINALIZADO"
+                : m.status_confronto,
+            encerrado:
+              norm(m.encerrado).toUpperCase() === "SIM" || hasDetalhes ? "SIM" : m.encerrado,
+          };
+        });
+      }
+
       function buildStandings(times, confrontos, discByTeam) {
         const ordered = [...times].sort((a, b) =>
           String(a.time_id || "").localeCompare(
@@ -2768,7 +2806,7 @@
         confrontos.filter(isFinished).forEach((m) => {
           const h = byId[m.time_casa_id],
             a = byId[m.time_fora_id];
-          if (!h || !a || h.grupo !== a.grupo) return;
+          if (!h || !a) return;
           const hg = safeNum(m.gols_casa),
             ag = safeNum(m.gols_fora);
           h.j++;
@@ -3577,6 +3615,7 @@
         ]);
 
         state.sumulas = sumulas;
+        state.confrontos = hydrateConfrontosWithSumulas(state.confrontos, sumulas);
         state.elencos = Object.fromEntries(rosters);
         state.scorers = computeScorers(sumulas);
         const disc = computeCards(sumulas);
