@@ -2919,9 +2919,28 @@
               .join("")
           : '<span style="font-size:12px;color:#8a5b5b">Nenhum atleta marcado como suspenso para este confronto.</span>';
       }
-      function preencherTimesSuspensaoSumulaPdf(confronto, elencoCasa, elencoFora) {
+      function preencherTimesSuspensaoSumulaPdf(confronto, elencoCasa, elencoFora, timeCasa, timeFora) {
         const timeSelect = document.getElementById("sumulaSuspensaoTime");
         if (!timeSelect) return;
+
+        const repsCasa = [timeCasa?.representante_1, timeCasa?.representante_2]
+          .filter(Boolean)
+          .map((nome, index) => ({
+            registro_id: `REP_${index + 1}_${confronto.time_casa_id}`,
+            nome: String(nome).toUpperCase(),
+            tipo: "REPRESENTANTE",
+            nome_time: confronto.nome_time_casa,
+            time_id: confronto.time_casa_id,
+          }));
+        const repsFora = [timeFora?.representante_1, timeFora?.representante_2]
+          .filter(Boolean)
+          .map((nome, index) => ({
+            registro_id: `REP_${index + 1}_${confronto.time_fora_id}`,
+            nome: String(nome).toUpperCase(),
+            tipo: "REPRESENTANTE",
+            nome_time: confronto.nome_time_fora,
+            time_id: confronto.time_fora_id,
+          }));
 
         sumulaSuspensaoElencoAtual = [
           ...elencoCasa.map((item) => ({
@@ -2934,6 +2953,8 @@
             nome_time: confronto.nome_time_fora,
             time_id: confronto.time_fora_id,
           })),
+          ...repsCasa,
+          ...repsFora,
         ];
 
         timeSelect.innerHTML = `
@@ -2962,7 +2983,14 @@
                 String(item.registro_id || item.jogador_id || item.nome || "").trim() +
                 "::" +
                 String(item.time_id || "").trim();
-              return `<option value="${escapeHtml(chave)}">${escapeHtml(item.nome || "-")}</option>`;
+              const tipo = String(item.tipo || item.tipo_jogador || "").toUpperCase();
+              const sufixo =
+                tipo === "REPRESENTANTE"
+                  ? " (REP.)"
+                  : tipo === "COMISSAO"
+                    ? " (COMISSÃO)"
+                    : "";
+              return `<option value="${escapeHtml(chave)}">${escapeHtml((item.nome || "-") + sufixo)}</option>`;
             }),
           )
           .join("");
@@ -3033,8 +3061,8 @@ const isPagoExtra = (item) => {
           .sort((a, b) =>
             String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR"),
           );
-        const comissao = elenco
-          .filter((item) => item.tipo === "COMISSAO")
+        const comissaoRegistros = elenco.filter((item) => item.tipo === "COMISSAO");
+        const comissao = comissaoRegistros
           .map((item) => item.nome)
           .filter(Boolean);
         const extras = elenco
@@ -3066,18 +3094,39 @@ const isPagoExtra = (item) => {
             </tr>`;
         });
 
-        const linhasReps = reps.map((nome, i) => `
-            <tr>
+        const linhasReps = reps.map((nome, i) => {
+            const chaveSuspenso = `REP_${i + 1}_${String(time?.time_id || "").trim()}::${String(time?.time_id || "").trim()}`;
+            const suspenso = suspensosSet.has(chaveSuspenso);
+            return `
+            <tr class="${suspenso ? "sumula-suspended-row" : ""}">
               <td>&nbsp;</td>
               <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
-              <td>${escapeHtml(nome)} <em style="font-size:10px;color:#667085">(REP.)</em></td>
+              <td>${escapeHtml(nome)} <em style="font-size:10px;color:#667085">(REP.)</em>${suspenso ? '<span class="sumula-suspended-tag">Suspenso</span>' : ""}</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
-            </tr>`);
+            </tr>`;
+        });
 
-        const linhas = (linhasAtletas.length + linhasReps.length)
-          ? [...linhasAtletas, ...linhasReps].join("")
+        const linhasComissao = comissaoRegistros.map((item) => {
+          const chaveSuspenso =
+            String(item.registro_id || item.jogador_id || item.nome || "").trim() +
+            "::" +
+            String(time?.time_id || "").trim();
+          const suspenso = suspensosSet.has(chaveSuspenso);
+          return `
+            <tr class="${suspenso ? "sumula-suspended-row" : ""}">
+              <td>&nbsp;</td>
+              <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
+              <td>${escapeHtml(item.nome || "-")} <em style="font-size:10px;color:#667085">(COMISSÃO)</em>${suspenso ? '<span class="sumula-suspended-tag">Suspenso</span>' : ""}</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+            </tr>`;
+        });
+
+        const linhas = (linhasAtletas.length + linhasReps.length + linhasComissao.length)
+          ? [...linhasAtletas, ...linhasReps, ...linhasComissao].join("")
           : `<tr><td colspan="6">Nenhum atleta cadastrado para este time.</td></tr>`;
 
         return `
@@ -3158,10 +3207,6 @@ const isPagoExtra = (item) => {
             carregarTimeElencoSumulaPdf(confronto.time_casa_id),
             carregarTimeElencoSumulaPdf(confronto.time_fora_id),
           ]);
-          preencherTimesSuspensaoSumulaPdf(confronto, elencoCasa, elencoFora);
-          const suspensosSelecionados = carregarSuspensoesSumulaPdf(confrontoId);
-          renderizarSuspensoesSumulaPdf(confrontoId);
-
           const timeCasa = times.find(
             (time) =>
               String(time.time_id || "").trim() ===
@@ -3172,6 +3217,15 @@ const isPagoExtra = (item) => {
               String(time.time_id || "").trim() ===
               String(confronto.time_fora_id || "").trim(),
           );
+          preencherTimesSuspensaoSumulaPdf(
+            confronto,
+            elencoCasa,
+            elencoFora,
+            timeCasa,
+            timeFora,
+          );
+          const suspensosSelecionados = carregarSuspensoesSumulaPdf(confrontoId);
+          renderizarSuspensoesSumulaPdf(confrontoId);
 
           const golsCasa = Number(dadosSumula?.resumo?.gols_casa || 0);
           const golsFora = Number(dadosSumula?.resumo?.gols_fora || 0);
