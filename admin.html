@@ -3041,7 +3041,9 @@ const isPagoExtra = (item) => {
           .filter((item) => isExtra(item) && isPagoExtra(item))
           .map((item) => item.nome)
           .filter(Boolean);
-        const reps = [time?.representante_1, time?.representante_2].filter(Boolean);
+        const reps = [time?.representante_1, time?.representante_2]
+          .filter(Boolean)
+          .map((nome) => String(nome).toUpperCase());
         const suspensosSet = new Set((suspensos || []).map((item) => item.chave));
 
         const linhasAtletas = atletas.map((atleta, index) => {
@@ -3068,7 +3070,7 @@ const isPagoExtra = (item) => {
             <tr>
               <td>&nbsp;</td>
               <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
-              <td>${escapeHtml(nome)} <em style="font-size:10px;color:#667085">(Rep.)</em></td>
+              <td>${escapeHtml(nome)} <em style="font-size:10px;color:#667085">(REP.)</em></td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
