@@ -448,6 +448,35 @@
         font-size: 8px;
         font-weight: 700;
       }
+      .sumula-suspended-row td {
+        background: #fff1f1;
+        color: #a22020;
+        font-weight: 700;
+      }
+      .sumula-suspended-row td:nth-child(3) {
+        position: relative;
+      }
+      .sumula-suspended-row td:nth-child(3)::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 1px;
+        bottom: 1px;
+        width: 4px;
+        background: #ff3b30;
+      }
+      .sumula-suspended-tag {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 5px;
+        border-radius: 999px;
+        background: #ffdfdf;
+        color: #a22020;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
       .sumula-sign-cell {
         vertical-align: bottom;
         padding-top: 7px !important;
@@ -505,6 +534,45 @@
         font-size: 9px;
         font-weight: 700;
         line-height: 1.2;
+      }
+      .sumula-suspensao-panel {
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid #ffd0d0;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #fff8f8 0%, #fff2f2 100%);
+      }
+      .sumula-suspensao-grid {
+        display: grid;
+        grid-template-columns: 180px 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+      .sumula-suspensao-lista {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .sumula-suspensao-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ffe1e1;
+        border: 1px solid #ffb9b9;
+        color: #9e2323;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .sumula-suspensao-chip button {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 900;
       }
       @media print {
         body * {
@@ -936,6 +1004,32 @@
                 Gerar PDF / Imprimir
               </button>
             </div>
+            <div class="sumula-suspensao-panel">
+              <div style="font-weight: 800; color: #0f2747; margin-bottom: 6px">
+                Marcar atletas suspensos na súmula
+              </div>
+              <div style="font-size: 12px; color: #667085; margin-bottom: 12px">
+                Selecione o time e o atleta do confronto atual para destacar o nome em vermelho na prévia e no PDF.
+              </div>
+              <div class="sumula-suspensao-grid">
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label">Time</label>
+                  <select id="sumulaSuspensaoTime" class="form-input" onchange="filtrarJogadoresSuspensaoSumulaPdf()">
+                    <option value="">Selecione o time</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                  <label class="form-label">Atleta</label>
+                  <select id="sumulaSuspensaoJogador" class="form-input">
+                    <option value="">Selecione o atleta</option>
+                  </select>
+                </div>
+                <button class="sumula-secondary-btn" type="button" onclick="adicionarSuspensaoSumulaPdf()">
+                  Marcar suspenso
+                </button>
+              </div>
+              <div id="sumulaSuspensaoLista" class="sumula-suspensao-lista"></div>
+            </div>
             <div id="sumulaPdfStatus" class="message"></div>
             <div class="sumula-preview-wrap">
               <div id="sumulaPdfPreview" class="sumula-preview-empty">
@@ -1209,6 +1303,8 @@
       let confrontoSelecionadoCache = null;
       let configuracoesAdminCache = [];
       let adminTimesCache = [];
+      let sumulaSuspensoesCache = {};
+      let sumulaSuspensaoElencoAtual = [];
 
       async function getApi(params = {}) {
         const url = new URL(SCRIPT_URL);
@@ -2789,7 +2885,137 @@
 
         return resultado.elenco || [];
       }
-      function montarBlocoTimeSumulaPdf(time, elenco, gols) {
+      function getSuspensoesStorageKey(confrontoId) {
+        return `apecad_sumula_suspensoes_${String(confrontoId || "").trim()}`;
+      }
+      function carregarSuspensoesSumulaPdf(confrontoId) {
+        const key = getSuspensoesStorageKey(confrontoId);
+        try {
+          sumulaSuspensoesCache[confrontoId] = JSON.parse(localStorage.getItem(key) || "[]");
+        } catch (erro) {
+          sumulaSuspensoesCache[confrontoId] = [];
+        }
+        return sumulaSuspensoesCache[confrontoId];
+      }
+      function salvarSuspensoesSumulaPdf(confrontoId) {
+        const key = getSuspensoesStorageKey(confrontoId);
+        localStorage.setItem(
+          key,
+          JSON.stringify(sumulaSuspensoesCache[confrontoId] || []),
+        );
+      }
+      function renderizarSuspensoesSumulaPdf(confrontoId) {
+        const lista = document.getElementById("sumulaSuspensaoLista");
+        if (!lista) return;
+        const itens = sumulaSuspensoesCache[confrontoId] || [];
+        lista.innerHTML = itens.length
+          ? itens
+              .map(
+                (item) => `<span class="sumula-suspensao-chip">
+                  ${escapeHtml(item.nome)} <small>(${escapeHtml(item.nome_time || "-")})</small>
+                  <button type="button" onclick="removerSuspensaoSumulaPdf('${escapeHtml(item.chave)}')">×</button>
+                </span>`,
+              )
+              .join("")
+          : '<span style="font-size:12px;color:#8a5b5b">Nenhum atleta marcado como suspenso para este confronto.</span>';
+      }
+      function preencherTimesSuspensaoSumulaPdf(confronto, elencoCasa, elencoFora) {
+        const timeSelect = document.getElementById("sumulaSuspensaoTime");
+        if (!timeSelect) return;
+
+        sumulaSuspensaoElencoAtual = [
+          ...elencoCasa.map((item) => ({
+            ...item,
+            nome_time: confronto.nome_time_casa,
+            time_id: confronto.time_casa_id,
+          })),
+          ...elencoFora.map((item) => ({
+            ...item,
+            nome_time: confronto.nome_time_fora,
+            time_id: confronto.time_fora_id,
+          })),
+        ];
+
+        timeSelect.innerHTML = `
+          <option value="">Selecione o time</option>
+          <option value="${escapeHtml(confronto.time_casa_id)}">${escapeHtml(confronto.nome_time_casa || "Time da casa")}</option>
+          <option value="${escapeHtml(confronto.time_fora_id)}">${escapeHtml(confronto.nome_time_fora || "Time visitante")}</option>
+        `;
+        document.getElementById("sumulaSuspensaoJogador").innerHTML =
+          '<option value="">Selecione o atleta</option>';
+      }
+      function filtrarJogadoresSuspensaoSumulaPdf() {
+        const timeId = document.getElementById("sumulaSuspensaoTime")?.value || "";
+        const jogadorSelect = document.getElementById("sumulaSuspensaoJogador");
+        if (!jogadorSelect) return;
+
+        const filtrados = sumulaSuspensaoElencoAtual
+          .filter((item) => String(item.time_id || "").trim() === String(timeId).trim())
+          .sort((a, b) =>
+            String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR"),
+          );
+
+        jogadorSelect.innerHTML = ['<option value="">Selecione o atleta</option>']
+          .concat(
+            filtrados.map((item) => {
+              const chave =
+                String(item.registro_id || item.jogador_id || item.nome || "").trim() +
+                "::" +
+                String(item.time_id || "").trim();
+              return `<option value="${escapeHtml(chave)}">${escapeHtml(item.nome || "-")}</option>`;
+            }),
+          )
+          .join("");
+      }
+      function adicionarSuspensaoSumulaPdf() {
+        const confrontoId =
+          document.getElementById("sumulaPdfConfronto")?.value || "";
+        const jogadorChave =
+          document.getElementById("sumulaSuspensaoJogador")?.value || "";
+        if (!confrontoId || !jogadorChave) return;
+
+        const item = sumulaSuspensaoElencoAtual.find((atleta) => {
+          const chave =
+            String(atleta.registro_id || atleta.jogador_id || atleta.nome || "").trim() +
+            "::" +
+            String(atleta.time_id || "").trim();
+          return chave === jogadorChave;
+        });
+
+        if (!item) return;
+
+        const lista = carregarSuspensoesSumulaPdf(confrontoId);
+        const chave =
+          String(item.registro_id || item.jogador_id || item.nome || "").trim() +
+          "::" +
+          String(item.time_id || "").trim();
+
+        if (!lista.some((x) => x.chave === chave)) {
+          lista.push({
+            chave,
+            nome: item.nome || "-",
+            nome_time: item.nome_time || "-",
+          });
+          sumulaSuspensoesCache[confrontoId] = lista;
+          salvarSuspensoesSumulaPdf(confrontoId);
+        }
+
+        renderizarSuspensoesSumulaPdf(confrontoId);
+        gerarPreviewSumulaPdf();
+      }
+      function removerSuspensaoSumulaPdf(chave) {
+        const confrontoId =
+          document.getElementById("sumulaPdfConfronto")?.value || "";
+        if (!confrontoId) return;
+        const lista = carregarSuspensoesSumulaPdf(confrontoId).filter(
+          (item) => item.chave !== chave,
+        );
+        sumulaSuspensoesCache[confrontoId] = lista;
+        salvarSuspensoesSumulaPdf(confrontoId);
+        renderizarSuspensoesSumulaPdf(confrontoId);
+        gerarPreviewSumulaPdf();
+      }
+      function montarBlocoTimeSumulaPdf(time, elenco, gols, suspensos = []) {
 const isPagoExtra = (item) => {
           const st = String(item.status_pagamento || item.status_paga || item.statusPaga || "").toUpperCase();
           return st === "PAGO";
@@ -2816,16 +3042,22 @@ const isPagoExtra = (item) => {
           .map((item) => item.nome)
           .filter(Boolean);
         const reps = [time?.representante_1, time?.representante_2].filter(Boolean);
+        const suspensosSet = new Set((suspensos || []).map((item) => item.chave));
 
         const linhasAtletas = atletas.map((atleta, index) => {
           const marcador =
             atleta.tipo === "GOLEIRO" ? " (G)" :
             atleta.tipo === "EXTRA"   ? " (E)" : "";
+          const chaveSuspenso =
+            String(atleta.registro_id || atleta.jogador_id || atleta.nome || "").trim() +
+            "::" +
+            String(time?.time_id || "").trim();
+          const suspenso = suspensosSet.has(chaveSuspenso);
           return `
-            <tr>
+            <tr class="${suspenso ? "sumula-suspended-row" : ""}">
               <td>&nbsp;</td>
               <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
-              <td>${escapeHtml(`${atleta.nome || "-"}${marcador}`)}</td>
+              <td>${escapeHtml(`${atleta.nome || "-"}${marcador}`)}${suspenso ? '<span class="sumula-suspended-tag">Suspenso</span>' : ""}</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
@@ -2924,6 +3156,9 @@ const isPagoExtra = (item) => {
             carregarTimeElencoSumulaPdf(confronto.time_casa_id),
             carregarTimeElencoSumulaPdf(confronto.time_fora_id),
           ]);
+          preencherTimesSuspensaoSumulaPdf(confronto, elencoCasa, elencoFora);
+          const suspensosSelecionados = carregarSuspensoesSumulaPdf(confrontoId);
+          renderizarSuspensoesSumulaPdf(confrontoId);
 
           const timeCasa = times.find(
             (time) =>
@@ -2979,11 +3214,17 @@ const isPagoExtra = (item) => {
               </div>
             </div>
             <div class="sumula-teams">
-              ${montarBlocoTimeSumulaPdf(timeCasa, elencoCasa, golsCasa)}
-              ${montarBlocoTimeSumulaPdf(timeFora, elencoFora, golsFora)}
+              ${montarBlocoTimeSumulaPdf(timeCasa, elencoCasa, golsCasa, suspensosSelecionados)}
+              ${montarBlocoTimeSumulaPdf(timeFora, elencoFora, golsFora, suspensosSelecionados)}
             </div>
             <div class="sumula-suspensos">
-              Atletas suspensos: ${suspensos.length ? escapeHtml(suspensos.join(" | ")) : "Nenhum atleta suspenso identificado no histórico atual."}
+              Atletas suspensos: ${[...new Set([
+                ...suspensos,
+                ...suspensosSelecionados.map((item) => `${item.nome} (${item.nome_time || "-"})`)
+              ])].length ? escapeHtml([...new Set([
+                ...suspensos,
+                ...suspensosSelecionados.map((item) => `${item.nome} (${item.nome_time || "-"})`)
+              ])].join(" | ")) : "Nenhum atleta suspenso identificado no histórico atual."}
             </div>
           `;
         } catch (erro) {
