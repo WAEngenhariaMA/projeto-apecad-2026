@@ -3108,25 +3108,20 @@ const isPagoExtra = (item) => {
             </tr>`;
         });
 
-        const linhasComissao = comissaoRegistros.map((item) => {
+        const comissaoRodape = comissaoRegistros.map((item) => {
           const chaveSuspenso =
             String(item.registro_id || item.jogador_id || item.nome || "").trim() +
             "::" +
             String(time?.time_id || "").trim();
           const suspenso = suspensosSet.has(chaveSuspenso);
-          return `
-            <tr class="${suspenso ? "sumula-suspended-row" : ""}">
-              <td>&nbsp;</td>
-              <td class="sumula-sign-cell"><div class="sumula-sign-slot"><span class="sumula-sign-line"></span></div></td>
-              <td>${escapeHtml(item.nome || "-")} <em style="font-size:10px;color:#667085">(COMISSÃO)</em>${suspenso ? '<span class="sumula-suspended-tag">Suspenso</span>' : ""}</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-              <td>&nbsp;</td>
-            </tr>`;
+          const nome = escapeHtml(String(item.nome || "-").toUpperCase());
+          return suspenso
+            ? `<span style="color:#c62828;font-weight:800">${nome} (SUSPENSO)</span>`
+            : nome;
         });
 
-        const linhas = (linhasAtletas.length + linhasReps.length + linhasComissao.length)
-          ? [...linhasAtletas, ...linhasReps, ...linhasComissao].join("")
+        const linhas = (linhasAtletas.length + linhasReps.length)
+          ? [...linhasAtletas, ...linhasReps].join("")
           : `<tr><td colspan="6">Nenhum atleta cadastrado para este time.</td></tr>`;
 
         return `
@@ -3154,7 +3149,7 @@ const isPagoExtra = (item) => {
             </table>
             <div class="sumula-team-footer">
               <div><strong>Total atletas:</strong> ${atletas.length}</div>
-              <div><strong>Comissão técnica:</strong> ${comissao.join(" - ") || "-"}</div>
+              <div><strong>Comissão técnica:</strong> ${comissaoRodape.join(" - ") || "-"}</div>
               <div><strong>Extras:</strong> ${extras.join(" - ") || "-"}</div>
               <div><strong>Representantes:</strong> ${reps.join(" - ") || "-"}</div>
               <div><strong>Ass. Capitão:</strong> <span class="sumula-fill-line"></span></div>
