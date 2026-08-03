@@ -2396,7 +2396,44 @@
           }
 
           confrontoSelecionadoCache = dadosConfronto.confronto;
-          elencoConfrontoCache = dadosConfronto.elenco || [];
+
+          const times = await garantirTimesAdminCache();
+          const timeCasa = times.find(
+            (time) =>
+              String(time.time_id || "").trim() ===
+              String(dadosConfronto.confronto.time_casa_id || "").trim(),
+          );
+          const timeFora = times.find(
+            (time) =>
+              String(time.time_id || "").trim() ===
+              String(dadosConfronto.confronto.time_fora_id || "").trim(),
+          );
+
+          const representantesCasa = [timeCasa?.representante_1, timeCasa?.representante_2]
+            .filter(Boolean)
+            .map((nome, index) => ({
+              jogador_id: `REP_${index + 1}_${dadosConfronto.confronto.time_casa_id}`,
+              nome_jogador: String(nome).toUpperCase(),
+              time_id: dadosConfronto.confronto.time_casa_id,
+              nome_time: dadosConfronto.confronto.nome_time_casa,
+              tipo_jogador: "REPRESENTANTE",
+            }));
+
+          const representantesFora = [timeFora?.representante_1, timeFora?.representante_2]
+            .filter(Boolean)
+            .map((nome, index) => ({
+              jogador_id: `REP_${index + 1}_${dadosConfronto.confronto.time_fora_id}`,
+              nome_jogador: String(nome).toUpperCase(),
+              time_id: dadosConfronto.confronto.time_fora_id,
+              nome_time: dadosConfronto.confronto.nome_time_fora,
+              tipo_jogador: "REPRESENTANTE",
+            }));
+
+          elencoConfrontoCache = [
+            ...(dadosConfronto.elenco || []),
+            ...representantesCasa,
+            ...representantesFora,
+          ];
 
           infoBox.innerHTML = `
       <strong>Rodada:</strong> ${dadosConfronto.confronto.rodada || "-"}<br>
