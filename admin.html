@@ -595,7 +595,8 @@
           box-shadow: none;
         }
         .sumula-toolbar,
-        #sumulaPdfStatus {
+        #sumulaPdfStatus,
+        .sumula-suspensao-panel {
           display: none !important;
         }
         .sumula-preview-wrap {
@@ -3261,12 +3262,9 @@ const isPagoExtra = (item) => {
 
           const golsCasa = Number(dadosSumula?.resumo?.gols_casa || 0);
           const golsFora = Number(dadosSumula?.resumo?.gols_fora || 0);
-          const suspensos = []
-            .concat(
-              elencoCasa.filter((item) => Number(item.vermelhos || 0) > 0),
-              elencoFora.filter((item) => Number(item.vermelhos || 0) > 0),
-            )
-            .map((item) => `${item.nome} (${item.nome_time || "-"})`);
+          const suspensos = suspensosSelecionados.map(
+            (item) => `${item.nome} (${item.nome_time || "-"})`,
+          );
 
           preview.className = "sumula-sheet";
           preview.innerHTML = `
