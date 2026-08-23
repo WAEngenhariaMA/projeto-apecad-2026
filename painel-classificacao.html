@@ -2768,6 +2768,8 @@
                 : m.status_confronto,
             encerrado:
               norm(m.encerrado).toUpperCase() === "SIM" || hasDetalhes ? "SIM" : m.encerrado,
+            houve_wo: m.houve_wo || sumula.resumo?.houve_wo || "NAO",
+            lado_wo: m.lado_wo || sumula.resumo?.lado_wo || "",
           };
         });
       }
@@ -2832,6 +2834,11 @@
             a.e++;
             h.pts++;
             a.pts++;
+          }
+          if (norm(m.houve_wo).toUpperCase() === "SIM") {
+            const lado = norm(m.lado_wo).toUpperCase();
+            if (lado === "CASA" || lado === "AMBOS") h.pts -= 3;
+            if (lado === "FORA" || lado === "AMBOS") a.pts -= 3;
           }
         });
         return base;
@@ -3599,8 +3606,9 @@
                     confronto_id: m.confronto_id,
                     gols: r.gols || [],
                     cartoes: r.cartoes || [],
+                    resumo: r.resumo || {},
                   }
-                : { confronto_id: m.confronto_id, gols: [], cartoes: [] };
+                : { confronto_id: m.confronto_id, gols: [], cartoes: [], resumo: {} };
             }),
           ),
           Promise.all(
